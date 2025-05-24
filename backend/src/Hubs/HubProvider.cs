@@ -1,5 +1,5 @@
 ﻿using backend.Models;
-using Microsoft.AspNet.SignalR;
+using Microsoft.AspNetCore.SignalR;
 
 namespace backend.src.Hubs
 {
