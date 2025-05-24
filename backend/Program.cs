@@ -1,3 +1,5 @@
+using backend.src.Hubs;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -16,10 +18,19 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+app.UseCors(cors =>
+{
+    cors.AllowAnyHeader()
+    .AllowAnyMethod()
+    .AllowCredentials().WithOrigins("localhost:8080");
+});
+
 app.UseHttpsRedirection();
 
 app.UseAuthorization();
 
 app.MapControllers();
+
+app.MapHub<HubProvider>("/Hub");
 
 app.Run();
