@@ -15,7 +15,7 @@
         outlined
         @keyup.enter="send"
         placeholder="Digite sua mensagem"
-        v-model="message.body"
+        v-model="message.content"
         class="q-mt-xl q-pa-sm"
         dense
       />

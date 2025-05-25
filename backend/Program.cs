@@ -23,7 +23,7 @@ app.UseCors(cors =>
 {
     cors.AllowAnyHeader()
     .AllowAnyMethod()
-    .AllowCredentials().WithOrigins("localhost:8080");
+    .AllowCredentials().WithOrigins("http://localhost:8080");
 });
 
 app.UseHttpsRedirection();
