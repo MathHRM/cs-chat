@@ -8,7 +8,7 @@
         class="q-mt-sm q-pa-sm"
         dense
       />
-      
+
       <ChatComponent :messages="messages" :userActual="message.username"/>
 
       <q-input

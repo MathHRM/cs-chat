@@ -3,7 +3,7 @@ import { HubConnectionBuilder, LogLevel } from "@aspnet/signalr";
 export default class Hub {
     constructor() {
         this.connection = new HubConnectionBuilder()
-            .withUrl('https://localhost:7089/Hub')
+            .withUrl('http://localhost:5136/Hub')
             .configureLogging(LogLevel.Information)
             .build();
     }

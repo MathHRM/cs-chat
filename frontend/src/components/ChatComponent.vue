@@ -2,7 +2,7 @@
   <div class="q-pa-md row justify-center">
     <div style="width: 100%; max-width: 400px">
     <div style="width: 100%" v-for="(message, index) in messages" :key="index">
-      <q-chat-message 
+      <q-chat-message
         v-if="message.username == userActual"
         sent
         :name="message.username"
