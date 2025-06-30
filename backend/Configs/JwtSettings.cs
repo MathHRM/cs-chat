@@ -1,4 +1,4 @@
-namespace app_backend.Config
+namespace backend.Configs
 {
     public class JwtSettings
     {
