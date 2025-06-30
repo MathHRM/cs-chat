@@ -8,7 +8,7 @@ using backend.Http.Responses;
 namespace backend.Http.Controllers
 {
     [ApiController]
-    [Route("api/Auth")]
+    [Route("api/auth")]
     public class AuthController : ControllerBase
     {
         private readonly TokenService _tokenService;
@@ -21,7 +21,7 @@ namespace backend.Http.Controllers
         }
 
         [HttpPost]
-        [Route("Register")]
+        [Route("register")]
         public async Task<ActionResult<LoginResponse>> Register([FromBody] AuthRequest request)
         {
             if (await _userService.UserExistsAsync(request.Username))
@@ -49,7 +49,7 @@ namespace backend.Http.Controllers
         }
 
         [HttpPost]
-        [Route("Login")]
+        [Route("login")]
         public async Task<ActionResult<LoginResponse>> Login([FromBody] AuthRequest request)
         {
             var user = await _userService.ValidateUserCredentialsAsync(request.Username, request.Password);

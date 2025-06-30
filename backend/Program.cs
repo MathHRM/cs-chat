@@ -5,7 +5,10 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.EntityFrameworkCore;
 using backend;
-var builder = WebApplication.CreateBuilder(args);
+using backend.Services;
+using backend.Repository;
+
+    var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
@@ -38,6 +41,11 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             };
         });
 builder.Services.AddAuthorization();
+
+// Add application services
+builder.Services.AddScoped<TokenService>();
+builder.Services.AddScoped<UserRepository>();
+builder.Services.AddScoped<UserService>();
 
 var app = builder.Build();
 
