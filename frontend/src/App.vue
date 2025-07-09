@@ -18,7 +18,7 @@
               dense
               autofocus
             />
-            <q-btn 
+            <q-btn
               @click="setUsername"
               :disable="!usernameInput.trim()"
               color="primary"
@@ -73,6 +73,16 @@ export default {
       if (!content.trim()) return;
       
       message.content = content;
+
+      if (_hub.connection.state != "Connected") {
+        messages.value.push({
+          username: "System",
+          content: "Connection not established",
+          created_at: new Date()
+        });
+        return;
+      }
+
       _hub.connection.invoke("SendMessage", message);
       message.content = "";
     }
