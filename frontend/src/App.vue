@@ -26,8 +26,7 @@
 </template>
 
 <script>
-import { ref, reactive, computed } from 'vue'
-import Hub from './Hub'
+import { ref, computed } from 'vue'
 import TerminalView from './pages/TerminalView.vue';
 
 export default {
@@ -38,14 +37,8 @@ export default {
   },
 
   setup() {
-    let messages = ref([]);
-    let message = reactive({
-      username: "",
-      content: "",
-    });
     let usernameInput = ref("");
     let loggedUser = ref("");
-    let _hub = new Hub();
 
     const getLoggedUser = computed(() => {
       return loggedUser.value.trim();
@@ -58,31 +51,9 @@ export default {
       }
     }
 
-    function handleSendMessage(content) {
-      if (!content.trim()) return;
-
-      message.content = content;
-
-      if (_hub.connection.state != "Connected") {
-        messages.value.push({
-          username: "System",
-          content: "Connection not established",
-          created_at: new Date()
-        });
-
-        return;
-      }
-
-      _hub.connection.invoke("SendMessage", message);
-      message.content = "";
-    }
-
     return {
-      messages,
-      message,
       usernameInput,
       setUsername,
-      handleSendMessage,
       getLoggedUser
     }
   }
