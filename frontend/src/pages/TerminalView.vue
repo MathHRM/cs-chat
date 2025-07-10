@@ -30,7 +30,7 @@ let message = reactive({
   content: "",
 });
 
-defineProps({
+const props = defineProps({
   userActual: String,
   messages: Array,
 });
@@ -38,6 +38,7 @@ defineProps({
 function handleSendMessage(content) {
   if (!content.trim()) return;
 
+  message.username = props.userActual;
   message.content = content;
 
   if (_hub.connection.state != HubConnectionState.Connected) {
