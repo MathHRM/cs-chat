@@ -21,6 +21,7 @@ import CommandsComponent from "@/components/CommandsComponent.vue";
 import CommandLine from "@/components/CommandLine.vue";
 import { ref, defineProps, onMounted, reactive } from "vue";
 import Hub from "../Hub";
+import { HubConnectionState } from "@aspnet/signalr";
 
 const _hub = new Hub();
 let messages = ref([]);
@@ -39,7 +40,7 @@ function handleSendMessage(content) {
 
   message.content = content;
 
-  if (_hub.connection.state != "Connected") {
+  if (_hub.connection.state != HubConnectionState.Connected) {
     messages.value.push({
       username: "System",
       content: "Connection not established",
@@ -54,6 +55,8 @@ function handleSendMessage(content) {
 }
 
 onMounted(() => {
+  console.log('Connecting to hub');
+
   _hub.connection
     .start()
     .then(() => {

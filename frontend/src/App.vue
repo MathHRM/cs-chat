@@ -26,7 +26,7 @@
 </template>
 
 <script>
-import { ref, reactive, onMounted, computed } from 'vue'
+import { ref, reactive, computed } from 'vue'
 import Hub from './Hub'
 import TerminalView from './pages/TerminalView.vue';
 
@@ -76,16 +76,6 @@ export default {
       _hub.connection.invoke("SendMessage", message);
       message.content = "";
     }
-
-    onMounted(() => {
-      _hub.connection.start()
-        .then(() => {
-          _hub.connection.on("ReceivedMessage", (msg) => {
-            messages.value.push(msg);
-          });
-        })
-        .catch(e => console.log("Error: Connection failed", e))
-    });
 
     return {
       messages,
