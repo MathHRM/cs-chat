@@ -1,0 +1,21 @@
+import axios from "axios";
+
+export const login = async ({
+  username,
+  password,
+}) => {
+  try {
+    const { data } = await axios.post('/login', {
+      username,
+      password,
+    });
+
+    localStorage.setItem('@auth', `${data.token}`);
+
+    return data.user;
+  } catch (err) {
+    console.log(err);
+
+    return err;
+  }
+};

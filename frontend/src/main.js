@@ -4,6 +4,7 @@ import { Quasar } from 'quasar'
 import quasarUserOptions from './quasar-user-options'
 import './styles/app.css'
 import { createPinia } from 'pinia'
+import './plugins/axios'
 
 const app = createApp(App);
 
