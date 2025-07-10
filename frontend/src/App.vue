@@ -72,14 +72,6 @@ export default {
       message.content = "";
     }
 
-    function send() {
-      if (message.content == "")
-        return;
-
-      _hub.connection.invoke("SendMessage", message);
-      message.content = "";
-    }
-
     onMounted(() => {
       _hub.connection.start()
         .then(() => {
@@ -91,7 +83,6 @@ export default {
     });
 
     return {
-      send,
       messages,
       message,
       usernameInput,
