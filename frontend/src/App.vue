@@ -2,19 +2,8 @@
   <q-layout view="lHh Lpr lFf">
     <q-page-container>
       <!-- Username Setup (only show if no username is set) -->
-      <div v-if="!getLoggedUser" class="username-setup">
-        <q-card class="q-pa-md q-ma-md">
-          <q-card-section>
-            <div class="text-h6">Enter Terminal</div>
-            <div class="text-subtitle2">Set your username to start chatting</div>
-          </q-card-section>
-          <q-card-section>
-            <q-input outlined placeholder="Enter your username" v-model="usernameInput" @keyup.enter="setUsername"
-              class="q-mb-md" dense autofocus />
-            <q-btn @click="setUsername" :disable="!usernameInput.trim()" color="primary" label="Enter Terminal"
-              class="full-width" />
-          </q-card-section>
-        </q-card>
+      <div v-if="!getLoggedUser" class="terminal-wrapper">
+        <LoginRegister />
       </div>
 
       <!-- Terminal Chat Interface -->
@@ -28,12 +17,14 @@
 <script>
 import { ref, computed } from 'vue'
 import TerminalView from './pages/TerminalView.vue';
+import LoginRegister from './pages/LoginRegister.vue';
 
 export default {
   name: 'LayoutDefault',
 
   components: {
-    TerminalView
+    TerminalView,
+    LoginRegister
   },
 
   setup() {

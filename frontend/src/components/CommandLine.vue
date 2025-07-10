@@ -1,6 +1,6 @@
 <template>
   <div class="terminal-input-line">
-    <span class="terminal-user">{{ userActual }}</span>
+    <span class="terminal-user">{{ userActual || '~' }}</span>
     <span class="terminal-separator">@</span>
     <span class="terminal-chat">chat</span>
     <span class="terminal-separator">:~$ </span>

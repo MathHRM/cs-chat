@@ -1,7 +1,5 @@
 <template>
-  <!-- Terminal Body -->
   <div class="terminal-body" ref="terminalBody">
-    <!-- Chat Messages -->
     <div
       v-for="(message, index) in messages"
       :key="index"
@@ -29,7 +27,6 @@ import {
 } from "vue";
 
 defineProps({
-  userActual: String,
   messages: Array,
 });
 
