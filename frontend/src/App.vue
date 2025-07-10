@@ -9,33 +9,17 @@
             <div class="text-subtitle2">Set your username to start chatting</div>
           </q-card-section>
           <q-card-section>
-            <q-input
-              outlined
-              placeholder="Enter your username"
-              v-model="usernameInput"
-              @keyup.enter="setUsername"
-              class="q-mb-md"
-              dense
-              autofocus
-            />
-            <q-btn
-              @click="setUsername"
-              :disable="!usernameInput.trim()"
-              color="primary"
-              label="Enter Terminal"
-              class="full-width"
-            />
+            <q-input outlined placeholder="Enter your username" v-model="usernameInput" @keyup.enter="setUsername"
+              class="q-mb-md" dense autofocus />
+            <q-btn @click="setUsername" :disable="!usernameInput.trim()" color="primary" label="Enter Terminal"
+              class="full-width" />
           </q-card-section>
         </q-card>
       </div>
 
       <!-- Terminal Chat Interface -->
       <div v-else class="terminal-wrapper">
-        <ChatComponent 
-          :messages="messages" 
-          :userActual="message.username"
-          @send-message="handleSendMessage"
-        />
+        <ChatComponent :messages="messages" :userActual="message.username" @send-message="handleSendMessage" />
       </div>
     </q-page-container>
   </q-layout>
@@ -53,7 +37,7 @@ export default {
     ChatComponent
   },
 
-  setup () {
+  setup() {
     let messages = ref([]);
     let message = reactive({
       username: "",
@@ -71,7 +55,7 @@ export default {
 
     function handleSendMessage(content) {
       if (!content.trim()) return;
-      
+
       message.content = content;
 
       if (_hub.connection.state != "Connected") {
@@ -80,6 +64,7 @@ export default {
           content: "Connection not established",
           created_at: new Date()
         });
+
         return;
       }
 
@@ -88,7 +73,7 @@ export default {
     }
 
     function send() {
-      if(message.content == "")
+      if (message.content == "")
         return;
 
       _hub.connection.invoke("SendMessage", message);
@@ -97,12 +82,12 @@ export default {
 
     onMounted(() => {
       _hub.connection.start()
-      .then(() => {
-        _hub.connection.on("ReceivedMessage", (msg) => {
-          messages.value.push(msg);
-        });
-      })
-      .catch(e => console.log("Error: Connection failed", e))
+        .then(() => {
+          _hub.connection.on("ReceivedMessage", (msg) => {
+            messages.value.push(msg);
+          });
+        })
+        .catch(e => console.log("Error: Connection failed", e))
     });
 
     return {

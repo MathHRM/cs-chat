@@ -9,26 +9,32 @@
       </div>
       <div class="terminal-title">Terminal</div>
     </div>
-    
+
     <!-- Terminal Body -->
     <div class="terminal-body" ref="terminalBody">
       <!-- Chat Messages -->
-      <div v-for="(message, index) in messages" :key="index" class="terminal-line">
+      <div
+        v-for="(message, index) in messages"
+        :key="index"
+        class="terminal-line"
+      >
         <span class="terminal-user">{{ message.username }}</span>
         <span class="terminal-separator">@</span>
         <span class="terminal-chat">chat</span>
         <span class="terminal-separator">:~$ </span>
         <span class="terminal-message">{{ message.content }}</span>
-        <div class="terminal-timestamp">{{ formatTimestamp(message.created_at) }}</div>
+        <div class="terminal-timestamp">
+          {{ formatTimestamp(message.created_at) }}
+        </div>
       </div>
-      
+
       <!-- Current Input Line -->
       <div class="terminal-input-line">
-        <span class="terminal-user">{{ userActual || 'user' }}</span>
+        <span class="terminal-user">{{ userActual || "user" }}</span>
         <span class="terminal-separator">@</span>
         <span class="terminal-chat">chat</span>
         <span class="terminal-separator">:~$ </span>
-        <input 
+        <input
           ref="terminalInput"
           v-model="currentInput"
           @keyup.enter="handleSend"
@@ -37,67 +43,69 @@
           :placeholder="messages.length === 0 ? 'Type your message...' : ''"
           autofocus
         />
-        <span class="terminal-cursor" :class="{ 'blink': showCursor }">█</span>
+        <span class="terminal-cursor" :class="{ blink: showCursor }">█</span>
       </div>
     </div>
   </div>
 </template>
 
-<script>
-export default {
-  name: 'ChatComponent',
-  props: {
-    userActual: String,
-    messages: Array
-  },
-  data() {
-    return {
-      currentInput: '',
-      showCursor: true
-    }
-  },
-  mounted() {
-    this.startCursorBlink();
-    this.scrollToBottom();
-  },
-  updated() {
-    this.scrollToBottom();
-  },
-  methods: {
-    handleSend() {
-      if (this.currentInput.trim()) {
-        this.$emit('send-message', this.currentInput.trim());
-        this.currentInput = '';
-      }
-    },
-    handleInput() {
-      // Reset cursor blink on input
-      this.showCursor = true;
-    },
-    startCursorBlink() {
-      setInterval(() => {
-        this.showCursor = !this.showCursor;
-      }, 500);
-    },
-    scrollToBottom() {
-      this.$nextTick(() => {
-        if (this.$refs.terminalBody) {
-          this.$refs.terminalBody.scrollTop = this.$refs.terminalBody.scrollHeight;
-        }
-      });
-    },
-    formatTimestamp(timestamp) {
-      if (!timestamp) return '';
-      const date = new Date(timestamp);
-      return date.toLocaleTimeString();
-    }
+<script setup>
+import { ref, onMounted, onUpdated, defineProps, defineEmits, nextTick, useTemplateRef } from "vue";
+
+const emit = defineEmits(["send-message"]);
+defineProps({
+  userActual: String,
+  messages: Array,
+});
+
+const terminalBody = useTemplateRef("terminalBody");
+const currentInput = ref("");
+const showCursor = ref(true);
+
+const handleSend = () => {
+  if (currentInput.value.trim()) {
+    emit("send-message", currentInput.value.trim());
+    currentInput.value = "";
   }
-}
+};
+
+const handleInput = () => {
+  showCursor.value = true;
+};
+
+const startCursorBlink = () => {
+  setInterval(() => {
+    showCursor.value = !showCursor.value;
+  }, 500);
+};
+
+const scrollToBottom = () => {
+  nextTick(() => {
+    if (terminalBody.value) {
+      terminalBody.value.scrollTop = terminalBody.value.scrollHeight;
+    }
+  });
+};
+
+const formatTimestamp = (timestamp) => {
+  if (!timestamp) return "";
+  const date = new Date(timestamp);
+  return date.toLocaleTimeString();
+};
+
+onMounted(() => {
+  startCursorBlink();
+  scrollToBottom();
+});
+
+onUpdated(() => {
+  scrollToBottom();
+});
 </script>
 
 <style scoped>
 .terminal-container {
-  font-family: 'Courier New', 'Monaco', 'Menlo', monospace;
+  font-family: "Courier New", "Monaco", "Menlo", monospace;
   background-color: #1e1e1e;
   border-radius: 8px;
   overflow: hidden;
@@ -220,8 +228,15 @@ export default {
 }
 
 @keyframes blink {
-  0%, 50% { opacity: 1; }
-  51%, 100% { opacity: 0; }
+  0%,
+  50% {
+    opacity: 1;
+  }
+
+  51%,
+  100% {
+    opacity: 0;
+  }
 }
 
 /* Custom scrollbar */
@@ -252,7 +267,7 @@ export default {
   .terminal-container {
     height: 70vh;
   }
-  
+
   .terminal-body {
     font-size: 12px;
   }
