@@ -1,14 +1,4 @@
 <template>
-  <!-- Terminal Header -->
-  <div class="terminal-header">
-    <div class="terminal-buttons">
-      <div class="terminal-btn close"></div>
-      <div class="terminal-btn minimize"></div>
-      <div class="terminal-btn maximize"></div>
-    </div>
-    <div class="terminal-title">Terminal</div>
-  </div>
-
   <!-- Terminal Body -->
   <div class="terminal-body" ref="terminalBody">
     <!-- Chat Messages -->

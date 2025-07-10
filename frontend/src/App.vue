@@ -19,7 +19,7 @@
 
       <!-- Terminal Chat Interface -->
       <div v-else class="terminal-wrapper">
-        <ChatComponent :messages="messages" :userActual="message.username" @send-message="handleSendMessage" />
+        <TerminalView />
       </div>
     </q-page-container>
   </q-layout>
@@ -27,14 +27,14 @@
 
 <script>
 import { ref, reactive, onMounted } from 'vue'
-import ChatComponent from './components/ChatComponent.vue'
 import Hub from './Hub'
+import TerminalView from './pages/TerminalView.vue';
 
 export default {
   name: 'LayoutDefault',
 
   components: {
-    ChatComponent
+    TerminalView
   },
 
   setup() {
