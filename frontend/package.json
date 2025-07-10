@@ -10,7 +10,9 @@
   "dependencies": {
     "@aspnet/signalr": "^1.1.4",
     "@quasar/extras": "^1.0.0",
+    "axios": "^1.10.0",
     "core-js": "^3.8.3",
+    "pinia": "^3.0.3",
     "quasar": "^2.16.0",
     "vue": "^3.2.13"
   },
