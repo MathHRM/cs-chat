@@ -1,5 +1,15 @@
 <template>
   <div class="terminal-container">
+    <!-- Terminal Header -->
+<!--     <div class="terminal-header">
+      <div class="terminal-buttons">
+        <div class="terminal-btn close"></div>
+        <div class="terminal-btn minimize"></div>
+        <div class="terminal-btn maximize"></div>
+      </div>
+      <div class="terminal-title">Terminal</div>
+    </div> -->
+
     <CommandsComponent :messages="messages" :userActual="userActual" />
 
     <CommandLine :userActual="userActual" @send-message="handleSendMessage" />

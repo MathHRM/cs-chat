@@ -2,7 +2,7 @@
   <q-layout view="lHh Lpr lFf">
     <q-page-container>
       <!-- Username Setup (only show if no username is set) -->
-      <div v-if="!message.username" class="username-setup">
+      <div v-if="!getLoggedUser" class="username-setup">
         <q-card class="q-pa-md q-ma-md">
           <q-card-section>
             <div class="text-h6">Enter Terminal</div>
@@ -19,14 +19,14 @@
 
       <!-- Terminal Chat Interface -->
       <div v-else class="terminal-wrapper">
-        <TerminalView />
+        <TerminalView :userActual="getLoggedUser" />
       </div>
     </q-page-container>
   </q-layout>
 </template>
 
 <script>
-import { ref, reactive, onMounted } from 'vue'
+import { ref, reactive, onMounted, computed } from 'vue'
 import Hub from './Hub'
 import TerminalView from './pages/TerminalView.vue';
 
@@ -44,11 +44,16 @@ export default {
       content: "",
     });
     let usernameInput = ref("");
+    let loggedUser = ref("");
     let _hub = new Hub();
+
+    const getLoggedUser = computed(() => {
+      return loggedUser.value.trim();
+    });
 
     function setUsername() {
       if (usernameInput.value.trim()) {
-        message.username = usernameInput.value.trim();
+        loggedUser.value = usernameInput.value.trim();
         usernameInput.value = "";
       }
     }
@@ -87,7 +92,8 @@ export default {
       message,
       usernameInput,
       setUsername,
-      handleSendMessage
+      handleSendMessage,
+      getLoggedUser
     }
   }
 }
