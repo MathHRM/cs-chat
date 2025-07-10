@@ -14,41 +14,16 @@
   </q-layout>
 </template>
 
-<script>
-import { ref, computed } from 'vue'
-import TerminalView from './pages/TerminalView.vue';
-import LoginRegister from './pages/LoginRegister.vue';
+<script setup>
+import { ref, computed } from "vue";
+import TerminalView from "./pages/TerminalView.vue";
+import LoginRegister from "./pages/LoginRegister.vue";
 
-export default {
-  name: 'LayoutDefault',
+let loggedUser = ref("");
 
-  components: {
-    TerminalView,
-    LoginRegister
-  },
-
-  setup() {
-    let usernameInput = ref("");
-    let loggedUser = ref("");
-
-    const getLoggedUser = computed(() => {
-      return loggedUser.value.trim();
-    });
-
-    function setUsername() {
-      if (usernameInput.value.trim()) {
-        loggedUser.value = usernameInput.value.trim();
-        usernameInput.value = "";
-      }
-    }
-
-    return {
-      usernameInput,
-      setUsername,
-      getLoggedUser
-    }
-  }
-}
+const getLoggedUser = computed(() => {
+  return loggedUser.value.trim();
+});
 </script>
 
 <style>
