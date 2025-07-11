@@ -7,7 +7,7 @@ export const getUser = async () => {
 
     return data;
   } catch (err) {
-    if (err.response.status === 401) {
+    if (err.response?.status === 401) {
       router.push('/login');
 
       return null;
