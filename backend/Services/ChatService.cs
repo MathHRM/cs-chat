@@ -37,9 +37,13 @@ namespace backend.Services
                 }
             }
 
+            id = string.IsNullOrEmpty(id)
+                ? Guid.NewGuid().ToString().ToUpper().Substring(0, 5)
+                : id;
+
             var chat = new Chat
             {
-                Id = id ?? Guid.NewGuid().ToString().ToUpper().Substring(0, 5),
+                Id = id,
             };
             await _context.Chats.AddAsync(chat);
             await _context.SaveChangesAsync();

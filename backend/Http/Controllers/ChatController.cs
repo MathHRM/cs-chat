@@ -35,13 +35,17 @@ public class ChatController : ControllerBase
     [Authorize]
     public async Task<ActionResult<Chat>> CreateChat([FromBody] ChatRequest request)
     {
+        if (request.Id != null)
+        {
+            var chat = await _chatService.GetChatByIdAsync(request.Id);
+            if (chat != null)
+            {
+                return BadRequest("Chat already exists.");
+            }
+        }
+
         var createdChat = await _chatService.CreateChatAsync(request.Id);
         var users = new List<User>();
-
-        if (createdChat == null)
-        {
-            return BadRequest("Chat already exists.");
-        }
 
         if (request.UserId != null)
         {
