@@ -1,13 +1,6 @@
 <template>
   <q-layout view="lHh Lpr lFf">
     <q-page-container>
-      <!-- <div v-if="!getLoggedUser" class="terminal-wrapper">
-        <LoginRegister />
-      </div>
-
-      <div v-else class="terminal-wrapper">
-        <TerminalView :userActual="getLoggedUser" />
-      </div> -->
       <div class="terminal-wrapper">
         <router-view />
       </div>
@@ -24,7 +17,7 @@ import router from "@/routes";
 const authStore = useAuthStore();
 
 onMounted(async () => {
-  const token = localStorage.getItem('@auth');
+  const token = localStorage.getItem("@auth");
 
   if (token) {
     const user = await getUser();
@@ -32,15 +25,15 @@ onMounted(async () => {
     if (user?.id) {
       authStore.setUser(user);
 
-      router.push('/');
+      router.push("/");
 
       return;
     }
 
-    localStorage.removeItem('@auth');
-
-    router.push('/login');
+    localStorage.removeItem("@auth");
   }
+
+  router.push("/login");
 });
 </script>
 
