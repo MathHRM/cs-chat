@@ -1,6 +1,6 @@
 <template>
   <div class="terminal-input-line">
-    <span class="terminal-user">{{ user.username || '~' }}</span>
+    <span class="terminal-user">{{ getUser.username || '~' }}</span>
     <span class="terminal-separator">@</span>
     <span class="terminal-chat">chat</span>
     <span class="terminal-separator">:~$ </span>
@@ -17,12 +17,12 @@
 </template>
 
 <script setup>
-import { ref, onMounted, defineEmits } from "vue";
+import { ref, onMounted, defineEmits, computed } from "vue";
 import { useAuthStore } from "@/stores/auth";
 
 const authStore = useAuthStore();
-const user = authStore.user;
 
+const getUser = computed(() => authStore.user);
 const emit = defineEmits(["send-message"]);
 
 const currentInput = ref("");

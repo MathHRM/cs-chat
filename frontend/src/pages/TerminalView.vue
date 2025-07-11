@@ -9,7 +9,7 @@
 <script setup>
 import CommandsComponent from "@/components/CommandsComponent.vue";
 import CommandLine from "@/components/CommandLine.vue";
-import { ref, onMounted, reactive } from "vue";
+import { ref, onMounted, reactive, computed } from "vue";
 import Hub from "../Hub";
 import { HubConnectionState } from "@aspnet/signalr";
 import { useAuthStore } from "@/stores/auth";
@@ -22,12 +22,12 @@ let message = reactive({
 });
 
 const authStore = useAuthStore();
-const user = authStore.user;
+const getUser = computed(() => authStore.user);
 
 function handleSendMessage(content) {
   if (!content.trim()) return;
 
-  message.username = user.username;
+  message.username = getUser.value.username;
   message.content = content;
 
   if (_hub.connection.state != HubConnectionState.Connected) {
