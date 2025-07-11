@@ -53,12 +53,7 @@ namespace backend.Services
             }
 
             existingUser.Username = user.Username ?? existingUser.Username;
-            existingUser.Password = user.Password ?? existingUser.Password;
-
-            if (!string.IsNullOrEmpty(user.Password))
-            {
-                existingUser.Password = BCrypt.Net.BCrypt.HashPassword(user.Password);
-            }
+            existingUser.CurrentChatId = user.CurrentChatId ?? existingUser.CurrentChatId;
 
             await _userRepository.UpdateUserAsync(existingUser);
             return existingUser;
@@ -77,14 +72,19 @@ namespace backend.Services
 
         public async Task<User?> ValidateUserCredentialsAsync(string username, string password)
         {
+            Console.WriteLine($"Username: ~{username}~");
+            Console.WriteLine($"Password: ~{password}~");
+
             var user = await GetUserByUsernameAsync(username);
             if (user == null)
             {
+                Console.WriteLine("User not found");
                 return null;
             }
 
             if (!BCrypt.Net.BCrypt.Verify(password, user.Password))
             {
+                Console.WriteLine("Invalid password");
                 return null;
             }
 
