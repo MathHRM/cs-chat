@@ -67,9 +67,13 @@ let messages = ref([]);
 
 function saveMessage(content, username = "~") {
   messages.value.push({
-    username: username,
-    content: content,
-    created_at: new Date(),
+    user: {
+      username: username,
+    },
+    message: {
+      content: content,
+      created_at: new Date(),
+    },
   });
 }
 
@@ -77,9 +81,13 @@ function alert(content) {
   const contentMessage = translate[content];
 
   messages.value.push({
-    username: "System",
-    content: contentMessage,
-    created_at: new Date(),
+    user: {
+      username: "System",
+    },
+    message: {
+      content: contentMessage,
+      created_at: new Date(),
+    },
   });
 
   return contentMessage;
