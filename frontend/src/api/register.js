@@ -5,7 +5,7 @@ export const register = async ({
   password,
 }) => {
   try {
-    const { data } = await axios.post('/register', {
+    const { data } = await axios.post('/auth/register', {
       username,
       password,
     });
