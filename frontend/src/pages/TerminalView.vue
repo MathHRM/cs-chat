@@ -40,6 +40,7 @@ function handleSendMessage(content) {
     return;
   }
 
+  console.log(message);
   _hub.connection.invoke("SendMessage", message);
   message.content = "";
 }

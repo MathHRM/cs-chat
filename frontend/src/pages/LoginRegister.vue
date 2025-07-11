@@ -11,55 +11,60 @@ import { login } from "@/api/login";
 import { register } from "@/api/register";
 import CommandLine from "@/components/CommandLine.vue";
 import CommandsComponent from "@/components/CommandsComponent.vue";
-import { ref } from "vue";
+import { onMounted, ref } from "vue";
 import router from "@/routes";
 
 const translate = {
-  'login': 'Logged in successfully',
-  'register': 'Registered successfully',
-  'login-failed': 'Wrong username or password',
-  'register-failed': 'Could not register',
-  'command-not-found': 'Command does not exist',
-  'not-a-command': 'Not a command',
-  'not-enough-args': 'Not enough arguments',
+  login: "Logged in successfully",
+  register: "Registered successfully",
+  "login-failed": "Wrong username or password",
+  "register-failed": "Could not register",
+  "command-not-found": "Command does not exist",
+  "not-a-command": "Not a command",
+  "not-enough-args": "Not enough arguments",
 };
 
 const commands = {
-  'login': {
-    'description': 'Login to the system',
-    'args': {
-      'username': {
-        'type': 'string',
-        'description': 'The username to login with',
-      },
-      'password': {
-        'type': 'string',
-        'description': 'The password to login with',
-      },
-    },
-    'handler': handleLogin
+  help: {
+    description: "Show available commands and their usage",
+    args: {},
+    handler: handleHelp,
   },
-  'register': {
-    'description': 'Register a new user',
-    'args': {
-      'username': {
-        'type': 'string',
-        'description': 'The username to register with',
+  login: {
+    description: "Login to the system",
+    args: {
+      username: {
+        type: "string",
+        description: "The username to login with",
       },
-      'password': {
-        'type': 'string',
-        'description': 'The password to register with',
+      password: {
+        type: "string",
+        description: "The password to login with",
       },
     },
-    'handler': handleRegister
+    handler: handleLogin,
+  },
+  register: {
+    description: "Register a new user",
+    args: {
+      username: {
+        type: "string",
+        description: "The username to register with",
+      },
+      password: {
+        type: "string",
+        description: "The password to register with",
+      },
+    },
+    handler: handleRegister,
   },
 };
 
 let messages = ref([]);
 
-function saveMessage(content) {
+function saveMessage(content, username = "~") {
   messages.value.push({
-    username: '~',
+    username: username,
     content: content,
     created_at: new Date(),
   });
@@ -69,7 +74,7 @@ function alert(content) {
   const contentMessage = translate[content];
 
   messages.value.push({
-    username: 'System',
+    username: "System",
     content: contentMessage,
     created_at: new Date(),
   });
@@ -81,12 +86,12 @@ function getCommandOnly(command) {
   const match = command.match(/^\/\s*(\w+)/);
 
   if (!match) {
-    console.log('no match');
+    console.log("no match");
 
     return null;
   }
 
-  console.log('match', match[1]);
+  console.log("match", match[1]);
 
   return match[1];
 }
@@ -108,29 +113,51 @@ function getCommandArgs(command) {
 async function handleLogin({ username, password }) {
   const data = await login(username, password);
 
-  if (! data?.user?.id) {
-    alert('login-failed');
+  if (!data?.user?.id) {
+    alert("login-failed");
 
     return;
   }
 
-  localStorage.setItem('@auth', `${data.token}`);
+  localStorage.setItem("@auth", `${data.token}`);
 
-  router.push('/');
+  router.push("/");
 }
 
 async function handleRegister({ username, password }) {
   const data = await register(username, password);
 
-  if (! data?.user?.id) {
-    alert('register-failed');
+  if (!data?.user?.id) {
+    alert("register-failed");
 
     return;
   }
 
-  localStorage.setItem('@auth', `${data.token}`);
+  localStorage.setItem("@auth", `${data.token}`);
 
-  router.push('/');
+  router.push("/");
+}
+
+function handleHelp() {
+  const helpMessage =
+    "Available commands:\n\n" +
+    Object.entries(commands)
+      .map(([name, cmd]) => {
+        const argsDescription =
+          Object.entries(cmd.args).length > 0
+            ? Object.entries(cmd.args)
+                .map(
+                  ([argName, argInfo]) =>
+                    `--${argName}=<${argInfo.type}> - ${argInfo.description}`
+                )
+                .join("\n    ")
+            : "No arguments required";
+
+        return `/${name} - ${cmd.description}\n    ${argsDescription}`;
+      })
+      .join("\n\n");
+
+  saveMessage(helpMessage, "System");
 }
 
 function handleCommand(command) {
@@ -138,8 +165,8 @@ function handleCommand(command) {
 
   command = command.trim();
 
-  if (!command.startsWith('/')) {
-    alert('not-a-command');
+  if (!command.startsWith("/")) {
+    alert("not-a-command");
 
     return;
   }
@@ -148,13 +175,16 @@ function handleCommand(command) {
   const commandArgs = getCommandArgs(command);
 
   if (!commands[commandName]) {
-    alert('command-not-found');
+    alert("command-not-found");
 
     return;
   }
 
-  if (Object.keys(commandArgs).length !== Object.keys(commands[commandName].args).length) {
-    alert('not-enough-args');
+  if (
+    Object.keys(commandArgs).length !==
+    Object.keys(commands[commandName].args).length
+  ) {
+    alert("not-enough-args");
 
     return;
   }
@@ -162,4 +192,7 @@ function handleCommand(command) {
   commands[commandName].handler(commandArgs);
 }
 
+onMounted(() => {
+  handleHelp();
+});
 </script>
