@@ -57,7 +57,9 @@ builder.Services.AddAuthorization();
 // Add application services
 builder.Services.AddScoped<TokenService>();
 builder.Services.AddScoped<UserRepository>();
+builder.Services.AddScoped<ChatRepository>();
 builder.Services.AddScoped<UserService>();
+builder.Services.AddScoped<ChatService>();
 
 var app = builder.Build();
 
