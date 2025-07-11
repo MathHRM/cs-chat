@@ -18,11 +18,12 @@ public class HubProvider : Hub<IHubProvider>
     public override async Task OnConnectedAsync()
     {
         var user = await _userService.GetUserByUsernameAsync(Context.User.Identity.Name);
-    }
 
-    public override async Task OnDisconnectedAsync(Exception? exception)
-    {
-        var user = await _userService.GetUserByUsernameAsync(Context.User.Identity.Name);
+        if (user.CurrentChatId == null)
+        {
+            user.CurrentChatId = "general";
+            await _userService.UpdateUserAsync(user.Id, user);
+        }
     }
 
     [Authorize]
