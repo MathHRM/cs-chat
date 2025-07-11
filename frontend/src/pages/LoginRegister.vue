@@ -93,8 +93,6 @@ function getCommandArgs(command) {
   const args = {};
   let match;
 
-  console.log('aaaaaaaaaaaa');
-
   while ((match = argRegex.exec(command)) !== null) {
     console.log(match);
 

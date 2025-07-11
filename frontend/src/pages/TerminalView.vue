@@ -1,29 +1,18 @@
 <template>
   <div class="terminal-container">
-    <!-- Terminal Header -->
-<!--     <div class="terminal-header">
-      <div class="terminal-buttons">
-        <div class="terminal-btn close"></div>
-        <div class="terminal-btn minimize"></div>
-        <div class="terminal-btn maximize"></div>
-      </div>
-      <div class="terminal-title">Terminal</div>
-    </div> -->
+    <CommandsComponent :messages="messages" />
 
-    <CommandsComponent :messages="messages" :userActual="userActual" />
-
-    <CommandLine :userActual="userActual" @send-message="handleSendMessage" />
+    <CommandLine @send-message="handleSendMessage" />
   </div>
 </template>
 
 <script setup>
 import CommandsComponent from "@/components/CommandsComponent.vue";
 import CommandLine from "@/components/CommandLine.vue";
-import { ref, defineProps, onMounted, reactive } from "vue";
+import { ref, onMounted, reactive } from "vue";
 import Hub from "../Hub";
 import { HubConnectionState } from "@aspnet/signalr";
-
-console.log('bbbbbbbbbbb');
+import { useAuthStore } from "@/stores/auth";
 
 const _hub = new Hub();
 let messages = ref([]);
@@ -32,15 +21,13 @@ let message = reactive({
   content: "",
 });
 
-const props = defineProps({
-  userActual: String,
-  messages: Array,
-});
+const authStore = useAuthStore();
+const user = authStore.user;
 
 function handleSendMessage(content) {
   if (!content.trim()) return;
 
-  message.username = props.userActual;
+  message.username = user.username;
   message.content = content;
 
   if (_hub.connection.state != HubConnectionState.Connected) {

@@ -16,6 +16,32 @@
 </template>
 
 <script setup>
+import { useAuthStore } from "@/stores/auth";
+import { onMounted } from "vue";
+import { getUser } from "@/api/getUser";
+import router from "@/routes";
+
+const authStore = useAuthStore();
+
+onMounted(async () => {
+  const token = localStorage.getItem('@auth');
+
+  if (token) {
+    const user = await getUser();
+
+    if (user?.id) {
+      authStore.setUser(user);
+
+      router.push('/');
+
+      return;
+    }
+
+    localStorage.removeItem('@auth');
+
+    router.push('/login');
+  }
+});
 </script>
 
 <style>

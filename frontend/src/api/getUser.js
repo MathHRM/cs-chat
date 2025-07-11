@@ -1,4 +1,5 @@
 import axios from "axios";
+import router from "@/routes";
 
 export const getUser = async () => {
   try {
@@ -6,6 +7,10 @@ export const getUser = async () => {
 
     return data.user;
   } catch (err) {
+    if (err.response.status === 401) {
+        router.push('/login');
+    }
+
     console.log(err);
 
     return err;
