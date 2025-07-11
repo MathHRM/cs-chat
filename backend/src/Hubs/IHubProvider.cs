@@ -1,9 +1,8 @@
 ﻿using backend.Models;
 
-namespace backend.src.Hubs
+namespace backend.src.Hubs;
+
+public interface IHubProvider
 {
-    public interface IHubProvider
-    {
-        Task ReceivedMessage(Message message);
-    }
+    Task ReceivedMessage(Message message);
 }

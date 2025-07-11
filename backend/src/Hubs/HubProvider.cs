@@ -1,13 +1,14 @@
 ﻿using backend.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
 
-namespace backend.src.Hubs
+namespace backend.src.Hubs;
+
+public class HubProvider : Hub<IHubProvider>
 {
-    public class HubProvider : Hub<IHubProvider>
+    [Authorize]
+    public async Task SendMessage(Message message)
     {
-        public async Task SendMessage(Message message)
-        {
-            await Clients.All.ReceivedMessage(message);
-        }
+        await Clients.All.ReceivedMessage(message);
     }
 }
