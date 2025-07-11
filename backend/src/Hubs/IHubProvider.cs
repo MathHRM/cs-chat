@@ -1,8 +1,8 @@
-﻿using backend.Models;
+﻿using backend.Http.Responses;
 
 namespace backend.src.Hubs;
 
 public interface IHubProvider
 {
-    Task ReceivedMessage(Message message);
+    Task ReceivedMessage(MessageResource message);
 }

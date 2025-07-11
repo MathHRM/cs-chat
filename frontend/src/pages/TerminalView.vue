@@ -9,32 +9,30 @@
 <script setup>
 import CommandsComponent from "@/components/CommandsComponent.vue";
 import CommandLine from "@/components/CommandLine.vue";
-import { ref, onMounted, reactive, computed } from "vue";
+import { ref, onMounted, reactive } from "vue";
 import Hub from "../Hub";
 import { HubConnectionState } from "@aspnet/signalr";
-import { useAuthStore } from "@/stores/auth";
 
 const _hub = new Hub();
 let messages = ref([]);
 let message = reactive({
-  username: "",
   content: "",
 });
-
-const authStore = useAuthStore();
-const getUser = computed(() => authStore.user);
 
 function handleSendMessage(content) {
   if (!content.trim()) return;
 
-  message.username = getUser.value.username;
   message.content = content;
 
   if (_hub.connection.state != HubConnectionState.Connected) {
     messages.value.push({
-      username: "System",
-      content: "Connection not established",
-      created_at: new Date(),
+      user: {
+        username: "System",
+      },
+      message: {
+        content: "Connection not established",
+        created_at: new Date(),
+      },
     });
 
     return;

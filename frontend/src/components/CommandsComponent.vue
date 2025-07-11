@@ -5,11 +5,11 @@
       :key="index"
       class="terminal-line"
     >
-      <span class="terminal-user">{{ message.username }}</span>
+      <span class="terminal-user">{{ message.user.username }}</span>
       <span class="terminal-separator">@</span>
       <span class="terminal-chat">chat</span>
       <span class="terminal-separator">:~$ </span>
-      <span class="terminal-message">{{ message.content }}</span>
+      <span class="terminal-message">{{ message.message.content }}</span>
       <div class="terminal-timestamp">
         {{ formatTimestamp(message.created_at) }}
       </div>
