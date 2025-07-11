@@ -6,10 +6,10 @@ public class Message
 {
     [Key]
     public int Id { get; set; }
-    public int ChatId { get; set; }
-    public Chat Chat { get; set; }
+    public string ChatId { get; set; }
+    public Chat Chat { get; set; } = null!;
     public int UserId { get; set; }
-    public User User { get; set; }
+    public User User { get; set; } = null!;
     public string Content { get; set; }
     public DateTime CreatedAT { get; set; }
 
@@ -17,7 +17,7 @@ public class Message
     {
     }
 
-    public Message(int id, int chatId, int userId, string content)
+    public Message(int id, string chatId, int userId, string content)
     {
         Id = id;
         ChatId = chatId;
