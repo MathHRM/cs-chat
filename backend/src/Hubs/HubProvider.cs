@@ -24,6 +24,8 @@ public class HubProvider : Hub<IHubProvider>
             user.CurrentChatId = "general";
             await _userService.UpdateUserAsync(user.Id, user);
         }
+
+        await JoinChat(user.CurrentChatId);
     }
 
     [Authorize]
@@ -31,7 +33,7 @@ public class HubProvider : Hub<IHubProvider>
     {
         var user = await _userService.GetUserByUsernameAsync(Context.User.Identity.Name);
 
-        await Clients.All.ReceivedMessage(new MessageResource
+        await Clients.Group(user.CurrentChatId!).ReceivedMessage(new MessageResource
         {
             User = new UserResponse
             {
@@ -42,6 +44,32 @@ public class HubProvider : Hub<IHubProvider>
             {
                 Content = message.Content,
                 CreatedAt = DateTime.UtcNow
+            },
+            Chat = new ChatResponse
+            {
+                Id = user.CurrentChatId
+            }
+        });
+    }
+
+    public async Task JoinChat(string chatId)
+    {
+        await Groups.AddToGroupAsync(Context.ConnectionId, chatId);
+        await Clients.Group(chatId).ReceivedMessage(new MessageResource
+        {
+            User = new UserResponse
+            {
+                Id = 0,
+                Username = Context.User.Identity.Name
+            },
+            Message = new MessageResponse
+            {
+                Content = "Joined the chat",
+                CreatedAt = DateTime.UtcNow
+            },
+            Chat = new ChatResponse
+            {
+                Id = chatId
             }
         });
     }
