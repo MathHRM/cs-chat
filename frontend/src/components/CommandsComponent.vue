@@ -7,7 +7,7 @@
     >
       <span class="terminal-user">{{ message.user.username }}</span>
       <span class="terminal-separator">@</span>
-      <span class="terminal-chat">chat</span>
+      <span class="terminal-chat">{{ message.chat.id }}</span>
       <span class="terminal-separator">:~$ </span>
       <span class="terminal-message">{{ message.message.content }}</span>
       <div class="terminal-timestamp">

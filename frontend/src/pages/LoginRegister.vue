@@ -2,7 +2,7 @@
   <div class="terminal-container">
     <CommandsComponent :messages="messages" />
 
-    <CommandLine @send-message="handleCommand" />
+    <CommandLine @send-message="handleCommand" :chat="'login-register'" />
   </div>
 </template>
 
@@ -70,6 +70,9 @@ function saveMessage(content, username = "~") {
     user: {
       username: username,
     },
+    chat: {
+      id: "login-register",
+    },
     message: {
       content: content,
       created_at: new Date(),
@@ -83,6 +86,9 @@ function alert(content) {
   messages.value.push({
     user: {
       username: "System",
+    },
+    chat: {
+      id: "login-register",
     },
     message: {
       content: contentMessage,
