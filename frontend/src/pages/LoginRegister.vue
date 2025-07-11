@@ -13,6 +13,9 @@ import CommandLine from "@/components/CommandLine.vue";
 import CommandsComponent from "@/components/CommandsComponent.vue";
 import { onMounted, ref } from "vue";
 import router from "@/routes";
+import { useAuthStore } from "@/stores/auth";
+
+const authStore = useAuthStore();
 
 const translate = {
   login: "Logged in successfully",
@@ -119,6 +122,7 @@ async function handleLogin({ username, password }) {
     return;
   }
 
+  authStore.setUser(data.user);
   localStorage.setItem("@auth", `${data.token}`);
 
   router.push("/");
@@ -133,6 +137,7 @@ async function handleRegister({ username, password }) {
     return;
   }
 
+  authStore.setUser(data.user);
   localStorage.setItem("@auth", `${data.token}`);
 
   router.push("/");
