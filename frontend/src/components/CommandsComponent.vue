@@ -54,3 +54,9 @@ onUpdated(() => {
   scrollToBottom();
 });
 </script>
+
+<style scoped>
+.terminal-message {
+  white-space: pre-wrap;
+}
+</style>
