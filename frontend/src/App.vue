@@ -1,29 +1,21 @@
 <template>
   <q-layout view="lHh Lpr lFf">
     <q-page-container>
-      <!-- Username Setup (only show if no username is set) -->
-      <div v-if="!getLoggedUser" class="terminal-wrapper">
+      <!-- <div v-if="!getLoggedUser" class="terminal-wrapper">
         <LoginRegister />
       </div>
 
-      <!-- Terminal Chat Interface -->
       <div v-else class="terminal-wrapper">
         <TerminalView :userActual="getLoggedUser" />
+      </div> -->
+      <div class="terminal-wrapper">
+        <router-view />
       </div>
     </q-page-container>
   </q-layout>
 </template>
 
 <script setup>
-import { ref, computed } from "vue";
-import TerminalView from "./pages/TerminalView.vue";
-import LoginRegister from "./pages/LoginRegister.vue";
-
-let loggedUser = ref("");
-
-const getLoggedUser = computed(() => {
-  return loggedUser.value.trim();
-});
 </script>
 
 <style>

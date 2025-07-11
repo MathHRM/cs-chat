@@ -23,6 +23,8 @@ import { ref, defineProps, onMounted, reactive } from "vue";
 import Hub from "../Hub";
 import { HubConnectionState } from "@aspnet/signalr";
 
+console.log('bbbbbbbbbbb');
+
 const _hub = new Hub();
 let messages = ref([]);
 let message = reactive({
