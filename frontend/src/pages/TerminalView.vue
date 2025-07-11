@@ -29,6 +29,9 @@ function handleSendMessage(content) {
       user: {
         username: "System",
       },
+      chat: {
+        id: "general",
+      },
       message: {
         content: "Connection not established",
         created_at: new Date(),
