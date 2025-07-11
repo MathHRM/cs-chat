@@ -20,10 +20,10 @@ onMounted(async () => {
   const token = localStorage.getItem("@auth");
 
   if (token) {
-    const user = await getUser();
+    const data = await getUser();
 
-    if (user?.id) {
-      authStore.setUser(user);
+    if (data?.user?.id) {
+      authStore.setUser(data.user);
 
       router.push("/");
 
@@ -33,6 +33,7 @@ onMounted(async () => {
     localStorage.removeItem("@auth");
   }
 
+  authStore.$reset();
   router.push("/login");
 });
 </script>

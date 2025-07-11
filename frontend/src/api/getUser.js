@@ -3,7 +3,7 @@ import router from "@/routes";
 
 export const getUser = async () => {
   try {
-    const { data } = await axios.get('/auth/user');
+    const { data } = await axios.get('/auth/me');
 
     return data;
   } catch (err) {
