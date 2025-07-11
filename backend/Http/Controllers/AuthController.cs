@@ -4,6 +4,7 @@ using backend.Models;
 using backend.Http.Requests;
 using backend.Services;
 using backend.Http.Responses;
+using Microsoft.AspNetCore.Authorization;
 
 namespace backend.Http.Controllers
 {
@@ -59,6 +60,25 @@ namespace backend.Http.Controllers
             }
 
             var token = _tokenService.GenerateToken(user);
+
+            return Ok(new LoginResponse
+            {
+                Token = token,
+                User = new UserResponse
+                {
+                    Id = user.Id,
+                    Username = user.Username,
+                }
+            });
+        }
+
+        [HttpGet]
+        [Authorize]
+        [Route("me")]
+        public async Task<ActionResult<UserResponse>> GetUser()
+        {
+            var user = await _userService.GetUserByUsernameAsync(User.Identity.Name);
+            var token = Request.Headers.Authorization.ToString().Replace("Bearer ", "");
 
             return Ok(new LoginResponse
             {
