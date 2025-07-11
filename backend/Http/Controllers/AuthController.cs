@@ -45,6 +45,7 @@ namespace backend.Http.Controllers
                 {
                     Id = createdUser.Id,
                     Username = createdUser.Username,
+                    CurrentChatId = createdUser.CurrentChatId
                 }
             });
         }
@@ -68,6 +69,7 @@ namespace backend.Http.Controllers
                 {
                     Id = user.Id,
                     Username = user.Username,
+                    CurrentChatId = user.CurrentChatId
                 }
             });
         }

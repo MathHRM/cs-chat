@@ -38,7 +38,8 @@ public class HubProvider : Hub<IHubProvider>
             User = new UserResponse
             {
                 Id = user.Id,
-                Username = user.Username
+                Username = user.Username,
+                CurrentChatId = user.CurrentChatId
             },
             Message = new MessageResponse
             {
@@ -60,7 +61,8 @@ public class HubProvider : Hub<IHubProvider>
             User = new UserResponse
             {
                 Id = 0,
-                Username = Context.User.Identity.Name
+                Username = Context.User.Identity.Name,
+                CurrentChatId = chatId
             },
             Message = new MessageResponse
             {
