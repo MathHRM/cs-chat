@@ -28,7 +28,15 @@ public class ChatController : ControllerBase
         var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
         var chats = await _chatService.GetAllChatsAsync(int.Parse(userId));
 
-        return Ok(chats);
+        return Ok(chats.Select(c => new ChatUserResponse {
+            Chat = new ChatResponse {
+                Id = c.Id,
+            },
+            Users = c.ChatUsers.Select(cu => new UserResponse {
+                Id = cu.User.Id,
+                Username = cu.User.Username,
+            }).ToList(),
+        }));
     }
 
     [HttpPost]

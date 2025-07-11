@@ -19,9 +19,11 @@ namespace backend.Repository
 
         public async Task<IEnumerable<Chat>> GetAllChatsAsync(int userId)
         {
-            return await _context.Chats.Where(
-                c => c.ChatUsers.Any(cu => cu.UserId == userId)
-            ).ToListAsync();
+            return await _context.Chats
+                .Where(c => c.ChatUsers.Any(cu => cu.UserId == userId))
+                .Include(c => c.ChatUsers)
+                .ThenInclude(cu => cu.User)
+                .ToListAsync();
         }
 
         public async Task<Chat> AddChatAsync(Chat chat)
