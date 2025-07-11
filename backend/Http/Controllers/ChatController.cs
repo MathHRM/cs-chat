@@ -26,8 +26,9 @@ public class ChatController : ControllerBase
     public async Task<ActionResult<IEnumerable<Chat>>> GetChats()
     {
         var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        var chats = await _chatService.GetAllChatsAsync(int.Parse(userId));
 
-        return Ok(_chatService.GetAllChatsAsync(int.Parse(userId)));
+        return Ok(chats);
     }
 
     [HttpPost]
