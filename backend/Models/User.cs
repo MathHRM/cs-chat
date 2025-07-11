@@ -8,7 +8,7 @@ public class User
     public int Id { get; set; }
     public string Username { get; set; }
     public string Password { get; set; }
-    public string ConnectionId { get; set; }
+    public string? ConnectionId { get; set; }
     public Chat Chat { get; set; }
     public List<Message> Messages { get; set; }
 }
