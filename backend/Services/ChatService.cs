@@ -8,11 +8,17 @@ namespace backend.Services
     {
         private readonly ChatRepository _chatRepository;
         private readonly AppDbContext _context;
+        private readonly UserService _userService;
 
-        public ChatService(ChatRepository chatRepository, AppDbContext context)
+        public ChatService(
+            ChatRepository chatRepository,
+            AppDbContext context,
+            UserService userService
+        )
         {
             _chatRepository = chatRepository;
             _context = context;
+            _userService = userService;
         }
 
         public async Task<Chat?> GetChatByIdAsync(string id)
@@ -25,7 +31,7 @@ namespace backend.Services
             return await _chatRepository.GetAllChatsAsync(userId);
         }
 
-        public async Task<Chat?> CreateChatAsync(string? id)
+        public async Task<Chat?> CreateChatAsync(string? id, List<User> users)
         {
             if (id != null)
             {
@@ -45,6 +51,18 @@ namespace backend.Services
             {
                 Id = id,
             };
+
+            foreach (var user in users)
+            {
+                var chatUser = new ChatUser
+                {
+                    ChatId = chat.Id,
+                    UserId = user.Id,
+                };
+
+                await _context.ChatUsers.AddAsync(chatUser);
+            }
+
             await _context.Chats.AddAsync(chat);
             await _context.SaveChangesAsync();
 
@@ -69,5 +87,7 @@ namespace backend.Services
         {
             return await _chatRepository.DeleteChatAsync(id);
         }
+
+
     }
 }

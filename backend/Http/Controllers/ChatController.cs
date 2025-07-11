@@ -35,6 +35,9 @@ public class ChatController : ControllerBase
     [Authorize]
     public async Task<ActionResult<Chat>> CreateChat([FromBody] ChatRequest request)
     {
+        var user = await _userService.GetUserByIdAsync(int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value));
+        var users = new List<User>() { user };
+
         if (request.Id != null)
         {
             var chat = await _chatService.GetChatByIdAsync(request.Id);
@@ -44,20 +47,25 @@ public class ChatController : ControllerBase
             }
         }
 
-        var createdChat = await _chatService.CreateChatAsync(request.Id);
-        var users = new List<User>();
-
         if (request.UserId != null)
         {
-            var user = await _userService.GetUserByIdAsync(request.UserId.Value);
-            if (user == null)
+            var userToAdd = await _userService.GetUserByIdAsync(request.UserId.Value);
+            if (userToAdd != null)
             {
-                return BadRequest("User not found.");
+                users.Add(userToAdd);
             }
-
-            users.Add(user);
         }
 
-        return Ok(new ChatResponse { Id = createdChat.Id, Users = users });
+        var createdChat = await _chatService.CreateChatAsync(request.Id, users);
+
+        return Ok(new ChatUserResponse {
+            Chat = new ChatResponse {
+                Id = createdChat.Id,
+            },
+            Users = users.Select(u => new UserResponse {
+                Id = u.Id,
+                Username = u.Username,
+            }).ToList(),
+        });
     }
 }
