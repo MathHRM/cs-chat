@@ -25,6 +25,7 @@ const translate = {
   "command-not-found": "Command does not exist",
   "not-a-command": "Not a command",
   "not-enough-args": "Not enough arguments",
+  "argument-required": "The argument :arg is required",
 };
 
 const commands = {
@@ -39,10 +40,12 @@ const commands = {
       username: {
         type: "string",
         description: "The username to login with",
+        required: true,
       },
       password: {
         type: "string",
         description: "The password to login with",
+        required: true,
       },
     },
     handler: handleLogin,
@@ -53,10 +56,12 @@ const commands = {
       username: {
         type: "string",
         description: "The username to register with",
+        required: true,
       },
       password: {
         type: "string",
         description: "The password to register with",
+        required: true,
       },
     },
     handler: handleRegister,
@@ -80,8 +85,11 @@ function saveMessage(content, username = "~") {
   });
 }
 
-function alert(content) {
-  const contentMessage = translate[content];
+function alert(content, context) {
+  const contentMessage = translate[content].replace(
+    /:arg/g,
+    context?.arg || ""
+  );
 
   messages.value.push({
     user: {
@@ -114,14 +122,28 @@ function getCommandOnly(command) {
 }
 
 function getCommandArgs(command) {
-  const argRegex = /--(\w+)=([^\s]+)/g;
-  const args = {};
-  let match;
+  const args = {
+    errors: {},
+    args: {},
+  };
 
-  while ((match = argRegex.exec(command)) !== null) {
-    console.log(match);
+  let commandOnly = getCommandOnly(command);
+  let commandArgs = commands[commandOnly]?.args;
 
-    args[match[1]] = match[2];
+  if (!commandArgs) {
+    return {};
+  }
+
+  for (const arg of Object.keys(commandArgs)) {
+    const regex = new RegExp(`(?:--${arg}|-${arg[0]})=([^\\s]+)`);
+    const found = command.match(regex);
+    let value = found ? found[1] : null;
+
+    if (!args.args[arg] && commandArgs[arg].required && value === null) {
+      args.errors[arg] = "argument-required";
+    }
+
+    args.args[arg] = value;
   }
 
   return args;
@@ -167,7 +189,7 @@ function handleHelp() {
             ? Object.entries(cmd.args)
                 .map(
                   ([argName, argInfo]) =>
-                    `--${argName}=<${argInfo.type}> - ${argInfo.description}`
+                    `--${argName} | -${argName[0]} - ${argInfo.description}`
                 )
                 .join("\n    ")
             : "No arguments required";
@@ -199,16 +221,19 @@ function handleCommand(command) {
     return;
   }
 
-  if (
-    Object.keys(commandArgs).length !==
-    Object.keys(commands[commandName].args).length
-  ) {
-    alert("not-enough-args");
+  if (Object.keys(commandArgs.errors).length > 0) {
+    for (const error of Object.keys(commandArgs.errors)) {
+      alert(commandArgs.errors[error], {
+        arg: error,
+      });
+    }
 
     return;
   }
 
-  commands[commandName].handler(commandArgs);
+  console.log(commandArgs.args);
+
+  commands[commandName].handler(commandArgs.args);
 }
 
 onMounted(() => {
