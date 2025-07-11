@@ -22,6 +22,13 @@ public class HubProvider : Hub<IHubProvider>
         await _userService.UpdateUserAsync(user.Id, user);
     }
 
+    public override async Task OnDisconnectedAsync(Exception? exception)
+    {
+        var user = await _userService.GetUserByUsernameAsync(Context.User.Identity.Name);
+        user.ConnectionId = null;
+        await _userService.UpdateUserAsync(user.Id, user);
+    }
+
     [Authorize]
     public async Task SendMessage(Message message)
     {
