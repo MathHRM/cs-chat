@@ -12,7 +12,7 @@ export const register = async ({
 
     localStorage.setItem('@auth', `${data.token}`);
 
-    return data.user;
+    return data;
   } catch (err) {
     console.log(err);
 

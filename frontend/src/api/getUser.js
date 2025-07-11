@@ -5,10 +5,12 @@ export const getUser = async () => {
   try {
     const { data } = await axios.get('/user');
 
-    return data.user;
+    return data;
   } catch (err) {
     if (err.response.status === 401) {
-        router.push('/login');
+      router.push('/login');
+
+      return null;
     }
 
     console.log(err);

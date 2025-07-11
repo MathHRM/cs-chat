@@ -7,15 +7,18 @@
 </template>
 
 <script setup>
+import { login } from "@/api/login";
+import { register } from "@/api/register";
 import CommandLine from "@/components/CommandLine.vue";
 import CommandsComponent from "@/components/CommandsComponent.vue";
 import { ref } from "vue";
+import router from "@/routes";
 
 const translate = {
   'login': 'Logged in successfully',
   'register': 'Registered successfully',
   'login-failed': 'Wrong username or password',
-  'register-failed': 'Username already exists',
+  'register-failed': 'Could not register',
   'command-not-found': 'Command does not exist',
   'not-a-command': 'Not a command',
   'not-enough-args': 'Not enough arguments',
@@ -34,7 +37,7 @@ const commands = {
         'description': 'The password to login with',
       },
     },
-    'handler': login
+    'handler': handleLogin
   },
   'register': {
     'description': 'Register a new user',
@@ -48,7 +51,7 @@ const commands = {
         'description': 'The password to register with',
       },
     },
-    'handler': register
+    'handler': handleRegister
   },
 };
 
@@ -102,14 +105,32 @@ function getCommandArgs(command) {
   return args;
 }
 
-function login({ username, password }) {
-  console.log(username, password);
-  alert('login');
+async function handleLogin({ username, password }) {
+  const data = await login(username, password);
+
+  if (! data?.user?.id) {
+    alert('login-failed');
+
+    return;
+  }
+
+  localStorage.setItem('@auth', `${data.token}`);
+
+  router.push('/');
 }
 
-function register({ username, password }) {
-  console.log(username, password);
-  alert('register');
+async function handleRegister({ username, password }) {
+  const data = await register(username, password);
+
+  if (! data?.user?.id) {
+    alert('register-failed');
+
+    return;
+  }
+
+  localStorage.setItem('@auth', `${data.token}`);
+
+  router.push('/');
 }
 
 function handleCommand(command) {
