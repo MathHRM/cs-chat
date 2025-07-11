@@ -46,7 +46,7 @@ function handleSendMessage(content) {
 }
 
 onMounted(() => {
-  console.log('Connecting to hub');
+  console.log("Connecting to hub");
 
   _hub.connection
     .start()
