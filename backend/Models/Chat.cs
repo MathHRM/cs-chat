@@ -1,8 +1,11 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace backend.Models;
 
 public class Chat
 {
-    public int Id { get; set; }
+    [Key]
+    public string Id { get; set; } = Guid.NewGuid().ToString();
     public ICollection<ChatUser> ChatUsers { get; set; } = new List<ChatUser>();
     public ICollection<Message> Messages { get; set; } = new List<Message>();
 }
