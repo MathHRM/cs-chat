@@ -3,17 +3,22 @@
     public class Message
     {
         public int Id { get; set; }
-
-        public string Username { get; set; }
-
+        public int ChatId { get; set; }
+        public Chat Chat { get; set; }
+        public int UserId { get; set; }
+        public User User { get; set; }
         public string Content { get; set; }
-
         public DateTime CreatedAT { get; set; }
 
-        public Message(int id, string username, string content)
+        public Message()
+        {
+        }
+
+        public Message(int id, int chatId, int userId, string content)
         {
             Id = id;
-            Username = username;
+            ChatId = chatId;
+            UserId = userId;
             Content = content;
             CreatedAT = DateTime.Now;
         }

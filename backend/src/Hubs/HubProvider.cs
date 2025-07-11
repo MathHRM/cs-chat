@@ -15,6 +15,13 @@ public class HubProvider : Hub<IHubProvider>
         _userService = userService;
     }
 
+    public override async Task OnConnectedAsync()
+    {
+        var user = await _userService.GetUserByUsernameAsync(Context.User.Identity.Name);
+        user.ConnectionId = Context.ConnectionId;
+        await _userService.UpdateUserAsync(user.Id, user);
+    }
+
     [Authorize]
     public async Task SendMessage(Message message)
     {
