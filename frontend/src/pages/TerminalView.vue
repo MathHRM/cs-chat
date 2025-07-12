@@ -9,15 +9,20 @@
 <script setup>
 import CommandsComponent from "@/components/CommandsComponent.vue";
 import CommandLine from "@/components/CommandLine.vue";
-import { ref, onMounted, reactive } from "vue";
+import { ref, onMounted, reactive, computed } from "vue";
 import Hub from "../Hub";
 import { HubConnectionState } from "@aspnet/signalr";
+import { useAuthStore } from "@/stores/auth";
 
 const _hub = new Hub();
 let messages = ref([]);
 let message = reactive({
   content: "",
 });
+
+const authStore = useAuthStore();
+
+const currentChatId = computed(() => authStore.user?.currentChatId);
 
 function handleSendMessage(content) {
   if (!content.trim()) return;
@@ -55,6 +60,8 @@ onMounted(() => {
       _hub.connection.on("ReceivedMessage", (msg) => {
         messages.value.push(msg);
       });
+
+      _hub.connection.invoke("JoinChat", currentChatId.value || "general");
     })
     .catch((e) => console.log("Error: Connection failed", e));
 });
