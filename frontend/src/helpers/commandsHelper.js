@@ -169,6 +169,10 @@ function alert({messages, chat, content, context}) {
   return contentMessage;
 }
 
+function isCommand(message) {
+  return /^\/\w+/.test(message);
+}
+
 export function handleMessage(
   messages,
   message,
@@ -187,7 +191,7 @@ export function handleMessage(
     pageCommands = allCommands;
   }
 
-  if (!message.startsWith("/")) {
+  if (!isCommand(message)) {
     if (
       hubConnection &&
       hubConnection.state == HubConnectionState.Connected
@@ -200,10 +204,21 @@ export function handleMessage(
 
   saveMessage(messages, message, user, chat);
 
-  if (!/^\/\w+/.test(message)) {
+  if (!isCommand(message)) {
     return;
   }
 
+  handleCommand(messages, message, chat, pageCommands, user, hubConnection);
+}
+
+function handleCommand(
+  messages,
+  message,
+  chat,
+  pageCommands,
+  user,
+  hubConnection
+) {
   const commandName = getCommandOnly(message);
   const commandArgs = getCommandArgs(message, pageCommands);
 
@@ -227,6 +242,7 @@ export function handleMessage(
   commandArgs.args.messages = messages;
   commandArgs.args.pageCommands = pageCommands;
   commandArgs.args.chat = chat;
+  commandArgs.args.user = user;
 
   pageCommands[commandName].handler(commandArgs.args);
 }
