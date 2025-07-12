@@ -65,11 +65,18 @@ export async function handleLogout() {
 export async function handleJoinChat({ chatId, hubConnection, messages, chat }) {
   const data = await joinChat(chatId);
 
-  if (!data?.user?.id) {
+  if (!data?.chat?.id) {
     alert({messages, chat, content: "join-chat-failed", context: {arg: chatId}});
 
     return;
   }
+
+  const authStore = useAuthStore();
+  const user = authStore.user;
+
+  user.currentChatId = chatId;
+
+  authStore.setUser(user);
 
   messages.value = [];
   hubConnection.invoke("JoinChat", chatId);
