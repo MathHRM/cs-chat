@@ -21,12 +21,12 @@ function saveMessage(messages, message, user, chat) {
   });
 }
 
-export async function handleRegister({ username, password }) {
+export async function handleRegister({ username, password, messages, chat }) {
   const authStore = useAuthStore();
   const data = await register(username, password);
 
   if (!data?.user?.id) {
-    alert("register-failed");
+    alert({messages, chat, content: "register-failed"});
 
     return;
   }
@@ -37,12 +37,12 @@ export async function handleRegister({ username, password }) {
   router.push("/");
 }
 
-export async function handleLogin({ username, password }) {
+export async function handleLogin({ username, password, messages, chat }) {
   const authStore = useAuthStore();
   const data = await login(username, password);
 
   if (!data?.user?.id) {
-    alert("login-failed");
+    alert({messages, chat, content: "login-failed"});
 
     return;
   }
@@ -62,15 +62,16 @@ export async function handleLogout() {
   router.push("/login");
 }
 
-export async function handleJoinChat({ chatId, hubConnection }) {
+export async function handleJoinChat({ chatId, hubConnection, messages, chat }) {
   const data = await joinChat(chatId);
 
   if (!data?.user?.id) {
-    alert("join-chat-failed");
+    alert({messages, chat, content: "join-chat-failed", context: {arg: chatId}});
 
     return;
   }
 
+  messages.value = [];
   hubConnection.invoke("JoinChat", chatId);
 }
 
@@ -100,12 +101,8 @@ function getCommandOnly(command) {
   const match = command.match(/^\/\s*(\w+)/);
 
   if (!match) {
-    console.log("no match");
-
     return null;
   }
-
-  console.log("match", match[1]);
 
   return match[1];
 }
@@ -138,7 +135,7 @@ export function getCommandArgs(command, pageCommands) {
   return args;
 }
 
-function alert(messages, chat, content, context) {
+function alert({messages, chat, content, context}) {
   const translate = {
     login: "Logged in successfully",
     register: "Registered successfully",
@@ -148,6 +145,7 @@ function alert(messages, chat, content, context) {
     "not-a-command": "Not a command",
     "not-enough-args": "Not enough arguments",
     "argument-required": "The argument :arg is required",
+    "join-chat-failed": "Could not join chat :arg",
   };
 
   const contentMessage = translate[content].replace(
@@ -210,16 +208,16 @@ export function handleMessage(
   const commandArgs = getCommandArgs(message, pageCommands);
 
   if (!pageCommands[commandName]) {
-    alert(messages, chat, "command-not-found");
+    alert({messages, chat, content: "command-not-found"});
 
     return;
   }
 
   if (Object.keys(commandArgs.errors).length > 0) {
     for (const error of Object.keys(commandArgs.errors)) {
-      alert(messages, chat, commandArgs.errors[error], {
+      alert({messages, chat, content: commandArgs.errors[error], context: {
         arg: error,
-      });
+      }});
     }
 
     return;
@@ -228,6 +226,7 @@ export function handleMessage(
   commandArgs.args.hubConnection = hubConnection;
   commandArgs.args.messages = messages;
   commandArgs.args.pageCommands = pageCommands;
+  commandArgs.args.chat = chat;
 
   pageCommands[commandName].handler(commandArgs.args);
 }
