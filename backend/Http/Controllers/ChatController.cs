@@ -91,6 +91,11 @@ public class ChatController : ControllerBase
                 Chat = new ChatResponse {
                     Id = user.CurrentChatId,
                 },
+                User = new UserResponse {
+                    Id = user.Id,
+                    Username = user.Username,
+                    CurrentChatId = user.CurrentChatId,
+                },
                 Users = new List<UserResponse> {
                     new UserResponse {
                         Id = user.Id,
@@ -115,6 +120,11 @@ public class ChatController : ControllerBase
         return Ok(new ChatUserResponse {
             Chat = new ChatResponse {
                 Id = chatUser.ChatId,
+            },
+            User = new UserResponse {
+                Id = user.Id,
+                Username = user.Username,
+                CurrentChatId = user.CurrentChatId,
             },
             Users = chatUser.Chat.ChatUsers.Select(cu => new UserResponse {
                 Id = cu.User.Id,

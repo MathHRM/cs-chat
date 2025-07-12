@@ -74,9 +74,6 @@ namespace backend.Services
 
         public async Task<User?> ValidateUserCredentialsAsync(string username, string password)
         {
-            Console.WriteLine($"Username: ~{username}~");
-            Console.WriteLine($"Password: ~{password}~");
-
             var user = await GetUserByUsernameAsync(username);
             if (user == null)
             {
