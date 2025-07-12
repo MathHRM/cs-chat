@@ -111,10 +111,6 @@ export function getCommandArgs(command, pageCommands) {
     args: {},
   };
 
-  if (!pageCommands) {
-    pageCommands = allCommands;
-  }
-
   let commandOnly = getCommandOnly(command);
   let commandArgs = pageCommands[commandOnly]?.args;
 
@@ -226,6 +222,7 @@ export function handleMessage(
 
   commandArgs.args.hubConnection = hubConnection;
   commandArgs.args.messages = messages;
+  commandArgs.args.pageCommands = pageCommands;
 
   pageCommands[commandName].handler(commandArgs.args);
 }
