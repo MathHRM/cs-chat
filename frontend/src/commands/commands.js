@@ -52,7 +52,7 @@ export const register = {
   handler: handleRegister,
 };
 
-export const joinChat = {
+export const join = {
   description: "Join a chat",
   args: {
     chatId: {
@@ -69,5 +69,5 @@ export default {
   login,
   logout,
   register,
-  joinChat,
+  join,
 };
