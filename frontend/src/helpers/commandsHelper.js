@@ -21,7 +21,7 @@ function saveMessage(messages, message, user, chat) {
   });
 }
 
-export async function handleRegister({ username, password }, messages) {
+export async function handleRegister({ username, password }) {
   const data = await register(username, password);
 
   if (!data?.user?.id) {
@@ -36,7 +36,7 @@ export async function handleRegister({ username, password }, messages) {
   router.push("/");
 }
 
-export async function handleLogin({ username, password }, messages) {
+export async function handleLogin({ username, password }) {
   const data = await login(username, password);
 
   if (!data?.user?.id) {
@@ -51,10 +51,26 @@ export async function handleLogin({ username, password }, messages) {
   router.push("/");
 }
 
-export function handleHelp(messages, commands) {
+export async function handleJoinChat({ chatId, hubConnection }) {
+  const data = await joinChat(chatId);
+
+  if (!data?.user?.id) {
+    alert("join-chat-failed");
+
+    return;
+  }
+
+  hubConnection.invoke("JoinChat", chatId);
+}
+
+export function handleHelp({ messages, pageCommands }) {
+  if (!pageCommands) {
+    pageCommands = allCommands;
+  }
+
   const helpMessage =
     "Available commands:\n\n" +
-    Object.entries(commands || allCommands)
+    Object.entries(pageCommands || allCommands)
       .map(([name, cmd]) => {
         const argsDescription =
           Object.entries(cmd.args).length > 0
@@ -73,7 +89,7 @@ export function handleHelp(messages, commands) {
   saveMessage(messages, helpMessage, "System", "chat");
 }
 
-export function getCommandArgs(command, pageCommands, messages) {
+export function getCommandArgs(command, pageCommands) {
   const args = {
     errors: {},
     args: {},
@@ -87,10 +103,6 @@ export function getCommandArgs(command, pageCommands, messages) {
   let commandArgs = pageCommands[commandOnly]?.args;
 
   if (!commandArgs || Object.keys(commandArgs).length == 0) {
-    if (commandOnly == "help") {
-      handleHelp(messages, pageCommands);
-    }
-
     return {};
   }
 
@@ -109,29 +121,29 @@ export function getCommandArgs(command, pageCommands, messages) {
   return args;
 }
 
-export function handleCommand(command, messages, user, chat, pageCommands) {
+export function handleMessage(messages, message, hubConnection, user, chat, pageCommands) {
   if (!pageCommands) {
     pageCommands = allCommands;
   }
 
-  saveMessage(messages, command, user, chat);
+  message = message.trim();
 
-  command = command.trim();
-
-  if (!command.startsWith("/")) {
-    alert("not-a-command");
+  if (!message.startsWith("/")) {
+    hubConnection.invoke("SendMessage", message);
 
     return;
   }
 
-  const commandName = getCommandOnly(command);
-  const commandArgs = getCommandArgs(command, pageCommands, messages);
+  const commandName = getCommandOnly(message);
+  const commandArgs = getCommandArgs(message, pageCommands);
 
   if (!pageCommands[commandName]) {
     alert("command-not-found");
 
     return;
   }
+
+  saveMessage(messages, message, user, chat);
 
   if (Object.keys(commandArgs.errors).length > 0) {
     for (const error of Object.keys(commandArgs.errors)) {
@@ -143,5 +155,8 @@ export function handleCommand(command, messages, user, chat, pageCommands) {
     return;
   }
 
-  pageCommands[commandName].handler(commandArgs.args, messages);
+  commandArgs.args.hubConnection = hubConnection;
+  commandArgs.args.messages = messages;
+
+  pageCommands[commandName].handler(commandArgs.args);
 }
