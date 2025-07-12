@@ -15,19 +15,6 @@ public class HubProvider : Hub<IHubProvider>
         _userService = userService;
     }
 
-    public override async Task OnConnectedAsync()
-    {
-        var user = await _userService.GetUserByUsernameAsync(Context.User.Identity.Name);
-
-        if (user.CurrentChatId == null)
-        {
-            user.CurrentChatId = "general";
-            await _userService.UpdateUserAsync(user.Id, user);
-        }
-
-        await JoinChat(user.CurrentChatId);
-    }
-
     [Authorize]
     public async Task SendMessage(Message message)
     {
@@ -62,7 +49,6 @@ public class HubProvider : Hub<IHubProvider>
             {
                 Id = 0,
                 Username = Context.User.Identity.Name,
-                CurrentChatId = chatId
             },
             Message = new MessageResponse
             {

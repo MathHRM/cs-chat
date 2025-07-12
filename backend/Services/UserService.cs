@@ -38,6 +38,8 @@ namespace backend.Services
                 user.Password = BCrypt.Net.BCrypt.HashPassword(user.Password);
             }
 
+            user.CurrentChatId = "general";
+
             await _context.Users.AddAsync(user);
             await _context.SaveChangesAsync();
 

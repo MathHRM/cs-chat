@@ -231,8 +231,6 @@ function handleCommand(command) {
     return;
   }
 
-  console.log(commandArgs.args);
-
   commands[commandName].handler(commandArgs.args);
 }
 
