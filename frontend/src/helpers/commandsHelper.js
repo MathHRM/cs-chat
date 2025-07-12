@@ -9,7 +9,7 @@ import { HubConnectionState } from "@aspnet/signalr";
 function saveMessage(messages, message, user, chat) {
   messages.value.push({
     user: {
-      username: user || '~',
+      username: user?.username || '~',
     },
     chat: {
       id: chat,
@@ -178,18 +178,22 @@ export function handleMessage(
   user,
   hubConnection
 ) {
+  message = message.trim();
+
+  if (!message) {
+    return;
+  }
+
   if (!pageCommands) {
     pageCommands = allCommands;
   }
 
-  message = message.trim();
-
   if (!message.startsWith("/")) {
     if (
       hubConnection &&
-      hubConnection.connection.state == HubConnectionState.Connected
+      hubConnection.state == HubConnectionState.Connected
     ) {
-      hubConnection.invoke("SendMessage", message);
+      hubConnection.invoke("SendMessage", {content: message});
 
       return;
     }

@@ -25,9 +25,6 @@ namespace backend.Http.Controllers
         [Route("register")]
         public async Task<ActionResult<LoginResponse>> Register([FromBody] AuthRequest request)
         {
-            Console.WriteLine($"Username: ~{request.Username}~");
-            Console.WriteLine($"Password: ~{request.Password}~");
-
             if (await _userService.UserExistsAsync(request.Username))
             {
                 return BadRequest("User with this Username already exists");

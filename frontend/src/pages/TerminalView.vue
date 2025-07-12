@@ -9,33 +9,34 @@
 <script setup>
 import CommandsComponent from "@/components/CommandsComponent.vue";
 import CommandLine from "@/components/CommandLine.vue";
-import { ref, onMounted, reactive, computed } from "vue";
+import { ref, onMounted, computed } from "vue";
 import Hub from "../Hub";
 import { HubConnectionState } from "@aspnet/signalr";
 import { useAuthStore } from "@/stores/auth";
+import { handleMessage } from "@/helpers/commandsHelper";
+import { help, joinChat } from "@/commands/commands";
 
 const _hub = new Hub();
 let messages = ref([]);
-let message = reactive({
-  content: "",
-});
 
 const authStore = useAuthStore();
 
-const currentChatId = computed(() => authStore.user?.currentChatId);
+
+const user = computed(() => authStore.user);
+
+const pageCommands = {
+  help,
+  joinChat,
+};
 
 function handleSendMessage(content) {
-  if (!content.trim()) return;
-
-  message.content = content;
-
   if (_hub.connection.state != HubConnectionState.Connected) {
     messages.value.push({
       user: {
         username: "System",
       },
       chat: {
-        id: "general",
+        id: user.value.currentChatId,
       },
       message: {
         content: "Connection not established",
@@ -46,14 +47,10 @@ function handleSendMessage(content) {
     return;
   }
 
-  console.log(message);
-  _hub.connection.invoke("SendMessage", message);
-  message.content = "";
+  handleMessage(messages, content, user.value.currentChatId, pageCommands, user.value, _hub.connection);
 }
 
 onMounted(() => {
-  console.log("Connecting to hub");
-
   _hub.connection
     .start()
     .then(() => {
@@ -61,7 +58,7 @@ onMounted(() => {
         messages.value.push(msg);
       });
 
-      _hub.connection.invoke("JoinChat", currentChatId.value || "general");
+      _hub.connection.invoke("JoinChat", user.value.currentChatId || "general");
     })
     .catch((e) => console.log("Error: Connection failed", e));
 });
