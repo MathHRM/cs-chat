@@ -197,6 +197,10 @@ export function handleMessage(
 
   saveMessage(messages, message, user, chat);
 
+  if (!/^\/\w+/.test(message)) {
+    return;
+  }
+
   const commandName = getCommandOnly(message);
   const commandArgs = getCommandArgs(message, pageCommands);
 
