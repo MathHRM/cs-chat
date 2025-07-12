@@ -88,6 +88,30 @@ namespace backend.Services
             return await _chatRepository.DeleteChatAsync(id);
         }
 
+        public async Task<ChatUser?> AddUserToChatAsync(string chatId, int userId)
+        {
+            var chat = await _chatRepository.GetChatByIdAsync(chatId);
+            if (chat == null)
+            {
+                return null;
+            }
 
+            var user = await _userService.GetUserByIdAsync(userId);
+            if (user == null)
+            {
+                return null;
+            }
+
+            var chatUser = new ChatUser
+            {
+                ChatId = chatId,
+                UserId = userId,
+            };
+
+            await _context.ChatUsers.AddAsync(chatUser);
+            await _context.SaveChangesAsync();
+
+            return chatUser;
+        }
     }
 }

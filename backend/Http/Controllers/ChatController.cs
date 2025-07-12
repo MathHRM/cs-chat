@@ -76,4 +76,51 @@ public class ChatController : ControllerBase
             }).ToList(),
         });
     }
+
+    [HttpPost]
+    [Authorize]
+    [Route("join")]
+    public async Task<ActionResult<ChatUserResponse>> JoinChat([FromBody] JoinChatRequest request)
+    {
+        var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
+        var user = await _userService.GetUserByIdAsync(userId);
+
+        if (user.CurrentChatId == request.ChatId)
+        {
+            return Ok(new ChatUserResponse {
+                Chat = new ChatResponse {
+                    Id = user.CurrentChatId,
+                },
+                Users = new List<UserResponse> {
+                    new UserResponse {
+                        Id = user.Id,
+                        Username = user.Username,
+                        CurrentChatId = user.CurrentChatId,
+                    },
+                },
+            });
+        }
+
+        var chatUser = await _chatService.AddUserToChatAsync(request.ChatId, userId);
+        if (chatUser == null)
+        {
+            return BadRequest("Failed to join chat.");
+        }
+
+        user.CurrentChatId = request.ChatId;
+        await _userService.UpdateUserAsync(user.Id, user);
+
+        var chat = await _chatService.GetChatByIdAsync(request.ChatId);
+
+        return Ok(new ChatUserResponse {
+            Chat = new ChatResponse {
+                Id = chatUser.ChatId,
+            },
+            Users = chatUser.Chat.ChatUsers.Select(cu => new UserResponse {
+                Id = cu.User.Id,
+                Username = cu.User.Username,
+                CurrentChatId = cu.User.CurrentChatId,
+            }).ToList(),
+        });
+    }
 }
