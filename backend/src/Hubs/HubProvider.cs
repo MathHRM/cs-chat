@@ -42,6 +42,7 @@ public class HubProvider : Hub<IHubProvider>
 
     public async Task JoinChat(string chatId)
     {
+        await RemoveUserFromAllChats();
         await Groups.AddToGroupAsync(Context.ConnectionId, chatId);
         await Clients.Group(chatId).ReceivedMessage(new MessageResource
         {
@@ -49,6 +50,7 @@ public class HubProvider : Hub<IHubProvider>
             {
                 Id = 0,
                 Username = Context.User.Identity.Name,
+                CurrentChatId = chatId
             },
             Message = new MessageResponse
             {
@@ -60,5 +62,16 @@ public class HubProvider : Hub<IHubProvider>
                 Id = chatId
             }
         });
+    }
+
+    private async Task RemoveUserFromAllChats()
+    {
+        var user = await _userService.GetUserByUsernameAsync(Context.User.Identity.Name);
+        var chatUsers = await _userService.GetChatUsersFromUserAsync(user);
+
+        foreach (var chatUser in chatUsers)
+        {
+            await Groups.RemoveFromGroupAsync(Context.ConnectionId, chatUser.ChatId.ToString());
+        }
     }
 }

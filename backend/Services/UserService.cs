@@ -101,5 +101,17 @@ namespace backend.Services
 
             return user;
         }
+
+        public async Task<List<ChatUser>> GetChatUsersFromUserAsync(User user)
+        {
+            if (user == null || user.CurrentChatId == null)
+            {
+                return new List<ChatUser>();
+            }
+
+            return await _context.ChatUsers
+                .Where(cu => cu.UserId == user.Id)
+                .ToListAsync();
+        }
     }
 }
