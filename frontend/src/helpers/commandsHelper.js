@@ -3,13 +3,13 @@ import { register } from "@/api/register";
 import { useAuthStore } from "@/stores/auth";
 import allCommands from "@/commands/commands";
 import { login } from "@/api/login";
-
-const authStore = useAuthStore();
+import { joinChat } from "@/api/joinChat";
+import { HubConnectionState } from "@aspnet/signalr";
 
 function saveMessage(messages, message, user, chat) {
   messages.value.push({
     user: {
-      username: user,
+      username: user || '~',
     },
     chat: {
       id: chat,
@@ -22,6 +22,7 @@ function saveMessage(messages, message, user, chat) {
 }
 
 export async function handleRegister({ username, password }) {
+  const authStore = useAuthStore();
   const data = await register(username, password);
 
   if (!data?.user?.id) {
@@ -37,6 +38,7 @@ export async function handleRegister({ username, password }) {
 }
 
 export async function handleLogin({ username, password }) {
+  const authStore = useAuthStore();
   const data = await login(username, password);
 
   if (!data?.user?.id) {
@@ -89,6 +91,20 @@ export function handleHelp({ messages, pageCommands }) {
   saveMessage(messages, helpMessage, "System", "chat");
 }
 
+function getCommandOnly(command) {
+  const match = command.match(/^\/\s*(\w+)/);
+
+  if (!match) {
+    console.log("no match");
+
+    return null;
+  }
+
+  console.log("match", match[1]);
+
+  return match[1];
+}
+
 export function getCommandArgs(command, pageCommands) {
   const args = {
     errors: {},
@@ -103,7 +119,7 @@ export function getCommandArgs(command, pageCommands) {
   let commandArgs = pageCommands[commandOnly]?.args;
 
   if (!commandArgs || Object.keys(commandArgs).length == 0) {
-    return {};
+    return args;
   }
 
   for (const arg of Object.keys(commandArgs)) {
@@ -121,7 +137,47 @@ export function getCommandArgs(command, pageCommands) {
   return args;
 }
 
-export function handleMessage(messages, message, hubConnection, user, chat, pageCommands) {
+function alert(messages, chat, content, context) {
+  const translate = {
+    login: "Logged in successfully",
+    register: "Registered successfully",
+    "login-failed": "Wrong username or password",
+    "register-failed": "Could not register",
+    "command-not-found": "Command does not exist",
+    "not-a-command": "Not a command",
+    "not-enough-args": "Not enough arguments",
+    "argument-required": "The argument :arg is required",
+  };
+
+  const contentMessage = translate[content].replace(
+    /:arg/g,
+    context?.arg || ""
+  );
+
+  messages.value.push({
+    user: {
+      username: "System",
+    },
+    chat: {
+      id: chat,
+    },
+    message: {
+      content: contentMessage,
+      created_at: new Date(),
+    },
+  });
+
+  return contentMessage;
+}
+
+export function handleMessage(
+  messages,
+  message,
+  chat,
+  pageCommands,
+  user,
+  hubConnection
+) {
   if (!pageCommands) {
     pageCommands = allCommands;
   }
@@ -129,25 +185,30 @@ export function handleMessage(messages, message, hubConnection, user, chat, page
   message = message.trim();
 
   if (!message.startsWith("/")) {
-    hubConnection.invoke("SendMessage", message);
+    if (
+      hubConnection &&
+      hubConnection.connection.state == HubConnectionState.Connected
+    ) {
+      hubConnection.invoke("SendMessage", message);
 
-    return;
+      return;
+    }
   }
+
+  saveMessage(messages, message, user, chat);
 
   const commandName = getCommandOnly(message);
   const commandArgs = getCommandArgs(message, pageCommands);
 
   if (!pageCommands[commandName]) {
-    alert("command-not-found");
+    alert(messages, chat, "command-not-found");
 
     return;
   }
 
-  saveMessage(messages, message, user, chat);
-
   if (Object.keys(commandArgs.errors).length > 0) {
     for (const error of Object.keys(commandArgs.errors)) {
-      alert(commandArgs.errors[error], {
+      alert(messages, chat, commandArgs.errors[error], {
         arg: error,
       });
     }

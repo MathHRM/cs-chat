@@ -58,41 +58,8 @@ export const joinChat = {
 };
 
 export default {
-  help: {
-    description: "Show available commands and their usage",
-    args: {},
-    handler: handleHelp,
-  },
-  login: {
-    description: "Login to the system",
-    args: {
-      username: {
-        type: "string",
-        description: "The username to login with",
-        required: true,
-      },
-      password: {
-        type: "string",
-        description: "The password to login with",
-        required: true,
-      },
-    },
-    handler: handleLogin,
-  },
-  register: {
-    description: "Register a new user",
-    args: {
-      username: {
-        type: "string",
-        description: "The username to register with",
-        required: true,
-      },
-      password: {
-        type: "string",
-        description: "The password to register with",
-        required: true,
-      },
-    },
-    handler: handleRegister,
-  },
+  help,
+  login,
+  register,
+  joinChat,
 };
