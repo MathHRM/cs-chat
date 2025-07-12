@@ -244,5 +244,13 @@ function handleCommand(
   commandArgs.args.chat = chat;
   commandArgs.args.user = user;
 
-  pageCommands[commandName].handler(commandArgs.args);
+  hundle(pageCommands[commandName], commandArgs.args);
+}
+
+function hundle(command, commandArgs) {
+  const result = command.handler(commandArgs);
+
+  if (!result) {
+    return;
+  }
 }
