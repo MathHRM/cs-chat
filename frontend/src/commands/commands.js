@@ -3,12 +3,19 @@ import {
     handleLogin,
     handleRegister,
     handleJoinChat,
+    handleLogout,
 } from "@/helpers/commandsHelper";
 
 export const help = {
   description: "Show available commands and their usage",
   args: {},
   handler: handleHelp,
+};
+
+export const logout = {
+  description: "Logout from the system",
+  args: {},
+  handler: handleLogout,
 };
 
 export const login = {
@@ -60,6 +67,7 @@ export const joinChat = {
 export default {
   help,
   login,
+  logout,
   register,
   joinChat,
 };

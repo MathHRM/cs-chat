@@ -53,6 +53,15 @@ export async function handleLogin({ username, password }) {
   router.push("/");
 }
 
+export async function handleLogout() {
+  const authStore = useAuthStore();
+
+  authStore.$reset();
+  localStorage.removeItem("@auth");
+
+  router.push("/login");
+}
+
 export async function handleJoinChat({ chatId, hubConnection }) {
   const data = await joinChat(chatId);
 
@@ -66,10 +75,6 @@ export async function handleJoinChat({ chatId, hubConnection }) {
 }
 
 export function handleHelp({ messages, pageCommands }) {
-  if (!pageCommands) {
-    pageCommands = allCommands;
-  }
-
   const helpMessage =
     "Available commands:\n\n" +
     Object.entries(pageCommands || allCommands)

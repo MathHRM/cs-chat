@@ -14,7 +14,7 @@ import Hub from "../Hub";
 import { HubConnectionState } from "@aspnet/signalr";
 import { useAuthStore } from "@/stores/auth";
 import { handleMessage } from "@/helpers/commandsHelper";
-import { help, joinChat } from "@/commands/commands";
+import { help, joinChat, logout } from "@/commands/commands";
 
 const _hub = new Hub();
 let messages = ref([]);
@@ -27,6 +27,7 @@ const user = computed(() => authStore.user);
 const pageCommands = {
   help,
   joinChat,
+  logout,
 };
 
 function handleSendMessage(content) {
