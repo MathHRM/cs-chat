@@ -13,13 +13,15 @@ import { ref, onMounted, computed } from "vue";
 import Hub from "../Hub";
 import { HubConnectionState } from "@aspnet/signalr";
 import { useAuthStore } from "@/stores/auth";
-import { handleMessage } from "@/helpers/commandsHelper";
+import handleMessage from "@/helpers/commandsHelper";
 import commands from "@/commands/commands";
+import { useI18n } from "vue-i18n";
 
 const _hub = new Hub();
 let messages = ref([]);
 
 const authStore = useAuthStore();
+const { t } = useI18n();
 
 const user = computed(() => authStore.user);
 
@@ -48,7 +50,7 @@ function handleSendMessage(content) {
     return;
   }
 
-  handleMessage(messages, content, user.value.currentChatId, pageCommands, user.value, _hub.connection);
+  handleMessage(messages, content, user.value.currentChatId, pageCommands, user.value, _hub.connection, t);
 }
 
 onMounted(() => {

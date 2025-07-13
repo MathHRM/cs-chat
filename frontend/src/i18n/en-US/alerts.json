@@ -1,0 +1,12 @@
+{
+    "logged-in": "Logged in successfully",
+    "logged-out": "Logged out successfully",
+    "registered": "Registered successfully",
+    "command-not-found": "Command not found",
+    "command-not-enough-arguments": "Command not enough arguments",
+    "command-invalid-argument": "Command invalid argument",
+    "not-a-command": "Not a command",
+    "not-enough-args": "Not enough arguments",
+    "argument-required": "The argument :arg is required",
+    "join-chat-failed": "Could not join chat :chatId"
+}

@@ -21,12 +21,12 @@ function saveMessage(messages, message, user, chat) {
   });
 }
 
-export async function handleRegister({ username, password, messages, chat }) {
+export async function handleRegister({ username, password, messages, chat, t }) {
   const authStore = useAuthStore();
   const data = await register(username, password);
 
   if (!data?.user?.id) {
-    alert({messages, chat, content: "register-failed"});
+    alert({messages, chat, content: "commands.register.response.failed", t});
 
     return;
   }
@@ -37,12 +37,12 @@ export async function handleRegister({ username, password, messages, chat }) {
   router.push("/");
 }
 
-export async function handleLogin({ username, password, messages, chat }) {
+export async function handleLogin({ username, password, messages, chat, t }) {
   const authStore = useAuthStore();
   const data = await login(username, password);
 
   if (!data?.user?.id) {
-    alert({messages, chat, content: "login-failed"});
+    alert({messages, chat, content: "commands.login.response.failed", t});
 
     return;
   }
@@ -62,11 +62,11 @@ export async function handleLogout() {
   router.push("/login");
 }
 
-export async function handleJoinChat({ chatId, hubConnection, messages, chat }) {
+export async function handleJoinChat({ chatId, hubConnection, messages, chat, t }) {
   const data = await joinChat(chatId);
 
   if (!data?.chat?.id) {
-    alert({messages, chat, content: "join-chat-failed", context: {arg: chatId}});
+    alert({messages, chat, content: "commands.join.response.failed", context: {chatId}, t});
 
     return;
   }
@@ -133,7 +133,7 @@ export function getCommandArgs(command, pageCommands) {
     let value = found ? found[1] : null;
 
     if (!args.args[arg] && commandArgs[arg].required && value === null) {
-      args.errors[arg] = "argument-required";
+      args.errors[arg] = "required";
     }
 
     args.args[arg] = value;
@@ -142,23 +142,8 @@ export function getCommandArgs(command, pageCommands) {
   return args;
 }
 
-function alert({messages, chat, content, context}) {
-  const translate = {
-    login: "Logged in successfully",
-    register: "Registered successfully",
-    "login-failed": "Wrong username or password",
-    "register-failed": "Could not register",
-    "command-not-found": "Command does not exist",
-    "not-a-command": "Not a command",
-    "not-enough-args": "Not enough arguments",
-    "argument-required": "The argument :arg is required",
-    "join-chat-failed": "Could not join chat :arg",
-  };
-
-  const contentMessage = translate[content].replace(
-    /:arg/g,
-    context?.arg || ""
-  );
+function alert({messages, chat, content, context, t}) {
+  const contentMessage = t(content, context);
 
   messages.value.push({
     user: {
@@ -180,13 +165,14 @@ function isCommand(message) {
   return /^\/\w+/.test(message);
 }
 
-export function handleMessage(
+export default function handleMessage(
   messages,
   message,
   chat,
   pageCommands,
   user,
-  hubConnection
+  hubConnection,
+  t
 ) {
   message = message.trim();
 
@@ -215,7 +201,7 @@ export function handleMessage(
     return;
   }
 
-  handleCommand(messages, message, chat, pageCommands, user, hubConnection);
+  handleCommand(messages, message, chat, pageCommands, user, hubConnection, t);
 }
 
 function handleCommand(
@@ -224,22 +210,29 @@ function handleCommand(
   chat,
   pageCommands,
   user,
-  hubConnection
+  hubConnection,
+  t
 ) {
   const commandName = getCommandOnly(message);
   const commandArgs = getCommandArgs(message, pageCommands);
 
   if (!pageCommands[commandName]) {
-    alert({messages, chat, content: "command-not-found"});
+    alert({messages, chat, content: "commands.errors.command-not-found", t});
 
     return;
   }
 
   if (Object.keys(commandArgs.errors).length > 0) {
     for (const error of Object.keys(commandArgs.errors)) {
-      alert({messages, chat, content: commandArgs.errors[error], context: {
-        arg: error,
-      }});
+      alert({
+        messages,
+        chat,
+        content: `commands.arguments.${commandArgs.errors[error]}`,
+        context: {
+          arg: error,
+        },
+        t,
+      });
     }
 
     return;
@@ -250,6 +243,7 @@ function handleCommand(
   commandArgs.args.pageCommands = pageCommands;
   commandArgs.args.chat = chat;
   commandArgs.args.user = user;
+  commandArgs.args.t = t;
 
   hundle(pageCommands[commandName], commandArgs.args);
 }

@@ -14,6 +14,10 @@
             "password": {
                 "description": "The password to login with"
             }
+        },
+        "response": {
+            "success": "Logged in successfully",
+            "failed": "Wrong username or password"
         }
     },
     "register": {
@@ -25,6 +29,10 @@
             "password": {
                 "description": "The password to register with"
             }
+        },
+        "response": {
+            "success": "Registered successfully",
+            "failed": "Could not register"
         }
     },
     "join": {
@@ -33,6 +41,18 @@
             "chatId": {
                 "description": "The ID of the chat to join"
             }
+        },
+        "response": {
+            "success": "Joined chat successfully",
+            "failed": "Could not join chat { chatId }"
         }
+    },
+    "arguments": {
+        "required": "The argument { arg } is required",
+        "invalid": "The argument { arg } is invalid",
+        "not-enough": "Not enough arguments"
+    },
+    "errors": {
+        "command-not-found": "Command does not exist"
     }
 }
