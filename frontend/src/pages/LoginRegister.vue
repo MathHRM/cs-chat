@@ -10,11 +10,12 @@
 import CommandLine from "@/components/CommandLine.vue";
 import CommandsComponent from "@/components/CommandsComponent.vue";
 import { onMounted, ref } from "vue";
-import { help, login, register } from "@/commands/commands";
+import commands from "@/commands/commands";
 import { handleHelp, handleMessage } from "@/helpers/commandsHelper";
 
 let messages = ref([]);
 
+const { help, login, register } = commands();
 const pageCommands = {
   help,
   login,

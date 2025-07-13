@@ -1,77 +1,79 @@
 import {
-    handleHelp,
-    handleLogin,
-    handleRegister,
-    handleJoinChat,
-    handleLogout,
+  handleHelp,
+  handleLogin,
+  handleRegister,
+  handleJoinChat,
+  handleLogout,
 } from "@/helpers/commandsHelper";
 
 import { useI18n } from "vue-i18n";
 
-const { t } = useI18n();
+export default function commands() {
+  const { t } = useI18n();
 
-export const help = {
-  description: t("commands.help.description"),
-  args: {},
-  handler: handleHelp,
-};
+  const help = {
+    description: t("commands.help.description"),
+    args: {},
+    handler: handleHelp,
+  };
 
-export const logout = {
-  description: t("commands.logout.description"),
-  args: {},
-  handler: handleLogout,
-};
+  const logout = {
+    description: t("commands.logout.description"),
+    args: {},
+    handler: handleLogout,
+  };
 
-export const login = {
-  description: t("commands.login.description"),
-  args: {
-    username: {
-      type: "string",
-      description: t("commands.login.args.username.description"),
-      required: true,
+  const login = {
+    description: t("commands.login.description"),
+    args: {
+      username: {
+        type: "string",
+        description: t("commands.login.args.username.description"),
+        required: true,
+      },
+      password: {
+        type: "string",
+        description: t("commands.login.args.password.description"),
+        required: true,
+      },
     },
-    password: {
-      type: "string",
-      description: t("commands.login.args.password.description"),
-      required: true,
-    },
-  },
-  handler: handleLogin,
-};
+    handler: handleLogin,
+  };
 
-export const register = {
-  description: t("commands.register.description"),
-  args: {
-    username: {
-      type: "string",
-      description: t("commands.register.args.username.description"),
-      required: true,
+  const register = {
+    description: t("commands.register.description"),
+    args: {
+      username: {
+        type: "string",
+        description: t("commands.register.args.username.description"),
+        required: true,
+      },
+      password: {
+        type: "string",
+        description: t("commands.register.args.password.description"),
+        required: true,
+      },
     },
-    password: {
-      type: "string",
-      description: t("commands.register.args.password.description"),
-      required: true,
-    },
-  },
-  handler: handleRegister,
-};
+    handler: handleRegister,
+  };
 
-export const join = {
-  description: t("commands.join.description"),
-  args: {
-    chatId: {
-      type: "string",
-      description: t("commands.join.args.chatId.description"),
-      required: true,
+  const join = {
+    description: t("commands.join.description"),
+    args: {
+      chatId: {
+        type: "string",
+        description: t("commands.join.args.chatId.description"),
+        required: true,
+      },
     },
-  },
-  handler: handleJoinChat,
-};
+    handler: handleJoinChat,
+  };
 
-export default {
-  help,
-  login,
-  logout,
-  register,
-  join,
-};
+  return {
+    help,
+    login,
+    logout,
+    register,
+    join,
+  };
+}

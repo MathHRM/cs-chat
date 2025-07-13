@@ -1,7 +1,7 @@
 import router from "@/routes";
 import { register } from "@/api/register";
 import { useAuthStore } from "@/stores/auth";
-import allCommands from "@/commands/commands";
+import commands from "@/commands/commands";
 import { login } from "@/api/login";
 import { joinChat } from "@/api/joinChat";
 import { HubConnectionState } from "@aspnet/signalr";
@@ -85,7 +85,7 @@ export async function handleJoinChat({ chatId, hubConnection, messages, chat }) 
 export function handleHelp({ messages, pageCommands }) {
   const helpMessage =
     "Available commands:\n\n" +
-    Object.entries(pageCommands || allCommands)
+    Object.entries(pageCommands || commands())
       .map(([name, cmd]) => {
         const argsDescription =
           Object.entries(cmd.args).length > 0
@@ -195,7 +195,7 @@ export function handleMessage(
   }
 
   if (!pageCommands) {
-    pageCommands = allCommands;
+    pageCommands = commands();
   }
 
   if (!isCommand(message)) {
