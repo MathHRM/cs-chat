@@ -6,7 +6,6 @@
       </div>
     </q-page-container>
   </q-layout>
-  {{ $t('commands.join') }}
 </template>
 
 <script setup>

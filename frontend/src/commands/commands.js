@@ -6,29 +6,33 @@ import {
     handleLogout,
 } from "@/helpers/commandsHelper";
 
+import { useI18n } from "vue-i18n";
+
+const { t } = useI18n();
+
 export const help = {
-  description: "Show available commands and their usage",
+  description: t("commands.help.description"),
   args: {},
   handler: handleHelp,
 };
 
 export const logout = {
-  description: "Logout from the system",
+  description: t("commands.logout.description"),
   args: {},
   handler: handleLogout,
 };
 
 export const login = {
-  description: "Login to the system",
+  description: t("commands.login.description"),
   args: {
     username: {
       type: "string",
-      description: "The username to login with",
+      description: t("commands.login.args.username.description"),
       required: true,
     },
     password: {
       type: "string",
-      description: "The password to login with",
+      description: t("commands.login.args.password.description"),
       required: true,
     },
   },
@@ -36,16 +40,16 @@ export const login = {
 };
 
 export const register = {
-  description: "Register a new user",
+  description: t("commands.register.description"),
   args: {
     username: {
       type: "string",
-      description: "The username to register with",
+      description: t("commands.register.args.username.description"),
       required: true,
     },
     password: {
       type: "string",
-      description: "The password to register with",
+      description: t("commands.register.args.password.description"),
       required: true,
     },
   },
@@ -53,11 +57,11 @@ export const register = {
 };
 
 export const join = {
-  description: "Join a chat",
+  description: t("commands.join.description"),
   args: {
     chatId: {
       type: "string",
-      description: "The ID of the chat to join",
+      description: t("commands.join.args.chatId.description"),
       required: true,
     },
   },

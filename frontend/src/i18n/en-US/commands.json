@@ -1,3 +1,38 @@
 {
-    "join": "Join the chat"
+    "help": {
+        "description": "Show available commands and their usage"
+    },
+    "logout": {
+        "description": "Logout from the system"
+    },
+    "login": {
+        "description": "Login to the system",
+        "args": {
+            "username": {
+                "description": "The username to login with"
+            },
+            "password": {
+                "description": "The password to login with"
+            }
+        }
+    },
+    "register": {
+        "description": "Register a new user",
+        "args": {
+            "username": {
+                "description": "The username to register with"
+            },
+            "password": {
+                "description": "The password to register with"
+            }
+        }
+    },
+    "join": {
+        "description": "Join a chat",
+        "args": {
+            "chatId": {
+                "description": "The ID of the chat to join"
+            }
+        }
+    }
 }
