@@ -13,6 +13,7 @@ import { useAuthStore } from "@/stores/auth";
 import { onMounted } from "vue";
 import { getUser } from "@/api/getUser";
 import { getChat } from "@/api/getChat";
+import { useChatStore } from "@/stores/chat";
 import router from "@/routes";
 
 const authStore = useAuthStore();
@@ -28,7 +29,7 @@ onMounted(async () => {
       authStore.setUser(userData.user);
       const currentChatData = await getChat(userData.user.currentChatId);
 
-      chatStore.setChat(currentChatData.chat);
+      chatStore.setChat(currentChatData);
 
       router.push("/");
 

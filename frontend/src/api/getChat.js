@@ -1,9 +1,8 @@
 import axios from "axios";
-import router from "@/routes";
 
 export const getChat = async (chatId) => {
   try {
-    const { data } = await axios.get(`/chat/${chatId}`);
+    const { data } = await axios.get(`/chats/${chatId}`);
 
     return data;
   } catch (err) {

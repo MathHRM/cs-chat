@@ -2,7 +2,7 @@
   <div class="terminal-input-line">
     <span class="terminal-user">{{ getUser.username || "~" }}</span>
     <span class="terminal-separator">@</span>
-    <span class="terminal-chat">{{ getUser.currentChatId || chat || "chat" }}</span>
+    <span class="terminal-chat">{{ getChat.id || chat || "chat" }}</span>
     <span class="terminal-separator">:~$ </span>
     <input
       ref="terminalInput"
@@ -19,6 +19,7 @@
 <script setup>
 import { ref, onMounted, defineEmits, computed, defineProps } from "vue";
 import { useAuthStore } from "@/stores/auth";
+import { useChatStore } from "@/stores/chat";
 
 defineProps({
   chat: {
@@ -27,8 +28,11 @@ defineProps({
 });
 
 const authStore = useAuthStore();
+const chatStore = useChatStore();
 
 const getUser = computed(() => authStore.user);
+const getChat = computed(() => chatStore.chat);
+
 const emit = defineEmits(["send-message"]);
 
 const currentInput = ref("");
