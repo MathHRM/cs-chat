@@ -6,6 +6,7 @@ import { login } from "@/api/login";
 import { joinChat } from "@/api/joinChat";
 import { HubConnectionState } from "@aspnet/signalr";
 import { useChatStore } from "@/stores/chat";
+import { getChat } from "@/api/getChat";
 
 function saveMessage(messages, message, user, chat) {
   messages.value.push({
@@ -24,6 +25,7 @@ function saveMessage(messages, message, user, chat) {
 
 export async function handleRegister({ username, password, messages, chat, t }) {
   const authStore = useAuthStore();
+  const chatStore = useChatStore();
   const data = await register(username, password);
 
   if (!data?.user?.id) {
@@ -32,7 +34,10 @@ export async function handleRegister({ username, password, messages, chat, t }) 
     return;
   }
 
+  let chatData = await getChat(data.user.currentChatId);
+
   authStore.setUser(data.user);
+  chatStore.setChat(chatData);
   localStorage.setItem("@auth", `${data.token}`);
 
   router.push("/");
@@ -40,6 +45,7 @@ export async function handleRegister({ username, password, messages, chat, t }) 
 
 export async function handleLogin({ username, password, messages, chat, t }) {
   const authStore = useAuthStore();
+  const chatStore = useChatStore();
   const data = await login(username, password);
 
   if (!data?.user?.id) {
@@ -48,7 +54,10 @@ export async function handleLogin({ username, password, messages, chat, t }) {
     return;
   }
 
+  let chatData = await getChat(data.user.currentChatId);
+
   authStore.setUser(data.user);
+  chatStore.setChat(chatData);
   localStorage.setItem("@auth", `${data.token}`);
 
   router.push("/");
