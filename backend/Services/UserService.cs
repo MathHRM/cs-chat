@@ -113,5 +113,13 @@ namespace backend.Services
                 .Where(cu => cu.UserId == user.Id)
                 .ToListAsync();
         }
+
+        public async Task<User?> GetUserWithChatsAsync(string username)
+        {
+            return await _context.Users
+                .Include(u => u.ChatUsers)
+                .ThenInclude(chatUser => chatUser.Chat)
+                .FirstOrDefaultAsync(u => u.Username == username);
+        }
     }
 }
