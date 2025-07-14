@@ -6,8 +6,8 @@ public class Help : Command
 
     public Dictionary<string, CommandArgument>? Args = null;
 
-    public override Task Handle(Dictionary<string, object> args)
+    public override Task<CommandResult> Handle(Dictionary<string, object> args)
     {
-        return Task.CompletedTask;
+        return Task.FromResult(new CommandResult { Success = true, Message = "Help command" });
     }
 }

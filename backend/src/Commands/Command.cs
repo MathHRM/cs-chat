@@ -4,28 +4,8 @@ public abstract class Command
 {
     public string Description { get; }
     public Dictionary<string, CommandArgument>? Args { get; }
-    public abstract Task Handle(Dictionary<string, object> args);
-    public List<string>? Validate(Dictionary<string, object> args)
-    {
-        if (Args == null)
-        {
-            return null;
-        }
-
-        var errors = new List<string>();
-
-        foreach (var arg in Args)
-        {
-            if (arg.Value.IsRequired && !args.ContainsKey(arg.Key))
-            {
-                errors.Add($"Argument {arg.Key} is required");
-            }
-        }
-
-        return errors;
-    }
-
-    private CommandArgsResult GetCommandArgs(string command)
+    public abstract Task<CommandResult> Handle(Dictionary<string, object> args);
+    public CommandArgsResult ValidateArguments(Dictionary<string, string> args)
     {
         var result = new CommandArgsResult();
 
@@ -34,41 +14,18 @@ public abstract class Command
             return result;
         }
 
-        var parts = command.Split(' ').Skip(1).ToList().FindAll(p => !p.StartsWith("-"));
-
-        foreach (var argDefinition in Args)
+        foreach (var arg in Args)
         {
-            var argName = argDefinition.Key;
-            var argInfo = argDefinition.Value;
+            if (arg.Value.IsRequired && !args.ContainsKey(arg.Key))
+            {
+                result.AddError(arg.Key, $"Argument {arg.Value.Name} is required");
 
-            if (argInfo.ByPosition)
-            {
-                if (parts.Count > 0)
-                {
-                    result.AddArg(argName, parts[0]);
-                    parts.RemoveAt(0);
-                }
-                else if (argInfo.IsRequired)
-                {
-                    result.AddError(argName, "required");
-                }
+                continue;
             }
-            else // Named argument
-            {
-                var argIndex = parts.FindIndex(p => p == $"--{argName}" || p == $"-{argName.First()}");
-                if (argIndex != -1 && parts.Count > argIndex + 1)
-                {
-                    result.AddArg(argName, parts[argIndex + 1]);
-                    parts.RemoveRange(argIndex, 2);
-                }
-                else if (argInfo.IsRequired)
-                {
-                    result.AddError(argName, "required");
-                }
-            }
+
+            result.AddArg(arg.Key, args[arg.Key]);
         }
 
         return result;
     }
-
 }
