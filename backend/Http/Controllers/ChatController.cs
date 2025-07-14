@@ -133,4 +133,19 @@ public class ChatController : ControllerBase
             }).ToList(),
         });
     }
+
+    [HttpGet]
+    [Authorize]
+    [Route("{chatId}")]
+    public async Task<ActionResult<Chat>> GetChat(string chatId)
+    {
+        var chat = await _chatService.GetChatByIdAsync(chatId);
+
+        if (chat == null)
+        {
+            return NotFound("Chat not found.");
+        }
+
+        return Ok(new ChatResponse { Id = chat.Id });
+    }
 }
