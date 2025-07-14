@@ -12,18 +12,23 @@
 import { useAuthStore } from "@/stores/auth";
 import { onMounted } from "vue";
 import { getUser } from "@/api/getUser";
+import { getChat } from "@/api/getChat";
 import router from "@/routes";
 
 const authStore = useAuthStore();
+const chatStore = useChatStore();
 
 onMounted(async () => {
   const token = localStorage.getItem("@auth");
 
   if (token) {
-    const data = await getUser();
+    const userData = await getUser();
 
-    if (data?.user?.id) {
-      authStore.setUser(data.user);
+    if (userData?.user?.id) {
+      authStore.setUser(userData.user);
+      const currentChatData = await getChat(userData.user.currentChatId);
+
+      chatStore.setChat(currentChatData.chat);
 
       router.push("/");
 
