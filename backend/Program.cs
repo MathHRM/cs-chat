@@ -87,3 +87,20 @@ app.MapControllers();
 app.MapHub<HubProvider>("/Hub");
 
 app.Run();
+
+public static class Logger
+{
+    public static void Info(string message)
+    {
+        Console.ForegroundColor = ConsoleColor.Yellow;
+        Console.WriteLine($"\n\nInfo: {message}\n\n");
+        Console.ResetColor();
+    }
+
+    public static void Error(string message)
+    {
+        Console.ForegroundColor = ConsoleColor.Red;
+        Console.WriteLine($"\n\nError: {message}\n\n");
+        Console.ResetColor();
+    }
+}

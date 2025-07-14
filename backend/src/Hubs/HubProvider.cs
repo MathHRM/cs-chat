@@ -19,6 +19,7 @@ public class HubProvider : Hub<IHubProvider>
     public async Task SendMessage(Message message)
     {
         var user = await _userService.GetUserByUsernameAsync(Context.User.Identity.Name);
+        Logger.Info($"Sending message from user {user.Username} to chat {user.CurrentChatId}");
 
         await Clients.Group(user.CurrentChatId!).ReceivedMessage(new MessageResource
         {
@@ -68,6 +69,8 @@ public class HubProvider : Hub<IHubProvider>
     {
         var username = Context.User.Identity.Name;
         var user = await _userService.GetUserWithChatsAsync(username);
+
+        Logger.Info($"Removing user {username} from other chats: {chatId}");
 
         foreach (var chatUser in user.ChatUsers.Where(cu => cu.ChatId != chatId))
         {
