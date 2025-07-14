@@ -11,7 +11,7 @@ public class TestController : ControllerBase
     [Route("testando")]
     public async Task<IActionResult> Get()
     {
-        var result = await CommandHandler.HandleCommand("/help --chatId=123 aaaaa -c=2323 --dcdcdc -c -d=\"aa aa   aa\" bbbbbb");
+        var result = await CommandHandler.HandleCommand("/login --username=admin --password=123456");
         return Ok(result);
     }
 

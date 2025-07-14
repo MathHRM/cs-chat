@@ -2,9 +2,11 @@ namespace backend.Commands.Commands;
 
 public class Help : Command
 {
-    public string Description = "Show help for all commands";
+    public override string CommandName => "help";
 
-    public Dictionary<string, CommandArgument>? Args = null;
+    public override string Description => "Show help for all commands";
+
+    public override Dictionary<string, CommandArgument>? Args => null;
 
     public override Task<CommandResult> Handle(Dictionary<string, object> args)
     {

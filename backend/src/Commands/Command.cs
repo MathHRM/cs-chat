@@ -2,8 +2,9 @@ using backend.Commands;
 
 public abstract class Command
 {
-    public string Description { get; }
-    public Dictionary<string, CommandArgument>? Args { get; }
+    public abstract string CommandName { get; }
+    public abstract string Description { get; }
+    public abstract Dictionary<string, CommandArgument>? Args { get; }
     public abstract Task<CommandResult> Handle(Dictionary<string, object> args);
     public CommandArgsResult ValidateArguments(Dictionary<string, string> args)
     {

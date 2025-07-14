@@ -13,11 +13,21 @@ public class CommandHandler
             return new CommandResult { Success = false, Message = "Invalid command" };
         }
 
-        if (CommandsList.Commands.TryGetValue(args["command"], out var commandObj))
+        if (CommandsList.Commands.TryGetValue(args["command"], out Command? command))
         {
-            var command = (Command)commandObj;
+            var argsResult = command.ValidateArguments(args);
+
+            if (!argsResult.Validated())
+            {
+                return new CommandResult { Success = false, Message = string.Join("\n", argsResult.Errors.Select(kvp => $"{kvp.Key}: {kvp.Value}")) };
+            }
 
             var result = await command.Handle(args.ToDictionary(kvp => kvp.Key, kvp => (object)kvp.Value));
+
+            if (!result.Success)
+            {
+                return new CommandResult { Success = false, Message = result.Message };
+            }
 
             Console.WriteLine(result.Message);
 
