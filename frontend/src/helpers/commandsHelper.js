@@ -74,11 +74,11 @@ export async function handleLogout() {
   router.push("/login");
 }
 
-export async function handleJoinChat({ chatId, hubConnection, messages, chat, t }) {
+export async function handleJoinChat({ _0: chatId, hubConnection, messages, chat, t }) {
   const data = await joinChat(chatId);
 
   if (!data?.chat?.id) {
-    alert({messages, chat, content: "commands.join.response.failed", context: {chatId}, t});
+    alert({messages, chat, content: "commands.join.response.failed", context: {chatId: chatId}, t});
 
     return;
   }
@@ -141,19 +141,42 @@ export function getCommandArgs(command, pageCommands) {
     return args;
   }
 
-  for (const arg of Object.keys(commandArgs)) {
-    const regex = new RegExp(`(?:--${arg}|-${arg[0]})=([^\\s]+)`);
-    const found = command.match(regex);
-    let value = found ? found[1] : null;
+  let nonNamedArgsValues = command
+    .split(" ")
+    .slice(1)
+    .filter(arg => !arg.startsWith("-"))
+    .reduce((args, value, index) => {
+      args[`_${index}`] = value;
+      return args;
+    }, {})
 
-    if (!args.args[arg] && commandArgs[arg].required && value === null) {
-      args.errors[arg] = "required";
+  for (const commandArgument of Object.keys(commandArgs)) {
+    let value = getCommandValue(commandArgument, nonNamedArgsValues, command);
+
+    if (!args.args[commandArgument] && commandArgs[commandArgument].required && value === null) {
+      const commandName = commandArgs[commandArgument].name;
+      args.errors[commandName] = "required";
     }
 
-    args.args[arg] = value;
+    args.args[commandArgument] = value;
   }
 
   return args;
+}
+
+function getCommandValue(commandArgument, nonNamedArgsValues, command) {
+  const regex = new RegExp(`(?:--${commandArgument}|-${commandArgument[0]})=([^\\s]+)`);
+  const found = command.match(regex);
+
+  if (found) {
+    return found[1];
+  }
+
+  if (nonNamedArgsValues[commandArgument]) {
+    return nonNamedArgsValues[commandArgument];
+  }
+
+  return null;
 }
 
 function alert({messages, chat, content, context, t}) {

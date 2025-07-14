@@ -27,11 +27,13 @@ export default function commands() {
     description: t("commands.login.description"),
     args: {
       username: {
+        name: "username",
         type: "string",
         description: t("commands.login.args.username.description"),
         required: true,
       },
       password: {
+        name: "password",
         type: "string",
         description: t("commands.login.args.password.description"),
         required: true,
@@ -44,11 +46,13 @@ export default function commands() {
     description: t("commands.register.description"),
     args: {
       username: {
+        name: "username",
         type: "string",
         description: t("commands.register.args.username.description"),
         required: true,
       },
       password: {
+        name: "password",
         type: "string",
         description: t("commands.register.args.password.description"),
         required: true,
@@ -60,7 +64,8 @@ export default function commands() {
   const join = {
     description: t("commands.join.description"),
     args: {
-      chatId: {
+      _0: {
+        name: "chatId",
         type: "string",
         description: t("commands.join.args.chatId.description"),
         required: true,
