@@ -18,7 +18,7 @@ public class TestController : ControllerBase
     [Route("testando")]
     public async Task<IActionResult> Get()
     {
-        var result = await _commandHandler.HandleCommand("/login --username=admin --password=123456");
+        var result = await _commandHandler.HandleCommand("/login --username --password=123456");
         return Ok(result);
     }
 
