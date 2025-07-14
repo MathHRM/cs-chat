@@ -65,6 +65,7 @@ export default function commands() {
     description: t("commands.join.description"),
     args: {
       _0: {
+        byPosition: true,
         name: "chatId",
         type: "string",
         description: t("commands.join.args.chatId.description"),

@@ -11,7 +11,7 @@ import { getChat } from "@/api/getChat";
 function saveMessage(messages, message, user, chat) {
   messages.value.push({
     user: {
-      username: user?.username || '~',
+      username: user?.username || "~",
     },
     chat: {
       id: chat,
@@ -23,13 +23,19 @@ function saveMessage(messages, message, user, chat) {
   });
 }
 
-export async function handleRegister({ username, password, messages, chat, t }) {
+export async function handleRegister({
+  username,
+  password,
+  messages,
+  chat,
+  t,
+}) {
   const authStore = useAuthStore();
   const chatStore = useChatStore();
   const data = await register(username, password);
 
   if (!data?.user?.id) {
-    alert({messages, chat, content: "commands.register.response.failed", t});
+    alert({ messages, chat, content: "commands.register.response.failed", t });
 
     return;
   }
@@ -49,7 +55,7 @@ export async function handleLogin({ username, password, messages, chat, t }) {
   const data = await login(username, password);
 
   if (!data?.user?.id) {
-    alert({messages, chat, content: "commands.login.response.failed", t});
+    alert({ messages, chat, content: "commands.login.response.failed", t });
 
     return;
   }
@@ -74,11 +80,23 @@ export async function handleLogout() {
   router.push("/login");
 }
 
-export async function handleJoinChat({ _0: chatId, hubConnection, messages, chat, t }) {
+export async function handleJoinChat({
+  _0: chatId,
+  hubConnection,
+  messages,
+  chat,
+  t,
+}) {
   const data = await joinChat(chatId);
 
   if (!data?.chat?.id) {
-    alert({messages, chat, content: "commands.join.response.failed", context: {chatId: chatId}, t});
+    alert({
+      messages,
+      chat,
+      content: "commands.join.response.failed",
+      context: { chatId: chatId },
+      t,
+    });
 
     return;
   }
@@ -102,12 +120,15 @@ export function handleHelp({ messages, pageCommands }) {
     Object.entries(pageCommands || commands())
       .map(([name, cmd]) => {
         const argsDescription =
-          Object.entries(cmd.args).length > 0
-            ? Object.entries(cmd.args)
-                .map(
-                  ([argName, argInfo]) =>
-                    `--${argName} | -${argName[0]} - ${argInfo.description}`
-                )
+          Object.values(cmd.args).length > 0
+            ? Object.values(cmd.args)
+                .map((argInfo) => {
+                  if (argInfo.byPosition ?? false) {
+                    return `[${argInfo.name}] - ${argInfo.description}`;
+                  }
+
+                  return `--${argInfo.name} | -${argInfo.name[0]} - ${argInfo.description}`;
+                })
                 .join("\n    ")
             : "No arguments required";
 
@@ -144,16 +165,20 @@ export function getCommandArgs(command, pageCommands) {
   let nonNamedArgsValues = command
     .split(" ")
     .slice(1)
-    .filter(arg => !arg.startsWith("-"))
+    .filter((arg) => !arg.startsWith("-"))
     .reduce((args, value, index) => {
       args[`_${index}`] = value;
       return args;
-    }, {})
+    }, {});
 
   for (const commandArgument of Object.keys(commandArgs)) {
     let value = getCommandValue(commandArgument, nonNamedArgsValues, command);
 
-    if (!args.args[commandArgument] && commandArgs[commandArgument].required && value === null) {
+    if (
+      !args.args[commandArgument] &&
+      commandArgs[commandArgument].required &&
+      value === null
+    ) {
       const commandName = commandArgs[commandArgument].name;
       args.errors[commandName] = "required";
     }
@@ -165,7 +190,9 @@ export function getCommandArgs(command, pageCommands) {
 }
 
 function getCommandValue(commandArgument, nonNamedArgsValues, command) {
-  const regex = new RegExp(`(?:--${commandArgument}|-${commandArgument[0]})=([^\\s]+)`);
+  const regex = new RegExp(
+    `(?:--${commandArgument}|-${commandArgument[0]})=([^\\s]+)`
+  );
   const found = command.match(regex);
 
   if (found) {
@@ -179,7 +206,7 @@ function getCommandValue(commandArgument, nonNamedArgsValues, command) {
   return null;
 }
 
-function alert({messages, chat, content, context, t}) {
+function alert({ messages, chat, content, context, t }) {
   const contentMessage = t(content, context);
 
   messages.value.push({
@@ -222,11 +249,8 @@ export default function handleMessage(
   }
 
   if (!isCommand(message)) {
-    if (
-      hubConnection &&
-      hubConnection.state == HubConnectionState.Connected
-    ) {
-      hubConnection.invoke("SendMessage", {content: message});
+    if (hubConnection && hubConnection.state == HubConnectionState.Connected) {
+      hubConnection.invoke("SendMessage", { content: message });
 
       return;
     }
@@ -254,7 +278,7 @@ function handleCommand(
   const commandArgs = getCommandArgs(message, pageCommands);
 
   if (!pageCommands[commandName]) {
-    alert({messages, chat, content: "commands.errors.command-not-found", t});
+    alert({ messages, chat, content: "commands.errors.command-not-found", t });
 
     return;
   }
