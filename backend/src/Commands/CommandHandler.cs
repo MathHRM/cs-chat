@@ -4,37 +4,55 @@ namespace backend.Commands;
 
 public class CommandHandler
 {
-    public static async Task<CommandResult> HandleCommand(string commandInput)
+    private readonly ICommandResolver _commandResolver;
+
+    public CommandHandler(ICommandResolver commandResolver)
     {
+        _commandResolver = commandResolver;
+    }
+
+    public async Task<CommandResult> HandleCommand(string commandInput)
+    {
+        // Parse the command input into arguments
         var args = ParseCommand(commandInput);
 
-        if (args == null)
+        if (args == null || !args.TryGetValue("command", out var commandName) || string.IsNullOrWhiteSpace(commandName))
         {
-            return new CommandResult { Success = false, Message = "Invalid command" };
+            return CommandResult.Failure("Invalid command");
         }
 
-        if (CommandsList.Commands.TryGetValue(args["command"], out Command? command))
+        // Resolve the command implementation
+        var command = _commandResolver.GetCommand(commandName);
+
+        if (command == null)
         {
-            var argsResult = command.ValidateArguments(args);
-
-            if (!argsResult.Validated())
-            {
-                return new CommandResult { Success = false, Message = string.Join("\n", argsResult.Errors.Select(kvp => $"{kvp.Key}: {kvp.Value}")) };
-            }
-
-            var result = await command.Handle(args.ToDictionary(kvp => kvp.Key, kvp => (object)kvp.Value));
-
-            if (!result.Success)
-            {
-                return new CommandResult { Success = false, Message = result.Message };
-            }
-
-            Console.WriteLine(result.Message);
-
-            return result;
+            return CommandResult.Failure("Command not found");
         }
 
-        return new CommandResult { Success = false, Message = "Command not found" };
+        // Validate the arguments for the command
+        var validationResult = command.ValidateArguments(args);
+
+        if (!validationResult.Validated())
+        {
+            var errorMessages = validationResult.Errors
+                .Select(kvp => $"{kvp.Key}: {kvp.Value}");
+            return CommandResult.Failure(string.Join(Environment.NewLine, errorMessages));
+        }
+
+        // Prepare arguments for the command handler
+        var handlerArgs = args.ToDictionary(kvp => kvp.Key, kvp => (object)kvp.Value);
+
+        // Execute the command
+        var result = await command.Handle(handlerArgs);
+
+        if (!result.Success)
+        {
+            return CommandResult.Failure(result.Message);
+        }
+
+        Console.WriteLine(result.Message);
+
+        return result;
     }
 
     public static Dictionary<string, string>? ParseCommand(string input)

@@ -7,6 +7,8 @@ using Microsoft.EntityFrameworkCore;
 using backend;
 using backend.Services;
 using backend.Repository;
+using backend.Commands;
+using backend.Commands.Commands;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -60,6 +62,12 @@ builder.Services.AddScoped<UserRepository>();
 builder.Services.AddScoped<ChatRepository>();
 builder.Services.AddScoped<UserService>();
 builder.Services.AddScoped<ChatService>();
+
+// Add command services
+builder.Services.AddScoped<ICommandResolver, CommandResolver>();
+builder.Services.AddScoped<CommandHandler>();
+builder.Services.AddScoped<Help>();
+builder.Services.AddScoped<Login>();
 
 var app = builder.Build();
 

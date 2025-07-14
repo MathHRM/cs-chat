@@ -4,9 +4,9 @@ namespace backend.Commands;
 
 public static class CommandsList
 {
-    public static Dictionary<string, Command> Commands = new Dictionary<string, Command>
+    public static Dictionary<string, Type> CommandTypes = new Dictionary<string, Type>
     {
-        { "help", new Help() },
-        { "login", new Login() },
+        { "help", typeof(Help) },
+        { "login", typeof(Login) },
     };
 }

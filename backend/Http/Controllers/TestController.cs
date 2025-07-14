@@ -7,11 +7,18 @@ namespace backend.Http.Controllers;
 [Route("api/test")]
 public class TestController : ControllerBase
 {
+    private readonly CommandHandler _commandHandler;
+
+    public TestController(CommandHandler commandHandler)
+    {
+        _commandHandler = commandHandler;
+    }
+
     [HttpGet]
     [Route("testando")]
     public async Task<IActionResult> Get()
     {
-        var result = await CommandHandler.HandleCommand("/login --username=admin --password=123456");
+        var result = await _commandHandler.HandleCommand("/login --username=admin --password=123456");
         return Ok(result);
     }
 
