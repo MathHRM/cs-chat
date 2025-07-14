@@ -5,6 +5,7 @@ import commands from "@/commands/commands";
 import { login } from "@/api/login";
 import { joinChat } from "@/api/joinChat";
 import { HubConnectionState } from "@aspnet/signalr";
+import { useChatStore } from "@/stores/chat";
 
 function saveMessage(messages, message, user, chat) {
   messages.value.push({
@@ -55,8 +56,10 @@ export async function handleLogin({ username, password, messages, chat, t }) {
 
 export async function handleLogout() {
   const authStore = useAuthStore();
+  const chatStore = useChatStore();
 
   authStore.$reset();
+  chatStore.$reset();
   localStorage.removeItem("@auth");
 
   router.push("/login");
@@ -72,11 +75,13 @@ export async function handleJoinChat({ chatId, hubConnection, messages, chat, t 
   }
 
   const authStore = useAuthStore();
+  const chatStore = useChatStore();
   const user = authStore.user;
 
   user.currentChatId = chatId;
 
   authStore.setUser(user);
+  chatStore.setChat(data.chat);
 
   messages.value = [];
   hubConnection.invoke("JoinChat", chatId);
