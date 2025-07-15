@@ -2,6 +2,7 @@ using backend.Services;
 using backend.Commands.Results;
 using backend.Http.Responses;
 using backend.Models;
+using backend.Commands.Enums;
 
 namespace backend.Commands.Commands;
 
@@ -70,7 +71,7 @@ public class Register : Command
                 }
             },
             Command = CommandName,
-            Success = true,
+            Result = CommandResultEnum.Success,
             Message = "Register successful"
         };
     }

@@ -1,5 +1,6 @@
 using System.Text;
 using backend.Commands.Results;
+using backend.Commands.Enums;
 using backend.Http.Responses;
 
 namespace backend.Commands.Commands;
@@ -50,13 +51,14 @@ public class Help : Command
 
         return new GenericResult
         {
-            Success = true,
+            Result = CommandResultEnum.Success,
             Response = new MessageResource
             {
                 Message = new MessageResponse
                 {
                     Content = helpMessage.ToString(),
-                    CreatedAt = DateTime.UtcNow
+                    CreatedAt = DateTime.UtcNow,
+                    Type = MessageType.Text
                 },
                 User = new UserResponse
                 {

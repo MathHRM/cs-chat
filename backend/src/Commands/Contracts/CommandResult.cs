@@ -6,21 +6,19 @@ namespace backend.Commands;
 
 public abstract class CommandResult
 {
-    public bool Success { get; set; }
+    public CommandResultEnum Result { get; set; }
     public string? Message { get; set; }
     public Dictionary<string, string> Errors { get; set; } = new();
     public string? Command { get; set; }
-    public MessageType? ResponseType { get; set; } = MessageType.Text;
 
     public static CommandResult FailureResult(string message, string? command = null, Dictionary<string, string>? errors = null)
     {
         return new GenericResult
         {
-            Success = false,
+            Result = CommandResultEnum.Error,
             Message = message,
             Command = command,
             Errors = errors ?? new Dictionary<string, string> { { "error", message } },
-            ResponseType = MessageType.Error
         };
     }
 
@@ -28,7 +26,7 @@ public abstract class CommandResult
     {
         return new GenericResult
         {
-            Success = true,
+            Result = CommandResultEnum.Success,
             Message = message,
             Command = command,
             Response = new MessageResource
@@ -36,10 +34,10 @@ public abstract class CommandResult
                 Message = new MessageResponse
                 {
                     Content = response,
-                    CreatedAt = DateTime.UtcNow
+                    CreatedAt = DateTime.UtcNow,
+                    Type = MessageType.Text
                 },
             },
-            ResponseType = MessageType.Text
         };
     }
 
@@ -47,10 +45,9 @@ public abstract class CommandResult
     {
         return new GenericResult
         {
-            Success = false,
+            Result = CommandResultEnum.Unauthorized,
             Message = "Unauthorized",
             Command = command,
-            ResponseType = MessageType.Error
         };
     }
 }
