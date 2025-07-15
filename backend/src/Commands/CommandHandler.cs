@@ -14,8 +14,7 @@ public class CommandHandler
 
     public async Task<CommandResult> HandleCommand(
         string commandInput,
-        HubCallerContext connection,
-        string? chatId = null
+        HubCallerContext connection
     )
     {
         var args = ParseCommand(commandInput);
@@ -49,7 +48,6 @@ public class CommandHandler
         }
 
         var handlerArgs = validationResult.Args.ToDictionary(kvp => kvp.Key, kvp => (object)kvp.Value);
-        handlerArgs["chatId"] = chatId;
         handlerArgs["connection"] = connection;
 
         var result = await command.Handle(handlerArgs);

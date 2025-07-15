@@ -4,6 +4,7 @@ using backend.Http.Responses;
 using backend.Services;
 using Microsoft.AspNetCore.SignalR;
 using System.Linq;
+using backend.Commands.Enums;
 
 namespace backend.Commands.Commands;
 
@@ -12,6 +13,7 @@ public class Join : Command
     private readonly UserService _userService;
     private readonly TokenService _tokenService;
     private readonly ChatService _chatService;
+
     public override string CommandName => "join";
 
     public override string Description => "Join a chat";
@@ -39,6 +41,51 @@ public class Join : Command
 
     public override async Task<CommandResult> Handle(Dictionary<string, object> args)
     {
-        return CommandResult.SuccessResult($"Chat joined successfully", CommandName, "Joined the chat");
+        var chatId = args["chatId"] as string;
+        var connection = args["connection"] as HubCallerContext;
+
+        var user = await _userService.GetUserByUsernameAsync(connection.User.Identity?.Name);
+
+        if (user.CurrentChatId == chatId)
+        {
+            return CommandResult.SuccessResult($"You are already in chat {chatId}", CommandName, "You are already in chat");
+        }
+
+        var chatUser = await _chatService.AddUserToChatAsync(chatId, user.Id);
+        if (chatUser == null)
+        {
+            return CommandResult.FailureResult("Failed to join chat.", CommandName);
+        }
+
+        user.CurrentChatId = chatId;
+        await _userService.UpdateUserAsync(user.Id, user);
+
+        var chat = await _chatService.GetChatByIdAsync(chatId);
+
+        return new JoinResult
+        {
+            Response = new ChatUserResponse
+            {
+                Chat = new ChatResponse
+                {
+                    Id = chatUser.ChatId,
+                },
+                User = new UserResponse
+                {
+                    Id = user.Id,
+                    Username = user.Username,
+                    CurrentChatId = user.CurrentChatId,
+                },
+                Users = chatUser.Chat.ChatUsers.Select(cu => new UserResponse
+                {
+                    Id = cu.User.Id,
+                    Username = cu.User.Username,
+                    CurrentChatId = cu.User.CurrentChatId,
+                }).ToList(),
+            },
+            Result = CommandResultEnum.Success,
+            Message = "Chat joined successfully",
+            Command = CommandName,
+        };
     }
 }
