@@ -2,6 +2,7 @@ using System.Text;
 using backend.Commands.Results;
 using backend.Commands.Enums;
 using backend.Http.Responses;
+using Microsoft.AspNetCore.SignalR;
 
 namespace backend.Commands.Commands;
 
@@ -22,9 +23,16 @@ public class Help : Command
     public override async Task<CommandResult> Handle(Dictionary<string, object> args)
     {
         var helpMessage = new StringBuilder("Available commands:\n\n");
-        var allCommands = _commandResolver.GetAllCommands();
+        var commands = _commandResolver.GetAllCommands();
 
-        foreach (var command in allCommands)
+        var connection = args["connection"] as HubConnectionContext;
+
+        if (connection == null || (connection.User.Identity?.IsAuthenticated ?? false))
+        {
+            commands = commands.Where(c => !c.RequiresAuthentication).ToList();
+        }
+
+        foreach (var command in commands)
         {
             helpMessage.AppendLine($"/{command.CommandName} - {command.Description}");
 
@@ -59,11 +67,6 @@ public class Help : Command
                 Content = helpMessage.ToString(),
                 CreatedAt = DateTime.UtcNow,
                 Type = MessageType.Text,
-                User = new UserResponse
-                {
-                    Id = 0,
-                    Username = "System",
-                }
             },
             Command = CommandName
         };

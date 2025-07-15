@@ -55,12 +55,12 @@ public class HubProvider : Hub<IHubProvider>
 
     private async Task HandleGuestUser(Message message)
     {
-        await Clients.Caller.ReceivedMessage(new MessageResource
-        {
-            Content = message.Content,
-            Type = message.Type,
-            CreatedAt = DateTime.UtcNow,
-        });
+        // await Clients.Caller.ReceivedMessage(new MessageResource
+        // {
+        //     Content = message.Content,
+        //     Type = message.Type,
+        //     CreatedAt = DateTime.UtcNow,
+        // });
 
         if (_commandHandler.IsCommand(message.Content))
         {
