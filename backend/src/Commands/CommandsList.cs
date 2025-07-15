@@ -9,5 +9,6 @@ public static class CommandsList
         { "help", typeof(Help) },
         { "login", typeof(Login) },
         { "register", typeof(Register) },
+        { "join", typeof(Join) },
     };
 }

@@ -17,28 +17,28 @@ public class CommandHandler
 
         if (args == null || !args.TryGetValue("command", out var commandName) || string.IsNullOrWhiteSpace(commandName))
         {
-            return CommandResult.Failure("Invalid command");
+            return CommandResult.FailureResult("Invalid command");
         }
 
         var command = _commandResolver.GetCommand(commandName);
 
         if (command == null)
         {
-            return CommandResult.Failure("Command not found", commandName);
+            return CommandResult.FailureResult("Command not found", commandName);
         }
 
         var validationResult = command.ValidateArguments(args);
 
         if (!validationResult.Validated())
         {
-            return CommandResult.Failure(
+            return CommandResult.FailureResult(
                 "Invalid arguments",
                 command.CommandName,
                 validationResult.Errors
             );
         }
 
-        var handlerArgs = args.ToDictionary(kvp => kvp.Key, kvp => (object)kvp.Value);
+        var handlerArgs = validationResult.Args.ToDictionary(kvp => kvp.Key, kvp => (object)kvp.Value);
 
         var result = await command.Handle(handlerArgs);
 

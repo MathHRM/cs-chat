@@ -6,4 +6,5 @@ public class CommandArgument
     public string Description { get; set; } = string.Empty;
     public bool IsRequired { get; set; } = false;
     public bool ByPosition { get; set; } = false;
+    public int Position { get; set; } = 0;
 }

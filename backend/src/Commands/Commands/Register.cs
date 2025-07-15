@@ -10,27 +10,41 @@ public class Register : Command
     private readonly UserService _userService;
     private readonly TokenService _tokenService;
 
+    public override string CommandName => "register";
+
+    public override string Description => "Register a new user";
+
     public Register(UserService userService, TokenService tokenService)
     {
         _userService = userService;
         _tokenService = tokenService;
     }
 
-    public override string CommandName => "register";
-
-    public override string Description => "Register a new user";
-
     public override Dictionary<string, CommandArgument>? Args => new Dictionary<string, CommandArgument>
     {
-        { "username", new CommandArgument { Name = "username", IsRequired = true, Description = "The username to register with" } },
-        { "password", new CommandArgument { Name = "password", IsRequired = true, Description = "The password to register with" } }
+        {
+            "username",
+            new CommandArgument {
+                Name = "username",
+                IsRequired = true,
+                Description = "The username to register with"
+            }
+        },
+        {
+            "password",
+            new CommandArgument {
+                Name = "password",
+                IsRequired = true,
+                Description = "The password to register with"
+            }
+        }
     };
 
     public override async Task<CommandResult> Handle(Dictionary<string, object> args)
     {
         if (await _userService.UserExistsAsync(args["username"] as string))
         {
-            return CommandResult.Failure("User with this Username already exists", CommandName);
+            return CommandResult.FailureResult("User with this Username already exists", CommandName);
         }
 
         var user = new User

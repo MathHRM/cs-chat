@@ -17,16 +17,32 @@ public abstract class Command
 
         foreach (var arg in Args)
         {
-            if (arg.Value.IsRequired && !args.ContainsKey(arg.Key))
-            {
-                result.AddError(arg.Key, $"Argument {arg.Value.Name} is required");
+            var argName = arg.Value.Name;
+            var argValue = GetArgValue(arg.Value, args);
 
-                continue;
+            if (argValue == null && arg.Value.IsRequired)
+            {
+                result.AddError(argName, $"Argument {argName} is required");
             }
 
-            result.AddArg(arg.Key, args[arg.Key]);
+            result.AddArg(argName, argValue);
         }
 
         return result;
+    }
+
+    private string? GetArgValue(CommandArgument arg, Dictionary<string, string> args)
+    {
+        if (arg.ByPosition && args.ContainsKey(arg.Position.ToString()))
+        {
+            return args[arg.Position.ToString()];
+        }
+
+        if (!arg.ByPosition && args.ContainsKey(arg.Name))
+        {
+            return args[arg.Name];
+        }
+
+        return null;
     }
 }

@@ -69,6 +69,7 @@ builder.Services.AddScoped<CommandHandler>();
 builder.Services.AddScoped<Help>();
 builder.Services.AddScoped<Login>();
 builder.Services.AddScoped<Register>();
+builder.Services.AddScoped<Join>();
 
 var app = builder.Build();
 
