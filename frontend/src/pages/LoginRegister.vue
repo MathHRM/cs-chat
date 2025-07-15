@@ -10,25 +10,33 @@
 import CommandLine from "@/components/CommandLine.vue";
 import CommandsComponent from "@/components/CommandsComponent.vue";
 import { onMounted, ref } from "vue";
-import commands from "@/commands/commands";
-import handleMessage, { handleHelp } from "@/helpers/commandsHelper";
-import { useI18n } from "vue-i18n";
+import handleMessage, { isCommand, alert } from "@/helpers/messageHandler";
+import handleCommand from "@/helpers/commandHandler";
+import Hub from "../Hub";
 
-const { t } = useI18n();
 let messages = ref([]);
-
-const { help, login, register } = commands();
-const pageCommands = {
-  help,
-  login,
-  register,
-};
+const _hub = new Hub();
 
 function handleInput(message) {
-  handleMessage(messages, message, "login-register", pageCommands, null, null, t);
+  if (! isCommand(message)) {
+    alert(messages, "You are not logged in, please log or register to start chatting", 2);
+    return;
+  }
+
+  handleMessage(message, _hub.connection, messages);
 }
 
 onMounted(() => {
-  handleHelp({ messages, pageCommands });
+  _hub.connection.start().then(() => {
+    _hub.connection.on("ReceivedMessage", (msg) => {
+      messages.value.push(msg);
+    });
+
+    _hub.connection.on("ReceivedCommand", (command) => {
+      handleCommand(command, messages);
+    });
+
+    _hub.connection.invoke("SendMessage", { content: "/help" });
+  });
 });
 </script>
