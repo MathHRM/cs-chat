@@ -10,17 +10,18 @@ public class Register : Command
 {
     private readonly UserService _userService;
     private readonly TokenService _tokenService;
-
+    private readonly ChatService _chatService;
     public override string CommandName => "register";
 
     public override string Description => "Register a new user";
 
     public override bool RequiresAuthentication => false;
 
-    public Register(UserService userService, TokenService tokenService)
+    public Register(UserService userService, TokenService tokenService, ChatService chatService)
     {
         _userService = userService;
         _tokenService = tokenService;
+        _chatService = chatService;
     }
 
     public override Dictionary<string, CommandArgument>? Args => new Dictionary<string, CommandArgument>
@@ -58,6 +59,8 @@ public class Register : Command
 
         var createdUser = await _userService.CreateUserAsync(user);
 
+        var chat = await _chatService.GetChatByIdAsync(createdUser.CurrentChatId!);
+
         return new LoginResult
         {
             Response = new LoginResponse
@@ -67,7 +70,11 @@ public class Register : Command
                 {
                     Id = createdUser.Id,
                     Username = createdUser.Username,
-                    CurrentChatId = createdUser.CurrentChatId ?? "general"
+                    CurrentChatId = createdUser.CurrentChatId!
+                },
+                Chat = new ChatResponse
+                {
+                    Id = chat.Id,
                 }
             },
             Command = CommandName,

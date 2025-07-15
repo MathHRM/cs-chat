@@ -9,17 +9,18 @@ public class Login : Command
 {
     private readonly UserService _userService;
     private readonly TokenService _tokenService;
-
+    private readonly ChatService _chatService;
     public override string CommandName => "login";
 
     public override string Description => "Login to the system";
 
     public override bool RequiresAuthentication => false;
 
-    public Login(UserService userService, TokenService tokenService)
+    public Login(UserService userService, TokenService tokenService, ChatService chatService)
     {
         _userService = userService;
         _tokenService = tokenService;
+        _chatService = chatService;
     }
 
     public override Dictionary<string, CommandArgument>? Args => new Dictionary<string, CommandArgument>
@@ -52,6 +53,8 @@ public class Login : Command
 
         var token = _tokenService.GenerateToken(user);
 
+        var chat = await _chatService.GetChatByIdAsync(user.CurrentChatId!);
+
         return new LoginResult
         {
             Response = new LoginResponse
@@ -61,7 +64,11 @@ public class Login : Command
                 {
                     Id = user.Id,
                     Username = user.Username,
-                    CurrentChatId = user.CurrentChatId ?? "general"
+                    CurrentChatId = user.CurrentChatId!
+                },
+                Chat = new ChatResponse
+                {
+                    Id = chat.Id,
                 }
             },
             Command = CommandName,
