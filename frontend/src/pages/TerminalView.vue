@@ -13,6 +13,7 @@ import { ref, onMounted, computed } from "vue";
 import Hub from "../Hub";
 import { HubConnectionState } from "@aspnet/signalr";
 import { useAuthStore } from "@/stores/auth";
+import proxy from "@/helpers/handleCommand";
 // import handleMessage from "@/helpers/commandsHelper";
 // import commands from "@/commands/commands";
 // import { useI18n } from "vue-i18n";
@@ -62,8 +63,9 @@ onMounted(() => {
         messages.value.push(msg);
       });
 
-      _hub.connection.on("ReceivedCommand", (msg) => {
-        console.log(msg);
+      _hub.connection.on("ReceivedCommand", (command) => {
+        console.log(command);
+        proxy(messages, command);
       });
 
       _hub.connection.invoke("JoinChat", user.value.currentChatId || "general");

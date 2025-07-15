@@ -1,5 +1,6 @@
 using System.Text;
 using backend.Commands.Results;
+using backend.Http.Responses;
 
 namespace backend.Commands.Commands;
 
@@ -50,7 +51,19 @@ public class Help : Command
         return new GenericResult
         {
             Success = true,
-            Response = helpMessage.ToString(),
+            Response = new MessageResource
+            {
+                Message = new MessageResponse
+                {
+                    Content = helpMessage.ToString(),
+                    CreatedAt = DateTime.UtcNow
+                },
+                User = new UserResponse
+                {
+                    Id = 0,
+                    Username = "System",
+                }
+            },
             Command = CommandName
         };
     }

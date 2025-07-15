@@ -39,6 +39,6 @@ public class Join : Command
 
     public override async Task<CommandResult> Handle(Dictionary<string, object> args)
     {
-        return CommandResult.SuccessResult($"Chat joined successfully", CommandName, args);
+        return CommandResult.SuccessResult($"Chat joined successfully", CommandName, "Joined the chat");
     }
 }
