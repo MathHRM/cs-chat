@@ -47,6 +47,11 @@ public class HubProvider : Hub<IHubProvider>
                 Id = user.CurrentChatId
             }
         });
+
+        if (_commandHandler.IsCommand(message.Content))
+        {
+            await Clients.Caller.ReceivedCommand(await _commandHandler.HandleCommand(message.Content, Context));
+        }
     }
 
     private async Task HandleGuestUser(Message message)
