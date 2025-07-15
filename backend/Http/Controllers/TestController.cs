@@ -18,8 +18,7 @@ public class TestController : ControllerBase
     [Route("testando")]
     public async Task<IActionResult> Get([FromQuery] string command)
     {
-        var result = await _commandHandler.HandleCommand(command);
-        return Ok(result);
+        return Ok(command);
     }
 
 }

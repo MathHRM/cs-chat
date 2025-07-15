@@ -14,6 +14,8 @@ public class Register : Command
 
     public override string Description => "Register a new user";
 
+    public override bool RequiresAuthentication => false;
+
     public Register(UserService userService, TokenService tokenService)
     {
         _userService = userService;

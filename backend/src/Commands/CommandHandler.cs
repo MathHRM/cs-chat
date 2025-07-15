@@ -1,4 +1,5 @@
 using System.Text.RegularExpressions;
+using Microsoft.AspNetCore.SignalR;
 
 namespace backend.Commands;
 
@@ -11,7 +12,11 @@ public class CommandHandler
         _commandResolver = commandResolver;
     }
 
-    public async Task<CommandResult> HandleCommand(string commandInput)
+    public async Task<CommandResult> HandleCommand(
+        string commandInput,
+        HubCallerContext connection,
+        string? chatId = null
+    )
     {
         var args = ParseCommand(commandInput);
 
@@ -27,6 +32,11 @@ public class CommandHandler
             return CommandResult.FailureResult("Command not found", commandName);
         }
 
+        if (command.RequiresAuthentication && !(connection.User.Identity?.IsAuthenticated ?? false))
+        {
+            return CommandResult.UnauthorizedResult(command.CommandName);
+        }
+
         var validationResult = command.ValidateArguments(args);
 
         if (!validationResult.Validated())
@@ -39,6 +49,8 @@ public class CommandHandler
         }
 
         var handlerArgs = validationResult.Args.ToDictionary(kvp => kvp.Key, kvp => (object)kvp.Value);
+        handlerArgs["chatId"] = chatId;
+        handlerArgs["connection"] = connection;
 
         var result = await command.Handle(handlerArgs);
 
@@ -90,5 +102,10 @@ public class CommandHandler
         }
 
         return results;
+    }
+
+    public bool IsCommand(string input)
+    {
+        return !string.IsNullOrWhiteSpace(input) && input.Trim().StartsWith("/");
     }
 }

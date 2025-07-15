@@ -1,7 +1,7 @@
-﻿using backend.Models;
+﻿using backend.Commands;
+using backend.Models;
 using backend.Http.Responses;
 using backend.Services;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
 
 namespace backend.src.Hubs;
@@ -9,15 +9,23 @@ namespace backend.src.Hubs;
 public class HubProvider : Hub<IHubProvider>
 {
     private readonly UserService _userService;
+    private readonly CommandHandler _commandHandler;
 
-    public HubProvider(UserService userService)
+    public HubProvider(UserService userService, CommandHandler commandHandler)
     {
         _userService = userService;
+        _commandHandler = commandHandler;
     }
 
-    [Authorize]
     public async Task SendMessage(Message message)
     {
+        if (! Context.User.Identity.IsAuthenticated)
+        {
+            await HandleGuestUser(message);
+
+            return;
+        }
+
         var user = await _userService.GetUserByUsernameAsync(Context.User.Identity.Name);
         Logger.Info($"Sending message from user {user.Username} to chat {user.CurrentChatId}");
 
@@ -39,6 +47,23 @@ public class HubProvider : Hub<IHubProvider>
                 Id = user.CurrentChatId
             }
         });
+    }
+
+    private async Task HandleGuestUser(Message message)
+    {
+        await Clients.Caller.ReceivedMessage(new MessageResource
+        {
+            Message = new MessageResponse
+            {
+                Content = message.Content,
+                CreatedAt = DateTime.UtcNow
+            }
+        });
+
+        if (_commandHandler.IsCommand(message.Content))
+        {
+            await Clients.Caller.ReceivedCommand(await _commandHandler.HandleCommand(message.Content, Context));
+        }
     }
 
     public async Task JoinChat(string chatId)

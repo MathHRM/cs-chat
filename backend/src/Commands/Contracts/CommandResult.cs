@@ -30,4 +30,14 @@ public abstract class CommandResult
             Response = response
         };
     }
+
+    public static CommandResult UnauthorizedResult(string? command = null)
+    {
+        return new GenericResult
+        {
+            Success = false,
+            Message = "Unauthorized",
+            Command = command
+        };
+    }
 }

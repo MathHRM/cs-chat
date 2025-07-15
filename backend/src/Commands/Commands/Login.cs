@@ -13,6 +13,8 @@ public class Login : Command
 
     public override string Description => "Login to the system";
 
+    public override bool RequiresAuthentication => false;
+
     public Login(UserService userService, TokenService tokenService)
     {
         _userService = userService;

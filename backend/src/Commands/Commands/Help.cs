@@ -10,6 +10,7 @@ public class Help : Command
     public override string CommandName => "help";
     public override string Description => "Show help for all commands";
     public override Dictionary<string, CommandArgument>? Args => null;
+    public override bool RequiresAuthentication => false;
 
     public Help(ICommandResolver commandResolver)
     {

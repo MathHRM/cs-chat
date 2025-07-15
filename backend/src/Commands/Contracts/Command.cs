@@ -6,6 +6,8 @@ public abstract class Command
     public abstract string Description { get; }
     public abstract Dictionary<string, CommandArgument>? Args { get; }
     public abstract Task<CommandResult> Handle(Dictionary<string, object> args);
+    public virtual bool RequiresAuthentication => true;
+
     public CommandArgsResult ValidateArguments(Dictionary<string, string> args)
     {
         var result = new CommandArgsResult();
