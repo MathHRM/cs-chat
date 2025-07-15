@@ -60,7 +60,8 @@ onMounted(() => {
     .start()
     .then(() => {
       _hub.connection.on("ReceivedMessage", (msg) => {
-        messages.value.push(msg);
+        // messages.value.push(msg);
+        console.log(msg);
       });
 
       _hub.connection.on("ReceivedCommand", (command) => {

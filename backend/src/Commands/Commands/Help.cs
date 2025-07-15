@@ -54,12 +54,9 @@ public class Help : Command
             Result = CommandResultEnum.Success,
             Response = new MessageResource
             {
-                Message = new MessageResponse
-                {
-                    Content = helpMessage.ToString(),
-                    CreatedAt = DateTime.UtcNow,
-                    Type = MessageType.Text
-                },
+                Content = helpMessage.ToString(),
+                CreatedAt = DateTime.UtcNow,
+                Type = MessageType.Text,
                 User = new UserResponse
                 {
                     Id = 0,

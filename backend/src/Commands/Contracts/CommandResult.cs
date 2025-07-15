@@ -19,6 +19,12 @@ public abstract class CommandResult
             Message = message,
             Command = command,
             Errors = errors ?? new Dictionary<string, string> { { "error", message } },
+            Response = new MessageResource
+            {
+                Content = message,
+                Type = MessageType.Error,
+                CreatedAt = DateTime.UtcNow
+            }
         };
     }
 
@@ -31,12 +37,9 @@ public abstract class CommandResult
             Command = command,
             Response = new MessageResource
             {
-                Message = new MessageResponse
-                {
-                    Content = response,
-                    CreatedAt = DateTime.UtcNow,
-                    Type = MessageType.Text
-                },
+                Content = response,
+                Type = MessageType.Success,
+                CreatedAt = DateTime.UtcNow
             },
         };
     }
@@ -48,6 +51,12 @@ public abstract class CommandResult
             Result = CommandResultEnum.Unauthorized,
             Message = "Unauthorized",
             Command = command,
+            Response = new MessageResource
+            {
+                Content = "Unauthorized",
+                Type = MessageType.Error,
+                CreatedAt = DateTime.UtcNow
+            }
         };
     }
 }

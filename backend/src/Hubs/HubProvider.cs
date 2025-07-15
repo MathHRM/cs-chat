@@ -3,6 +3,7 @@ using backend.Models;
 using backend.Http.Responses;
 using backend.Services;
 using Microsoft.AspNetCore.SignalR;
+using backend.Commands.Enums;
 
 namespace backend.src.Hubs;
 
@@ -37,11 +38,9 @@ public class HubProvider : Hub<IHubProvider>
                 Username = user.Username,
                 CurrentChatId = user.CurrentChatId
             },
-            Message = new MessageResponse
-            {
-                Content = message.Content,
-                CreatedAt = DateTime.UtcNow
-            },
+            Content = message.Content,
+            Type = message.Type,
+            CreatedAt = DateTime.UtcNow,
             Chat = new ChatResponse
             {
                 Id = user.CurrentChatId
@@ -58,11 +57,9 @@ public class HubProvider : Hub<IHubProvider>
     {
         await Clients.Caller.ReceivedMessage(new MessageResource
         {
-            Message = new MessageResponse
-            {
-                Content = message.Content,
-                CreatedAt = DateTime.UtcNow
-            }
+            Content = message.Content,
+            Type = message.Type,
+            CreatedAt = DateTime.UtcNow,
         });
 
         if (_commandHandler.IsCommand(message.Content))
@@ -83,11 +80,9 @@ public class HubProvider : Hub<IHubProvider>
                 Username = Context.User.Identity.Name,
                 CurrentChatId = chatId
             },
-            Message = new MessageResponse
-            {
-                Content = "Joined the chat",
-                CreatedAt = DateTime.UtcNow
-            },
+            Content = "Joined the chat",
+            Type = MessageType.Text,
+            CreatedAt = DateTime.UtcNow,
             Chat = new ChatResponse
             {
                 Id = chatId
