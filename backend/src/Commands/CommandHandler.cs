@@ -24,7 +24,7 @@ public class CommandHandler
 
         if (command == null)
         {
-            return CommandResult.Failure("Command not found");
+            return CommandResult.Failure("Command not found", commandName);
         }
 
         var validationResult = command.ValidateArguments(args);

@@ -68,6 +68,7 @@ builder.Services.AddScoped<ICommandResolver, CommandResolver>();
 builder.Services.AddScoped<CommandHandler>();
 builder.Services.AddScoped<Help>();
 builder.Services.AddScoped<Login>();
+builder.Services.AddScoped<Register>();
 
 var app = builder.Build();
 
