@@ -1,3 +1,5 @@
+using backend.Commands.Results;
+
 namespace backend.Commands.Commands;
 
 public class Help : Command
@@ -8,8 +10,13 @@ public class Help : Command
 
     public override Dictionary<string, CommandArgument>? Args => null;
 
-    public override Task<CommandResult> Handle(Dictionary<string, object> args)
+    public override async Task<CommandResult> Handle(Dictionary<string, object> args)
     {
-        return Task.FromResult(new CommandResult { Success = true, Message = "Help command" });
+        return new GenericResult
+        {
+            Success = true,
+            Message = "Help command",
+            Command = CommandName
+        };
     }
 }

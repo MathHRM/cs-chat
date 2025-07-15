@@ -13,7 +13,6 @@ public class CommandHandler
 
     public async Task<CommandResult> HandleCommand(string commandInput)
     {
-        // Parse the command input into arguments
         var args = ParseCommand(commandInput);
 
         if (args == null || !args.TryGetValue("command", out var commandName) || string.IsNullOrWhiteSpace(commandName))
@@ -21,7 +20,6 @@ public class CommandHandler
             return CommandResult.Failure("Invalid command");
         }
 
-        // Resolve the command implementation
         var command = _commandResolver.GetCommand(commandName);
 
         if (command == null)
@@ -29,28 +27,20 @@ public class CommandHandler
             return CommandResult.Failure("Command not found");
         }
 
-        // Validate the arguments for the command
         var validationResult = command.ValidateArguments(args);
 
         if (!validationResult.Validated())
         {
-            var errorMessages = validationResult.Errors
-                .Select(kvp => $"{kvp.Key}: {kvp.Value}");
-            return CommandResult.Failure(string.Join(Environment.NewLine, errorMessages));
+            return CommandResult.Failure(
+                "Invalid arguments",
+                command.CommandName,
+                validationResult.Errors
+            );
         }
 
-        // Prepare arguments for the command handler
         var handlerArgs = args.ToDictionary(kvp => kvp.Key, kvp => (object)kvp.Value);
 
-        // Execute the command
         var result = await command.Handle(handlerArgs);
-
-        if (!result.Success)
-        {
-            return CommandResult.Failure(result.Message);
-        }
-
-        Console.WriteLine(result.Message);
 
         return result;
     }

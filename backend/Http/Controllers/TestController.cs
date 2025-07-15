@@ -16,9 +16,9 @@ public class TestController : ControllerBase
 
     [HttpGet]
     [Route("testando")]
-    public async Task<IActionResult> Get()
+    public async Task<IActionResult> Get([FromQuery] string command)
     {
-        var result = await _commandHandler.HandleCommand("/login --username --password=123456");
+        var result = await _commandHandler.HandleCommand(command);
         return Ok(result);
     }
 
