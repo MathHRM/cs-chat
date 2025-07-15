@@ -1,18 +1,18 @@
 <template>
   <div class="terminal-line">
-    <span v-if="message.responseType === 'Error'">
+    <span v-if="message.type === 1">
       <span class="terminal-message-error">
-        {{ message.message.content }}
+        {{ message.content }}
       </span>
     </span>
-    <span v-else-if="message.responseType === 'Info'">
+    <span v-else-if="message.type === 2">
       <span class="terminal-message-info">
-        {{ message.message.content }}
+        {{ message.content }}
       </span>
     </span>
-    <span v-else-if="message.responseType === 'Success'">
+    <span v-else-if="message.type === 3">
       <span class="terminal-message-success">
-        {{ message.message.content }}
+        {{ message.content }}
       </span>
     </span>
     <span v-else>
@@ -20,7 +20,7 @@
       <span class="terminal-separator">@</span>
       <span class="terminal-chat">{{ message.chat?.id ?? "chat" }}</span>
       <span class="terminal-separator">:~$ </span>
-      <span class="terminal-message">{{ message.message.content }}</span>
+      <span class="terminal-message">{{ message.content }}</span>
     </span>
   </div>
 </template>
@@ -39,6 +39,9 @@ defineProps({
   color: #000000;
   padding: 2px 6px;
   border-radius: 3px;
+  width: 100%;
+  display: block;
+  box-sizing: border-box;
 }
 
 .terminal-message-info {
@@ -46,6 +49,9 @@ defineProps({
   color: #000000;
   padding: 2px 6px;
   border-radius: 3px;
+  width: 100%;
+  display: block;
+  box-sizing: border-box;
 }
 
 .terminal-message-success {
@@ -53,9 +59,15 @@ defineProps({
   color: #000000;
   padding: 2px 6px;
   border-radius: 3px;
+  width: 100%;
+  display: block;
+  box-sizing: border-box;
 }
 
 .terminal-message {
   white-space: pre-wrap;
+  width: 100%;
+  display: block;
+  box-sizing: border-box;
 }
 </style>

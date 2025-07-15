@@ -31,6 +31,8 @@ public class Help : Command
             if (command.Args == null || !command.Args.Any())
             {
                 helpMessage.AppendLine("    No arguments required");
+                helpMessage.AppendLine();
+
                 continue;
             }
 
