@@ -60,39 +60,4 @@ public class HubProvider : Hub<IHubProvider>
             await Clients.Caller.ReceivedCommand(await _commandHandler.HandleCommand(message.Content, Context, Groups));
         }
     }
-
-    public async Task JoinChat(string chatId)
-    {
-        await RemoveUserFromOtherChats(chatId);
-        await Groups.AddToGroupAsync(Context.ConnectionId, chatId);
-        await Clients.Group(chatId).ReceivedMessage(new MessageResource
-        {
-            User = new UserResponse
-            {
-                Id = 0,
-                Username = Context.User.Identity.Name,
-                CurrentChatId = chatId
-            },
-            Content = "Joined the chat",
-            Type = MessageType.Text,
-            CreatedAt = DateTime.UtcNow,
-            Chat = new ChatResponse
-            {
-                Id = chatId
-            }
-        });
-    }
-
-    private async Task RemoveUserFromOtherChats(string chatId)
-    {
-        var username = Context.User.Identity.Name;
-        var user = await _userService.GetUserWithChatsAsync(username);
-
-        Logger.Info($"Removing user {username} from other chats: {chatId}");
-
-        foreach (var chatUser in user.ChatUsers.Where(cu => cu.ChatId != chatId))
-        {
-            await Groups.RemoveFromGroupAsync(Context.ConnectionId, chatUser.ChatId);
-        }
-    }
 }
