@@ -11,46 +11,21 @@ import CommandsComponent from "@/components/CommandsComponent.vue";
 import CommandLine from "@/components/CommandLine.vue";
 import { ref, onMounted, computed } from "vue";
 import Hub from "../Hub";
-import { HubConnectionState } from "@aspnet/signalr";
 import { useAuthStore } from "@/stores/auth";
-import handleMessage from "@/helpers/commandsHelper";
-import commands from "@/commands/commands";
-import { useI18n } from "vue-i18n";
+import handleCommand from "@/helpers/commandHandler";
+import handleMessage from "@/helpers/messageHandler";
+import { useChatStore } from "@/stores/chat";
 
 const _hub = new Hub();
 let messages = ref([]);
 
 const authStore = useAuthStore();
-const { t } = useI18n();
-
+const chatStore = useChatStore();
 const user = computed(() => authStore.user);
-
-const { help, join, logout } = commands();
-const pageCommands = {
-  help,
-  join,
-  logout,
-};
+const chat = computed(() => chatStore.chat);
 
 function handleSendMessage(content) {
-  if (_hub.connection.state != HubConnectionState.Connected) {
-    messages.value.push({
-      user: {
-        username: "System",
-      },
-      chat: {
-        id: user.value.currentChatId,
-      },
-      message: {
-        content: "Connection not established",
-        created_at: new Date(),
-      },
-    });
-
-    return;
-  }
-
-  handleMessage(messages, content, user.value.currentChatId, pageCommands, user.value, _hub.connection, t);
+  handleMessage(content, _hub.connection, messages, user.value, chat.value);
 }
 
 onMounted(() => {
@@ -61,7 +36,9 @@ onMounted(() => {
         messages.value.push(msg);
       });
 
-      _hub.connection.invoke("JoinChat", user.value.currentChatId || "general");
+      _hub.connection.on("ReceivedCommand", (command) => {
+        handleCommand(command, messages);
+      });
     })
     .catch((e) => console.log("Error: Connection failed", e));
 });

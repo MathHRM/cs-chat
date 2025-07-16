@@ -5,19 +5,14 @@
       :key="index"
       class="terminal-line"
     >
-      <span class="terminal-user">{{ message.user.username }}</span>
-      <span class="terminal-separator">@</span>
-      <span class="terminal-chat">{{ message.chat.id }}</span>
-      <span class="terminal-separator">:~$ </span>
-      <span class="terminal-message">{{ message.message.content }}</span>
-      <div class="terminal-timestamp">
-        {{ formatTimestamp(message.created_at) }}
-      </div>
+      <MessageComponent :message="message" />
     </div>
   </div>
 </template>
 
 <script setup>
+import MessageComponent from "./MessageComponent.vue";
+
 import {
   onMounted,
   onUpdated,
@@ -40,12 +35,6 @@ const scrollToBottom = () => {
   });
 };
 
-const formatTimestamp = (timestamp) => {
-  if (!timestamp) return "";
-  const date = new Date(timestamp);
-  return date.toLocaleTimeString();
-};
-
 onMounted(() => {
   scrollToBottom();
 });
@@ -55,8 +44,3 @@ onUpdated(() => {
 });
 </script>
 
-<style scoped>
-.terminal-message {
-  white-space: pre-wrap;
-}
-</style>

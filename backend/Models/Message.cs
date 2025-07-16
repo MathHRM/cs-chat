@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using backend.Commands;
 
 namespace backend.Models;
 
@@ -12,6 +13,7 @@ public class Message
     public User User { get; set; } = null!;
     public string Content { get; set; }
     public DateTime CreatedAT { get; set; }
+    public MessageType Type { get; set; } = MessageType.Text;
 
     public Message()
     {
