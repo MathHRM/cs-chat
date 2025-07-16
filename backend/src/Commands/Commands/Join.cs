@@ -41,6 +41,11 @@ public class Join : Command
         var connection = args["connection"] as HubCallerContext;
         var groups = args["groups"] as IGroupManager;
 
+        if (connection == null)
+        {
+            return CommandResult.UnauthorizedResult(CommandName);
+        }
+
         var user = await _userService.GetUserByUsernameAsync(connection.User.Identity?.Name);
 
         if (user.CurrentChatId == chatId)
