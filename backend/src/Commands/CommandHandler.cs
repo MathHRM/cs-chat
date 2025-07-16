@@ -14,8 +14,9 @@ public class CommandHandler
 
     public async Task<CommandResult> HandleCommand(
         string commandInput,
-        HubCallerContext connection,
-        IGroupManager groups
+        HubCallerContext? connection = null,
+        IGroupManager? groups = null,
+        HttpContext? httpContext = null
     )
     {
         var args = ParseCommand(commandInput);
@@ -32,7 +33,11 @@ public class CommandHandler
             return CommandResult.FailureResult("Command not found", commandName);
         }
 
-        if (command.RequiresAuthentication && !(connection.User.Identity?.IsAuthenticated ?? false))
+        if (
+            command.RequiresAuthentication &&
+            (connection?.User.Identity?.IsAuthenticated ?? false) &&
+            (httpContext?.User.Identity?.IsAuthenticated ?? false)
+        )
         {
             return CommandResult.UnauthorizedResult(command.CommandName);
         }
@@ -50,6 +55,7 @@ public class CommandHandler
 
         validationResult.Args.Add("connection", connection);
         validationResult.Args.Add("groups", groups);
+        validationResult.Args.Add("httpContext", httpContext);
 
         var result = await command.Handle(validationResult.Args);
 
