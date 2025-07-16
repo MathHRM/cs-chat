@@ -20,8 +20,17 @@ const { t } = useI18n();
 let messages = ref([]);
 
 async function handleInput(message) {
-  if (! isCommand(message)) {
+  if (!isCommand(message)) {
+    messages.value.push({
+      content: message,
+      type: 0,
+      user: {
+        username: "~",
+      },
+    });
+
     alert(messages, t("alerts.not-logged-in"), 2);
+
     return;
   }
 
