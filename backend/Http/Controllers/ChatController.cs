@@ -31,6 +31,7 @@ public class ChatController : ControllerBase
         return Ok(chats.Select(c => new ChatUserResponse {
             Chat = new ChatResponse {
                 Id = c.Id,
+                Name = c.Name,
             },
             Users = c.ChatUsers.Select(cu => new UserResponse {
                 Id = cu.User.Id,
@@ -69,6 +70,7 @@ public class ChatController : ControllerBase
         return Ok(new ChatUserResponse {
             Chat = new ChatResponse {
                 Id = createdChat.Id,
+                Name = createdChat.Name,
             },
             Users = users.Select(u => new UserResponse {
                 Id = u.Id,
@@ -90,6 +92,7 @@ public class ChatController : ControllerBase
             return Ok(new ChatUserResponse {
                 Chat = new ChatResponse {
                     Id = user.CurrentChatId,
+                    Name = user.CurrentChat.Name,
                 },
                 User = new UserResponse {
                     Id = user.Id,
@@ -120,6 +123,7 @@ public class ChatController : ControllerBase
         return Ok(new ChatUserResponse {
             Chat = new ChatResponse {
                 Id = chatUser.ChatId,
+                Name = chat.Name,
             },
             User = new UserResponse {
                 Id = user.Id,
@@ -146,6 +150,6 @@ public class ChatController : ControllerBase
             return NotFound("Chat not found.");
         }
 
-        return Ok(new ChatResponse { Id = chat.Id });
+        return Ok(new ChatResponse { Id = chat.Id, Name = chat.Name });
     }
 }

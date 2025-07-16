@@ -74,6 +74,7 @@ public class Join : Command
                 Chat = new ChatResponse
                 {
                     Id = chatUser.ChatId,
+                    Name = chat.Name,
                 },
                 User = new UserResponse
                 {

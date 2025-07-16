@@ -83,6 +83,7 @@ public class Chat : Command
                     Chat = new ChatResponse
                     {
                         Id = chatId,
+                        Name = existingChat.Name,
                     },
                     User = new UserResponse
                     {
@@ -134,6 +135,7 @@ public class Chat : Command
                 Chat = new ChatResponse
                 {
                     Id = createdChat.Id,
+                    Name = createdChat.Name,
                 },
                 User = new UserResponse
                 {

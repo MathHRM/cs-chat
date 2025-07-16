@@ -5,4 +5,5 @@ namespace backend.Http.Responses;
 public class ChatResponse
 {
     public string? Id { get; set; }
+    public string? Name { get; set; }
 }
