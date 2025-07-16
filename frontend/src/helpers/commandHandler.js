@@ -29,6 +29,9 @@ export default function handleCommand(command, messages) {
     case "logout":
       handleLogout(messages, command);
       break;
+    case "join":
+      handleJoin(messages, command);
+      break;
     default:
       console.log(command);
       alert(messages, "Command could not be processed", 2);
@@ -67,4 +70,22 @@ function handleLogout() {
   localStorage.removeItem("@auth");
 
   router.push("/login");
+}
+
+function handleJoin(messages, command) {
+  const data = command.response;
+
+  if (!data?.chat?.id) {
+    alert(messages, command.message, 1);
+
+    return;
+  }
+
+  const chatStore = useChatStore();
+
+  chatStore.setChat(data.chat);
+
+  messages.value = [];
+
+  alert(messages, `You have joined the chat ${data.chat.id}`, 3);
 }
