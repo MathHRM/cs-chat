@@ -39,6 +39,7 @@ public class Join : Command
     {
         var chatId = args["chatId"] as string;
         var connection = args["connection"] as HubCallerContext;
+        var groups = args["groups"] as IGroupManager;
 
         var user = await _userService.GetUserByUsernameAsync(connection.User.Identity?.Name);
 
@@ -57,6 +58,9 @@ public class Join : Command
         await _userService.UpdateUserAsync(user.Id, user);
 
         var chat = await _chatService.GetChatByIdAsync(chatId);
+
+        await RemoveUserFromOtherChats(chatId, connection, groups);
+        await groups.AddToGroupAsync(connection.ConnectionId, chatId);
 
         return new JoinResult
         {
@@ -83,5 +87,18 @@ public class Join : Command
             Message = "Chat joined successfully",
             Command = CommandName,
         };
+    }
+
+    private async Task RemoveUserFromOtherChats(string chatId, HubCallerContext connection, IGroupManager groups)
+    {
+        var username = connection.User.Identity.Name;
+        var user = await _userService.GetUserWithChatsAsync(username);
+
+        Logger.Info($"Removing user {username} from other chats: {chatId}");
+
+        foreach (var chatUser in user.ChatUsers.Where(cu => cu.ChatId != chatId))
+        {
+            await groups.RemoveFromGroupAsync(connection.ConnectionId, chatUser.ChatId);
+        }
     }
 }

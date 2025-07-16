@@ -14,7 +14,8 @@ public class CommandHandler
 
     public async Task<CommandResult> HandleCommand(
         string commandInput,
-        HubCallerContext connection
+        HubCallerContext connection,
+        IGroupManager groups
     )
     {
         var args = ParseCommand(commandInput);
@@ -48,6 +49,7 @@ public class CommandHandler
         }
 
         validationResult.Args.Add("connection", connection);
+        validationResult.Args.Add("groups", groups);
 
         var result = await command.Handle(validationResult.Args);
 

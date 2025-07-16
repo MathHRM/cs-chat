@@ -28,6 +28,7 @@ public class HubProvider : Hub<IHubProvider>
 
         var user = await _userService.GetUserByUsernameAsync(Context.User.Identity.Name);
         Logger.Info($"Sending message from user {user.Username} to chat {user.CurrentChatId}");
+        Logger.Info(message.Content);
 
         await Clients.Group(user.CurrentChatId!).ReceivedMessage(new MessageResource
         {
@@ -48,7 +49,7 @@ public class HubProvider : Hub<IHubProvider>
 
         if (_commandHandler.IsCommand(message.Content))
         {
-            await Clients.Caller.ReceivedCommand(await _commandHandler.HandleCommand(message.Content, Context));
+            await Clients.Caller.ReceivedCommand(await _commandHandler.HandleCommand(message.Content, Context, Groups));
         }
     }
 
@@ -56,7 +57,7 @@ public class HubProvider : Hub<IHubProvider>
     {
         if (_commandHandler.IsCommand(message.Content))
         {
-            await Clients.Caller.ReceivedCommand(await _commandHandler.HandleCommand(message.Content, Context));
+            await Clients.Caller.ReceivedCommand(await _commandHandler.HandleCommand(message.Content, Context, Groups));
         }
     }
 
