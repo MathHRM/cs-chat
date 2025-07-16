@@ -90,5 +90,5 @@ function handleJoin(messages, command, t) {
 
   messages.value = [];
 
-  alert(messages, t("alerts.joined-chat", { chatId: data.chat.id }), 3);
+  alert(messages, t("alerts.joined-chat", { chatId: data.chat.name }), 3);
 }

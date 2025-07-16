@@ -2,7 +2,7 @@
   <div class="terminal-input-line">
     <span class="terminal-user">{{ getUser.username || "~" }}</span>
     <span class="terminal-separator">@</span>
-    <span class="terminal-chat">{{ getChat.id || chat || "chat" }}</span>
+    <span class="terminal-chat">{{ getChat.name || chat || "chat" }}</span>
     <span class="terminal-separator">:~$ </span>
     <input
       ref="terminalInput"
