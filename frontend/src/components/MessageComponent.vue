@@ -66,8 +66,5 @@ defineProps({
 
 .terminal-message {
   white-space: pre-wrap;
-  width: 100%;
-  display: block;
-  box-sizing: border-box;
 }
 </style>
