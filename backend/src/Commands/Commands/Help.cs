@@ -27,7 +27,7 @@ public class Help : Command
 
         var connection = args["connection"] as HubCallerContext;
 
-        if (connection == null || (connection.User.Identity?.IsAuthenticated ?? false))
+        if (connection == null || !(connection.User.Identity?.IsAuthenticated ?? false))
         {
             commands = commands.Where(c => !c.RequiresAuthentication).ToList();
         }
