@@ -64,7 +64,7 @@ public class ChatController : ControllerBase
             }
         }
 
-        var createdChat = await _chatService.CreateChatAsync(request.Id, users);
+        var createdChat = await _chatService.CreateChatAsync(request.Id, users, true);
 
         return Ok(new ChatUserResponse {
             Chat = new ChatResponse {

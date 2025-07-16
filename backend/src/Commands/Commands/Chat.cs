@@ -112,7 +112,7 @@ public class Chat : Command
 
         // Create new chat with both users
         var users = new List<Models.User> { currentUser, targetUser };
-        var createdChat = await _chatService.CreateChatAsync(chatId, users);
+        var createdChat = await _chatService.CreateChatAsync(null, users, false);
 
         if (createdChat == null)
         {
@@ -120,12 +120,12 @@ public class Chat : Command
         }
 
         // Update current user's chat
-        currentUser.CurrentChatId = chatId;
+        currentUser.CurrentChatId = createdChat.Id;
         await _userService.UpdateUserAsync(currentUser.Id, currentUser);
 
         // Join the chat group
-        await RemoveUserFromOtherChats(chatId, connection, groups);
-        await groups.AddToGroupAsync(connection.ConnectionId, chatId);
+        await RemoveUserFromOtherChats(createdChat.Id, connection, groups);
+        await groups.AddToGroupAsync(connection.ConnectionId, createdChat.Id);
 
         return new JoinResult
         {
@@ -133,7 +133,7 @@ public class Chat : Command
             {
                 Chat = new ChatResponse
                 {
-                    Id = chatId,
+                    Id = createdChat.Id,
                 },
                 User = new UserResponse
                 {

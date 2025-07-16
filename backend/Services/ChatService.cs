@@ -31,7 +31,7 @@ namespace backend.Services
             return await _chatRepository.GetAllChatsAsync(userId);
         }
 
-        public async Task<Chat?> CreateChatAsync(string? id, List<User> users)
+        public async Task<Chat?> CreateChatAsync(string? id, List<User> users, bool isPublic)
         {
             if (id != null)
             {
@@ -43,9 +43,12 @@ namespace backend.Services
                 }
             }
 
+            var chatId = isPublic ? GeneratePublicChatId() : GeneratePrivateChatId(users[0].Username, users[1].Username);
+
             var chat = new Chat
             {
-                Id = id ?? GeneratePublicChatId(),
+                Id = chatId,
+                Name = isPublic ? chatId : $"{users[0].Username}.{users[1].Username}",
             };
 
             foreach (var user in users)
