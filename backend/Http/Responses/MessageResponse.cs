@@ -1,4 +1,4 @@
-using backend.Commands.Enums;
+using backend.Commands;
 
 namespace backend.Http.Responses;
 

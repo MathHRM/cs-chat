@@ -1,12 +1,8 @@
-using backend.Services;
-using backend.Commands.Results;
 using backend.Http.Responses;
 using backend.Services;
 using Microsoft.AspNetCore.SignalR;
-using System.Linq;
-using backend.Commands.Enums;
 
-namespace backend.Commands.Commands;
+namespace backend.Commands;
 
 public class Join : Command
 {

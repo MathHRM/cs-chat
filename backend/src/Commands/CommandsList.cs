@@ -1,5 +1,3 @@
-using backend.Commands.Commands;
-
 namespace backend.Commands;
 
 public static class CommandsList

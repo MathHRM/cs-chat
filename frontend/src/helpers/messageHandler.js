@@ -20,7 +20,6 @@ export default function handleMessage(
 }
 
 export function isCommand(message) {
-  if (typeof message !== "string") return false;
   return message.trim().startsWith("/");
 }
 

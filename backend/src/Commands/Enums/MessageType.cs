@@ -1,4 +1,4 @@
-namespace backend.Commands.Enums;
+namespace backend.Commands;
 
 public enum MessageType
 {

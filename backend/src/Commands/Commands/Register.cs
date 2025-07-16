@@ -1,10 +1,8 @@
 using backend.Services;
-using backend.Commands.Results;
 using backend.Http.Responses;
 using backend.Models;
-using backend.Commands.Enums;
 
-namespace backend.Commands.Commands;
+namespace backend.Commands;
 
 public class Register : Command
 {

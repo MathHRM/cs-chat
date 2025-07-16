@@ -8,7 +8,6 @@ using backend;
 using backend.Services;
 using backend.Repository;
 using backend.Commands;
-using backend.Commands.Commands;
 
 var builder = WebApplication.CreateBuilder(args);
 

@@ -1,9 +1,9 @@
 using backend.Services;
-using backend.Commands.Results;
+using backend.Commands;
 using backend.Http.Responses;
-using backend.Commands.Enums;
+using backend.Commands;
 
-namespace backend.Commands.Commands;
+namespace backend.Commands;
 
 public class Login : Command
 {

@@ -1,6 +1,6 @@
 using backend.Http.Responses;
 
-namespace backend.Commands.Results;
+namespace backend.Commands;
 
 public class LoginResult : CommandResult
 {

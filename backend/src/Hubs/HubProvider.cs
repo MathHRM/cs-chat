@@ -3,7 +3,6 @@ using backend.Models;
 using backend.Http.Responses;
 using backend.Services;
 using Microsoft.AspNetCore.SignalR;
-using backend.Commands.Enums;
 
 namespace backend.src.Hubs;
 
@@ -55,13 +54,6 @@ public class HubProvider : Hub<IHubProvider>
 
     private async Task HandleGuestUser(Message message)
     {
-        // await Clients.Caller.ReceivedMessage(new MessageResource
-        // {
-        //     Content = message.Content,
-        //     Type = message.Type,
-        //     CreatedAt = DateTime.UtcNow,
-        // });
-
         if (_commandHandler.IsCommand(message.Content))
         {
             await Clients.Caller.ReceivedCommand(await _commandHandler.HandleCommand(message.Content, Context));

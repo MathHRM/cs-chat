@@ -1,10 +1,8 @@
 using System.Text;
-using backend.Commands.Results;
-using backend.Commands.Enums;
 using backend.Http.Responses;
 using Microsoft.AspNetCore.SignalR;
 
-namespace backend.Commands.Commands;
+namespace backend.Commands;
 
 public class Help : Command
 {
