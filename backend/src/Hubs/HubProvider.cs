@@ -17,6 +17,16 @@ public class HubProvider : Hub<IHubProvider>
         _commandHandler = commandHandler;
     }
 
+    public override async Task OnConnectedAsync()
+    {
+        if (! Context.User.Identity.IsAuthenticated)
+            return;
+
+        var user = await _userService.GetUserByUsernameAsync(Context.User.Identity.Name);
+
+        await Groups.AddToGroupAsync(Context.ConnectionId, user.CurrentChatId!);
+    }
+
     public async Task SendMessage(Message message)
     {
         if (! Context.User.Identity.IsAuthenticated)

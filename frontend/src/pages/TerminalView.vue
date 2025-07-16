@@ -53,8 +53,6 @@ onMounted(() => {
       _hub.connection.on("ReceivedCommand", (command) => {
         handleCommand(command, messages);
       });
-
-      _hub.connection.invoke("JoinChat", user.value.currentChatId || "general");
     })
     .catch((e) => console.log("Error: Connection failed", e));
 });
