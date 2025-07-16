@@ -43,13 +43,9 @@ namespace backend.Services
                 }
             }
 
-            id = string.IsNullOrEmpty(id)
-                ? Guid.NewGuid().ToString().ToUpper().Substring(0, 5)
-                : id;
-
             var chat = new Chat
             {
-                Id = id,
+                Id = id ?? GeneratePublicChatId(),
             };
 
             foreach (var user in users)
@@ -112,6 +108,23 @@ namespace backend.Services
             await _context.SaveChangesAsync();
 
             return chatUser;
+        }
+
+        public string GeneratePrivateChatId(string username1, string username2)
+        {
+            if (username1.CompareTo(username2) > 0)
+            {
+                (username1, username2) = (username2, username1);
+            }
+
+            return $"private-{username1}-{username2}";
+        }
+
+        public string GeneratePublicChatId()
+        {
+            var id = Guid.NewGuid().ToString().ToUpper().Substring(0, 5);
+
+            return $"public-{id}";
         }
     }
 }

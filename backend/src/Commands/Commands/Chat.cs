@@ -63,10 +63,7 @@ public class Chat : Command
             return CommandResult.FailureResult("You cannot chat with yourself", CommandName);
         }
 
-        // Create chat ID in alphabetical order
-        var usernames = new[] { currentUser.Username, targetUsername };
-        Array.Sort(usernames, StringComparer.OrdinalIgnoreCase);
-        var chatId = $"{usernames[0]}.{usernames[1]}";
+        var chatId = _chatService.GeneratePrivateChatId(currentUser.Username, targetUsername);
 
         // Check if chat already exists
         var existingChat = await _chatService.GetChatByIdAsync(chatId);

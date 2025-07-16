@@ -12,7 +12,7 @@ public class Message
     public int UserId { get; set; }
     public User User { get; set; } = null!;
     public string Content { get; set; }
-    public DateTime CreatedAT { get; set; }
+    public DateTime CreatedAT { get; set; } = DateTime.Now;
     public MessageType Type { get; set; } = MessageType.Text;
 
     public Message()
@@ -25,6 +25,5 @@ public class Message
         ChatId = chatId;
         UserId = userId;
         Content = content;
-        CreatedAT = DateTime.Now;
     }
 }
