@@ -40,10 +40,16 @@ const emit = defineEmits(["send-message"]);
 const currentInput = ref("");
 const showCursor = ref(true);
 
+const terminalInput = ref(null);
+
 const handleSend = () => {
   if (currentInput.value.trim()) {
     emit("send-message", currentInput.value.trim());
     currentInput.value = "";
+  }
+  // Refocus the input after sending a message
+  if (terminalInput.value) {
+    terminalInput.value.focus();
   }
 };
 
@@ -59,5 +65,9 @@ const startCursorBlink = () => {
 
 onMounted(() => {
   startCursorBlink();
+  // Ensure input is focused on mount
+  if (terminalInput.value) {
+    terminalInput.value.focus();
+  }
 });
 </script>

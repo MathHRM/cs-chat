@@ -16,7 +16,6 @@
       </span>
     </span>
     <span v-else>
-      <span class="terminal-start">&rarr;</span>
       <span class="terminal-user">{{ message.user.username }}</span>
       <span class="terminal-separator"> chat:( </span>
       <span class="terminal-chat">{{ message.chat?.id ?? "chat" }}</span>

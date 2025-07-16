@@ -1,11 +1,10 @@
 .terminal-container {
   font-family: "Courier New", "Monaco", "Menlo", monospace;
   background-color: #1e1e1e;
-  border-radius: 8px;
+  border-radius: 0;
   overflow: hidden;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-  height: 80vh;
-  max-height: 600px;
+  box-shadow: none;
+  height: 100vh;
   display: flex;
   flex-direction: column;
 }
@@ -108,6 +107,8 @@
   display: flex;
   align-items: center;
   position: relative;
+  margin-bottom: 20px;
+  padding: 0 12px;
 }
 
 .terminal-input {
@@ -119,6 +120,8 @@
   font-size: inherit;
   flex: 1;
   margin-left: 4px;
+  padding: 4px 8px;
+  border-radius: 2px;
 }
 
 .terminal-input::placeholder {
@@ -173,7 +176,7 @@
 /* Responsive design */
 @media (max-width: 600px) {
   .terminal-container {
-    height: 70vh;
+    height: 100vh;
   }
 
   .terminal-body {
