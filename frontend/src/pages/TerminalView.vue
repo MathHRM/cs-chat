@@ -11,35 +11,21 @@ import CommandsComponent from "@/components/CommandsComponent.vue";
 import CommandLine from "@/components/CommandLine.vue";
 import { ref, onMounted, computed } from "vue";
 import Hub from "../Hub";
-import { HubConnectionState } from "@aspnet/signalr";
 import { useAuthStore } from "@/stores/auth";
 import handleCommand from "@/helpers/commandHandler";
+import handleMessage from "@/helpers/messageHandler";
+import { useChatStore } from "@/stores/chat";
 
 const _hub = new Hub();
 let messages = ref([]);
 
 const authStore = useAuthStore();
+const chatStore = useChatStore();
 const user = computed(() => authStore.user);
+const chat = computed(() => chatStore.chat);
 
 function handleSendMessage(content) {
-  if (_hub.connection.state != HubConnectionState.Connected) {
-    messages.value.push({
-      user: {
-        username: "System",
-      },
-      chat: {
-        id: user.value.currentChatId,
-      },
-      message: {
-        content: "Connection not established",
-        created_at: new Date(),
-      },
-    });
-
-    return;
-  }
-
-  _hub.connection.invoke("SendMessage", {content});
+  handleMessage(content, _hub.connection, messages, user.value, chat.value);
 }
 
 onMounted(() => {

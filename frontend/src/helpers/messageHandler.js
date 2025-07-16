@@ -3,7 +3,9 @@ import { HubConnectionState } from "@aspnet/signalr";
 export default function handleMessage(
   message,
   hubConnection,
-  messages
+  messages,
+  user,
+  chat
 ) {
   message = message.trim();
 
@@ -14,6 +16,19 @@ export default function handleMessage(
   if (!hubConnection || hubConnection.state != HubConnectionState.Connected) {
     alert(messages, "Connection not established", 1);
     return;
+  }
+
+  if (isCommand(message)) {
+    messages.value.push({
+      content: message,
+      type: 0,
+      user: {
+        username: user.username,
+      },
+      chat: {
+        id: chat.id,
+      },
+    });
   }
 
   hubConnection.invoke("SendMessage", { content: message });

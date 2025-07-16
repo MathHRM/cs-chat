@@ -40,6 +40,13 @@ public class HubProvider : Hub<IHubProvider>
         Logger.Info($"Sending message from user {user.Username} to chat {user.CurrentChatId}");
         Logger.Info(message.Content);
 
+        if (_commandHandler.IsCommand(message.Content))
+        {
+            await Clients.Caller.ReceivedCommand(await _commandHandler.HandleCommand(message.Content, Context, Groups));
+
+            return;
+        }
+
         await Clients.Group(user.CurrentChatId!).ReceivedMessage(new MessageResource
         {
             User = new UserResponse
@@ -56,11 +63,6 @@ public class HubProvider : Hub<IHubProvider>
                 Id = user.CurrentChatId
             }
         });
-
-        if (_commandHandler.IsCommand(message.Content))
-        {
-            await Clients.Caller.ReceivedCommand(await _commandHandler.HandleCommand(message.Content, Context, Groups));
-        }
     }
 
     private async Task HandleGuestUser(Message message)
