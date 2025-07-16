@@ -32,6 +32,9 @@ export default function handleCommand(command, messages, t) {
     case "join":
       handleJoin(messages, command, t);
       break;
+    case "chat":
+      handleJoin(messages, command, t);
+      break;
     default:
       console.log(command);
       alert(messages, t("alerts.command-handle"), 2);
