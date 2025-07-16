@@ -65,30 +65,30 @@
 }
 
 .terminal-start {
-  color: #3e7b04;
+  color: #6aff00;
   font-weight: bold;
   margin-right: 4px;
   margin-left: 2px;
 }
 
 .terminal-end {
-  color: #9d8000;
+  color: #ffd700;
   font-weight: bold;
   margin-right: 4px;
 }
 
 .terminal-user {
-  color: #047a78;
+  color: #00fff7;
   font-weight: bold;
   margin-right: 4px;
 }
 
 .terminal-separator {
-  color: #295181;
+  color: #4fa3ff;
 }
 
 .terminal-chat {
-  color: #a00000;
+  color: #ff2222;
   font-weight: bold;
 }
 
