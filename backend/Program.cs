@@ -70,6 +70,7 @@ builder.Services.AddScoped<Help>();
 builder.Services.AddScoped<Login>();
 builder.Services.AddScoped<Register>();
 builder.Services.AddScoped<Join>();
+builder.Services.AddScoped<Logout>();
 
 var app = builder.Build();
 

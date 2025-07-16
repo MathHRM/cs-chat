@@ -47,10 +47,9 @@ public class CommandHandler
             );
         }
 
-        var handlerArgs = validationResult.Args.ToDictionary(kvp => kvp.Key, kvp => (object)kvp.Value);
-        handlerArgs["connection"] = connection;
+        validationResult.Args.Add("connection", connection);
 
-        var result = await command.Handle(handlerArgs);
+        var result = await command.Handle(validationResult.Args);
 
         return result;
     }

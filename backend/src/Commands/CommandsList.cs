@@ -10,5 +10,6 @@ public static class CommandsList
         { "login", typeof(Login) },
         { "register", typeof(Register) },
         { "join", typeof(Join) },
+        { "logout", typeof(Logout) },
     };
 }

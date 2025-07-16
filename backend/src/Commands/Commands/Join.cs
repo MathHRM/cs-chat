@@ -39,7 +39,7 @@ public class Join : Command
         }
     };
 
-    public override async Task<CommandResult> Handle(Dictionary<string, object> args)
+    public override async Task<CommandResult> Handle(Dictionary<string, object?> args)
     {
         var chatId = args["chatId"] as string;
         var connection = args["connection"] as HubCallerContext;

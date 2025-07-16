@@ -43,7 +43,7 @@ public class Login : Command
         }
     };
 
-    public override async Task<CommandResult> Handle(Dictionary<string, object> args)
+    public override async Task<CommandResult> Handle(Dictionary<string, object?> args)
     {
         var user = await _userService.ValidateUserCredentialsAsync(args["username"] as string, args["password"] as string);
         if (user == null)

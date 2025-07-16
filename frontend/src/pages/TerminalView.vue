@@ -13,6 +13,7 @@ import { ref, onMounted, computed } from "vue";
 import Hub from "../Hub";
 import { HubConnectionState } from "@aspnet/signalr";
 import { useAuthStore } from "@/stores/auth";
+import handleCommand from "@/helpers/commandHandler";
 
 const _hub = new Hub();
 let messages = ref([]);
@@ -50,7 +51,7 @@ onMounted(() => {
       });
 
       _hub.connection.on("ReceivedCommand", (command) => {
-        console.log(command);
+        handleCommand(command, messages);
       });
 
       _hub.connection.invoke("JoinChat", user.value.currentChatId || "general");
