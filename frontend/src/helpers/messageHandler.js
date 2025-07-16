@@ -5,7 +5,8 @@ export default function handleMessage(
   hubConnection,
   messages,
   user,
-  chat
+  chat,
+  t
 ) {
   message = message.trim();
 
@@ -14,7 +15,7 @@ export default function handleMessage(
   }
 
   if (!hubConnection || hubConnection.state != HubConnectionState.Connected) {
-    alert(messages, "Connection not established", 1);
+    alert(messages, t("alerts.connection-failed"), 1);
     return;
   }
 

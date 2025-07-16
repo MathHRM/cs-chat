@@ -15,6 +15,9 @@ import { useAuthStore } from "@/stores/auth";
 import handleCommand from "@/helpers/commandHandler";
 import handleMessage from "@/helpers/messageHandler";
 import { useChatStore } from "@/stores/chat";
+import { useI18n } from "vue-i18n";
+
+const { t } = useI18n();
 
 const _hub = new Hub();
 let messages = ref([]);
@@ -25,7 +28,7 @@ const user = computed(() => authStore.user);
 const chat = computed(() => chatStore.chat);
 
 function handleSendMessage(content) {
-  handleMessage(content, _hub.connection, messages, user.value, chat.value);
+  handleMessage(content, _hub.connection, messages, user.value, chat.value, t);
 }
 
 onMounted(() => {
@@ -37,7 +40,7 @@ onMounted(() => {
       });
 
       _hub.connection.on("ReceivedCommand", (command) => {
-        handleCommand(command, messages);
+        handleCommand(command, messages, t);
       });
     })
     .catch((e) => console.log("Error: Connection failed", e));

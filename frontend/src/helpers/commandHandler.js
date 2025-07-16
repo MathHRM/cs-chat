@@ -3,7 +3,7 @@ import { useAuthStore } from "@/stores/auth";
 import { useChatStore } from "@/stores/chat";
 import router from "@/routes";
 
-export default function handleCommand(command, messages) {
+export default function handleCommand(command, messages, t) {
   console.log(command);
 
   if (!command.command) {
@@ -30,11 +30,11 @@ export default function handleCommand(command, messages) {
       handleLogout(messages, command);
       break;
     case "join":
-      handleJoin(messages, command);
+      handleJoin(messages, command, t);
       break;
     default:
       console.log(command);
-      alert(messages, "Command could not be processed", 2);
+      alert(messages, t("alerts.command-handle"), 2);
       break;
   }
 }
@@ -72,7 +72,7 @@ function handleLogout() {
   router.push("/login");
 }
 
-function handleJoin(messages, command) {
+function handleJoin(messages, command, t) {
   const data = command.response;
 
   if (!data?.chat?.id) {
@@ -87,5 +87,5 @@ function handleJoin(messages, command) {
 
   messages.value = [];
 
-  alert(messages, `You have joined the chat ${data.chat.id}`, 3);
+  alert(messages, t("alerts.joined-chat", { chatId: data.chat.id }), 3);
 }

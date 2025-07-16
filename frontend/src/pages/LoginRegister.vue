@@ -13,12 +13,15 @@ import { ref } from "vue";
 import { isCommand, alert } from "@/helpers/messageHandler";
 import { sendCommand } from "@/api/sendCommand";
 import handleCommand from "@/helpers/commandHandler";
+import { useI18n } from "vue-i18n";
+
+const { t } = useI18n();
 
 let messages = ref([]);
 
 async function handleInput(message) {
   if (! isCommand(message)) {
-    alert(messages, "You are not logged in, please log or register to start chatting", 2);
+    alert(messages, t("alerts.not-logged-in"), 2);
     return;
   }
 
@@ -35,6 +38,6 @@ async function handleInput(message) {
 
   const command = await sendCommand(message);
 
-  handleCommand(command, messages);
+  handleCommand(command, messages, t);
 }
 </script>

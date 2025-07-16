@@ -1,5 +1,5 @@
-import commands from './commands.json'
+import alerts from './alerts.json'
 
 export default {
-    commands
+    alerts
 }
