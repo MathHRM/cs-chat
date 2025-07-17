@@ -17,7 +17,7 @@ public abstract class CommandResult
             Message = message,
             Command = command,
             Errors = errors ?? new Dictionary<string, string> { { "error", message } },
-            Response = new MessageResource
+            Response = new MessageResponse
             {
                 Content = message,
                 Type = MessageType.Error,
@@ -33,7 +33,7 @@ public abstract class CommandResult
             Result = CommandResultEnum.Success,
             Message = message,
             Command = command,
-            Response = new MessageResource
+            Response = new MessageResponse
             {
                 Content = response,
                 Type = MessageType.Success,
@@ -49,7 +49,7 @@ public abstract class CommandResult
             Result = CommandResultEnum.Unauthorized,
             Message = "Unauthorized",
             Command = command,
-            Response = new MessageResource
+            Response = new MessageResponse
             {
                 Content = "Unauthorized",
                 Type = MessageType.Error,

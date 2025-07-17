@@ -8,6 +8,7 @@ using backend;
 using backend.Services;
 using backend.Repository;
 using backend.Commands;
+using backend.src.Mappers;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -64,6 +65,8 @@ builder.Services.AddScoped<ChatService>();
 
 // Add command services
 builder.Services.AddScoped<ICommandResolver, CommandResolver>();
+builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+
 builder.Services.AddScoped<CommandHandler>();
 builder.Services.AddScoped<Help>();
 builder.Services.AddScoped<Login>();

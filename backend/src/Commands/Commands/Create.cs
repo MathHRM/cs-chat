@@ -2,6 +2,7 @@ using backend.Http.Responses;
 using backend.Models;
 using backend.Services;
 using Microsoft.AspNetCore.SignalR;
+using AutoMapper;
 
 namespace backend.Commands;
 
@@ -10,16 +11,18 @@ public class Create : Command
     private readonly UserService _userService;
     private readonly TokenService _tokenService;
     private readonly ChatService _chatService;
+    private readonly IMapper _mapper;
 
     public override string CommandName => "create";
 
     public override string Description => "Create a chat";
 
-    public Create(UserService userService, TokenService tokenService, ChatService chatService)
+    public Create(UserService userService, TokenService tokenService, ChatService chatService, IMapper mapper)
     {
         _userService = userService;
         _tokenService = tokenService;
         _chatService = chatService;
+        _mapper = mapper;
     }
 
     public override Dictionary<string, CommandArgument>? Args => new Dictionary<string, CommandArgument>
@@ -76,25 +79,9 @@ public class Create : Command
         {
             Response = new ChatUserResponse
             {
-                Chat = new ChatResponse
-                {
-                    Id = chat.Id,
-                    Name = chat.Name,
-                    IsPublic = chat.IsPublic,
-                    IsGroup = chat.IsGroup,
-                },
-                User = new UserResponse
-                {
-                    Id = user.Id,
-                    Username = user.Username,
-                    CurrentChatId = user.CurrentChatId,
-                },
-                Users = chat.ChatUsers.Select(cu => new UserResponse
-                {
-                    Id = cu.User.Id,
-                    Username = cu.User.Username,
-                    CurrentChatId = cu.User.CurrentChatId,
-                }).ToList(),
+                Chat = _mapper.Map<ChatResponse>(chat),
+                User = _mapper.Map<UserResponse>(user),
+                Users = chat.ChatUsers.Select(cu => _mapper.Map<UserResponse>(cu.User)).ToList(),
             },
             Result = CommandResultEnum.Success,
             Message = $"Chat {chat.Name} ({chat.Id}) created successfully",

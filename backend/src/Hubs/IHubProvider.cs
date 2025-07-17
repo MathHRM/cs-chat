@@ -5,6 +5,6 @@ namespace backend.src.Hubs;
 
 public interface IHubProvider
 {
-    Task ReceivedMessage(MessageResource message);
+    Task ReceivedMessage(MessageResponse message);
     Task ReceivedCommand(CommandResult result);
 }

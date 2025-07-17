@@ -60,11 +60,17 @@ public class Help : Command
         return new GenericResult
         {
             Result = CommandResultEnum.Success,
-            Response = new MessageResource
+            Response = new MessageResponse
             {
                 Content = helpMessage.ToString(),
                 CreatedAt = DateTime.UtcNow,
                 Type = MessageType.Text,
+                User = new UserResponse
+                {
+                    Id = 0,
+                    Username = "System",
+                    CurrentChatId = null
+                },
             },
             Command = CommandName
         };
