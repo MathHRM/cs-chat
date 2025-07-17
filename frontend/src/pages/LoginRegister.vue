@@ -9,7 +9,7 @@
 <script setup>
 import CommandLine from "@/components/CommandLine.vue";
 import CommandsComponent from "@/components/CommandsComponent.vue";
-import { ref } from "vue";
+import { ref, onMounted } from "vue";
 import { isCommand, alert } from "@/helpers/messageHandler";
 import { sendCommand } from "@/api/sendCommand";
 import handleCommand from "@/helpers/commandHandler";
@@ -49,4 +49,10 @@ async function handleInput(message) {
 
   handleCommand(command, messages, t);
 }
+
+onMounted(async () => {
+  const command = await sendCommand("/help");
+
+  handleCommand(command, messages, t);
+});
 </script>
