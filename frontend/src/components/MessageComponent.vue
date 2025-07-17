@@ -18,7 +18,7 @@
     <span v-else>
       <span class="terminal-user">{{ message.user.username }}</span>
       <span class="terminal-separator"> chat:( </span>
-      <span class="terminal-chat">{{ message.chat?.name ?? "chat" }}</span>
+      <span class="terminal-chat">{{ message.chat?.name || "chat" }}</span>
       <span class="terminal-separator"> )</span>
       <span class="terminal-message">{{ message.content }}</span>
     </span>
