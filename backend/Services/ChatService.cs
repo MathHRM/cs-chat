@@ -109,7 +109,7 @@ namespace backend.Services
             return chatUser;
         }
 
-        public async Task<Chat?> JoinChatAsync(string chatName, int userId)
+        public async Task<Chat?> JoinChatAsync(string chatId, int userId)
         {
             var user = await _userService.GetUserByIdAsync(userId);
 
@@ -118,7 +118,7 @@ namespace backend.Services
                 return null;
             }
 
-            var chat = await _chatRepository.GetChatByNameAsync(chatName);
+            var chat = await _chatRepository.GetChatByIdAsync(chatId);
             if (chat == null)
             {
                 return null;

@@ -83,6 +83,8 @@ public class Join : Command
             return CommandResult.FailureResult("Invalid password", CommandName);
         }
 
+        await _chatService.JoinChatAsync(chat.Id, user.Id);
+
         user.CurrentChatId = chat.Id;
         await _userService.UpdateUserAsync(user.Id, user);
 
