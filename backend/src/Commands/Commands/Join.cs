@@ -24,20 +24,28 @@ public class Join : Command
     public override Dictionary<string, CommandArgument>? Args => new Dictionary<string, CommandArgument>
     {
         {
-            "chatName",
+            "chatId",
             new CommandArgument {
-                Name = "chatName",
+                Name = "chatId",
                 IsRequired = true,
                 Description = "The chat to join",
                 ByPosition = true,
                 Position = 0,
+            }
+        },
+        {
+            "password",
+            new CommandArgument {
+                Name = "password",
+                Description = "The password of the chat",
             }
         }
     };
 
     public override async Task<CommandResult> Handle(Dictionary<string, object?> args)
     {
-        var chatName = args["chatName"] as string;
+        var chatId = args["chatId"] as string;
+        var password = args["password"] as string;
         var connection = args["connection"] as HubCallerContext;
         var groups = args["groups"] as IGroupManager;
 
@@ -48,16 +56,31 @@ public class Join : Command
 
         var user = await _userService.GetUserByUsernameAsync(connection.User.Identity?.Name);
 
-        if (user.CurrentChat.Name == chatName)
+        if (user.CurrentChat.Id == chatId)
         {
-            return CommandResult.SuccessResult($"You are already in chat {chatName}", CommandName, "You are already in chat");
+            return CommandResult.SuccessResult($"You are already in chat {chatId}", CommandName, "You are already in chat");
         }
 
-        var chat = await _chatService.JoinChatAsync(chatName, user.Id);
+        var chat = await _chatService.GetChatByIdAsync(chatId);
 
         if (chat == null)
         {
             return CommandResult.FailureResult("Failed to join chat.", CommandName);
+        }
+
+        if (!chat.IsGroup)
+        {
+            return CommandResult.FailureResult("Chat is not a group to join", CommandName);
+        }
+
+        if (!chat.IsPublic && password == null)
+        {
+            return CommandResult.FailureResult("Chat is private and no password provided", CommandName);
+        }
+
+        if (chat.Password != null && !BCrypt.Net.BCrypt.Verify(password, chat.Password))
+        {
+            return CommandResult.FailureResult("Invalid password", CommandName);
         }
 
         await RemoveUserFromOtherChats(chat.Id, connection, groups);

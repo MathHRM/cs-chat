@@ -118,16 +118,10 @@ namespace backend.Services
                 return null;
             }
 
-            Console.WriteLine($"Joining chat {chatName} for user {user.Username}");
-
             var chat = await _chatRepository.GetChatByNameAsync(chatName);
-            Console.WriteLine($"Chat: {chat?.Id}");
-
             if (chat == null)
             {
-                Console.WriteLine("Chat not found, creating new chat");
-                chat = await CreateChatAsync(chatName, new List<User> { user }, true, true);
-                Console.WriteLine($"New chat created: {chat?.Id}");
+                return null;
             }
 
             await AddUserToChatAsync(chat, user);
