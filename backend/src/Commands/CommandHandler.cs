@@ -101,6 +101,8 @@ public class CommandHandler
                     continue;
                 }
 
+                results[argName] = "true";
+
                 continue;
             }
 
