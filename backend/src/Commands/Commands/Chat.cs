@@ -113,7 +113,7 @@ public class Chat : Command
 
         // Create new chat with both users
         var users = new List<Models.User> { currentUser, targetUser };
-        var createdChat = await _chatService.CreateChatAsync(null, users, false);
+        var createdChat = await _chatService.CreateChatAsync(null, users, false, false);
 
         if (createdChat == null)
         {

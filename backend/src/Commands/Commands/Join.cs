@@ -24,9 +24,9 @@ public class Join : Command
     public override Dictionary<string, CommandArgument>? Args => new Dictionary<string, CommandArgument>
     {
         {
-            "chatId",
+            "chatName",
             new CommandArgument {
-                Name = "chatId",
+                Name = "chatName",
                 IsRequired = true,
                 Description = "The chat to join",
                 ByPosition = true,
@@ -37,7 +37,7 @@ public class Join : Command
 
     public override async Task<CommandResult> Handle(Dictionary<string, object?> args)
     {
-        var chatId = args["chatId"] as string;
+        var chatName = args["chatName"] as string;
         var connection = args["connection"] as HubCallerContext;
         var groups = args["groups"] as IGroupManager;
 
@@ -48,24 +48,20 @@ public class Join : Command
 
         var user = await _userService.GetUserByUsernameAsync(connection.User.Identity?.Name);
 
-        if (user.CurrentChatId == chatId)
+        if (user.CurrentChat.Name == chatName)
         {
-            return CommandResult.SuccessResult($"You are already in chat {chatId}", CommandName, "You are already in chat");
+            return CommandResult.SuccessResult($"You are already in chat {chatName}", CommandName, "You are already in chat");
         }
 
-        var chatUser = await _chatService.AddUserToChatAsync(chatId, user.Id);
-        if (chatUser == null)
+        var chat = await _chatService.JoinChatAsync(chatName, user.Id);
+
+        if (chat == null)
         {
             return CommandResult.FailureResult("Failed to join chat.", CommandName);
         }
 
-        user.CurrentChatId = chatId;
-        await _userService.UpdateUserAsync(user.Id, user);
-
-        var chat = await _chatService.GetChatByIdAsync(chatId);
-
-        await RemoveUserFromOtherChats(chatId, connection, groups);
-        await groups.AddToGroupAsync(connection.ConnectionId, chatId);
+        await RemoveUserFromOtherChats(chat.Id, connection, groups);
+        await groups.AddToGroupAsync(connection.ConnectionId, chat.Id);
 
         return new JoinResult
         {
@@ -73,8 +69,10 @@ public class Join : Command
             {
                 Chat = new ChatResponse
                 {
-                    Id = chatUser.ChatId,
+                    Id = chat.Id,
                     Name = chat.Name,
+                    IsPublic = chat.IsPublic,
+                    IsGroup = chat.IsGroup,
                 },
                 User = new UserResponse
                 {
@@ -82,7 +80,7 @@ public class Join : Command
                     Username = user.Username,
                     CurrentChatId = user.CurrentChatId,
                 },
-                Users = chatUser.Chat.ChatUsers.Select(cu => new UserResponse
+                Users = chat.ChatUsers.Select(cu => new UserResponse
                 {
                     Id = cu.User.Id,
                     Username = cu.User.Username,

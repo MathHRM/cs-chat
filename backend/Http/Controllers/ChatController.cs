@@ -65,7 +65,7 @@ public class ChatController : ControllerBase
             }
         }
 
-        var createdChat = await _chatService.CreateChatAsync(request.Id, users, true);
+        var createdChat = await _chatService.CreateChatAsync(request.Id, users, true, false);
 
         return Ok(new ChatUserResponse {
             Chat = new ChatResponse {
@@ -109,20 +109,18 @@ public class ChatController : ControllerBase
             });
         }
 
-        var chatUser = await _chatService.AddUserToChatAsync(request.ChatId, userId);
-        if (chatUser == null)
+        var chat = await _chatService.JoinChatAsync(request.ChatId, userId);
+        if (chat == null)
         {
             return BadRequest("Failed to join chat.");
         }
 
-        user.CurrentChatId = request.ChatId;
+        user.CurrentChatId = chat.Id;
         await _userService.UpdateUserAsync(user.Id, user);
-
-        var chat = await _chatService.GetChatByIdAsync(request.ChatId);
 
         return Ok(new ChatUserResponse {
             Chat = new ChatResponse {
-                Id = chatUser.ChatId,
+                Id = chat.Id,
                 Name = chat.Name,
             },
             User = new UserResponse {
@@ -130,7 +128,7 @@ public class ChatController : ControllerBase
                 Username = user.Username,
                 CurrentChatId = user.CurrentChatId,
             },
-            Users = chatUser.Chat.ChatUsers.Select(cu => new UserResponse {
+            Users = chat.ChatUsers.Select(cu => new UserResponse {
                 Id = cu.User.Id,
                 Username = cu.User.Username,
                 CurrentChatId = cu.User.CurrentChatId,

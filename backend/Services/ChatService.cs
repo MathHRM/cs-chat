@@ -31,24 +31,13 @@ namespace backend.Services
             return await _chatRepository.GetAllChatsAsync(userId);
         }
 
-        public async Task<Chat?> CreateChatAsync(string? id, List<User> users, bool isPublic)
+        public async Task<Chat> CreateChatAsync(string? name, List<User> users, bool isPublic, bool isGroup)
         {
-            if (id != null)
-            {
-                var existingChat = await _chatRepository.GetChatByIdAsync(id);
-
-                if (existingChat != null)
-                {
-                    return null;
-                }
-            }
-
-            var chatId = isPublic ? GeneratePublicChatId() : GeneratePrivateChatId(users[0].Username, users[1].Username);
-
             var chat = new Chat
             {
-                Id = chatId,
-                Name = isPublic ? chatId : $"{users[0].Username}.{users[1].Username}",
+                IsPublic = isPublic,
+                IsGroup = isGroup,
+                ChatUsers = new List<ChatUser>(),
             };
 
             foreach (var user in users)
@@ -59,8 +48,12 @@ namespace backend.Services
                     UserId = user.Id,
                 };
 
-                await _context.ChatUsers.AddAsync(chatUser);
+                chat.ChatUsers.Add(chatUser);
+                // await _context.ChatUsers.AddAsync(chatUser);
             }
+
+            chat.Id = isPublic ? GeneratePublicChatId() : GeneratePrivateChatId(users[0].Username, users[1].Username);
+            chat.Name = name ?? chat.Id;
 
             await _context.Chats.AddAsync(chat);
             await _context.SaveChangesAsync();
@@ -87,30 +80,53 @@ namespace backend.Services
             return await _chatRepository.DeleteChatAsync(id);
         }
 
-        public async Task<ChatUser?> AddUserToChatAsync(string chatId, int userId)
+        public async Task<ChatUser?> AddUserToChatAsync(Chat chat, User user)
         {
-            var chat = await _chatRepository.GetChatByIdAsync(chatId);
-            if (chat == null)
-            {
-                return null;
-            }
+            // Check if the user is already in the chat
+            var exists = await _context.ChatUsers
+                .AnyAsync(cu => cu.ChatId == chat.Id && cu.UserId == user.Id);
 
-            var user = await _userService.GetUserByIdAsync(userId);
-            if (user == null)
+            if (exists)
             {
                 return null;
             }
 
             var chatUser = new ChatUser
             {
-                ChatId = chatId,
-                UserId = userId,
+                ChatId = chat.Id,
+                UserId = user.Id,
             };
 
             await _context.ChatUsers.AddAsync(chatUser);
             await _context.SaveChangesAsync();
 
             return chatUser;
+        }
+
+        public async Task<Chat?> JoinChatAsync(string chatName, int userId)
+        {
+            var user = await _userService.GetUserByIdAsync(userId);
+
+            if (user == null)
+            {
+                return null;
+            }
+
+            Console.WriteLine($"Joining chat {chatName} for user {user.Username}");
+
+            var chat = await _chatRepository.GetChatByNameAsync(chatName);
+            Console.WriteLine($"Chat: {chat?.Id}");
+
+            if (chat == null)
+            {
+                Console.WriteLine("Chat not found, creating new chat");
+                chat = await CreateChatAsync(chatName, new List<User> { user }, true, true);
+                Console.WriteLine($"New chat created: {chat?.Id}");
+            }
+
+            await AddUserToChatAsync(chat, user);
+
+            return chat;
         }
 
         public string GeneratePrivateChatId(string username1, string username2)
@@ -127,7 +143,7 @@ namespace backend.Services
         {
             var id = Guid.NewGuid().ToString().ToUpper().Substring(0, 5);
 
-            return $"public-{id}";
+            return id;
         }
     }
 }
