@@ -1,20 +1,21 @@
 using backend.Http.Responses;
+using backend.Models;
 using backend.Services;
 using Microsoft.AspNetCore.SignalR;
 
 namespace backend.Commands;
 
-public class Join : Command
+public class Create : Command
 {
     private readonly UserService _userService;
     private readonly TokenService _tokenService;
     private readonly ChatService _chatService;
 
-    public override string CommandName => "join";
+    public override string CommandName => "create";
 
-    public override string Description => "Join a chat";
+    public override string Description => "Create a chat";
 
-    public Join(UserService userService, TokenService tokenService, ChatService chatService)
+    public Create(UserService userService, TokenService tokenService, ChatService chatService)
     {
         _userService = userService;
         _tokenService = tokenService;
@@ -24,13 +25,21 @@ public class Join : Command
     public override Dictionary<string, CommandArgument>? Args => new Dictionary<string, CommandArgument>
     {
         {
-            "chatId",
+            "name",
             new CommandArgument {
-                Name = "chatId",
+                Name = "name",
                 IsRequired = true,
-                Description = "The chat to join",
+                Description = "The name of the chat to create",
                 ByPosition = true,
                 Position = 0,
+            }
+        },
+        {
+            "private",
+            new CommandArgument {
+                Name = "private",
+                Description = "Whether the chat is private",
+                IsFlag = true,
             }
         },
         {
@@ -39,57 +48,29 @@ public class Join : Command
                 Name = "password",
                 Description = "The password of the chat",
             }
-        }
+        },
     };
 
     public override async Task<CommandResult> Handle(Dictionary<string, object?> args)
     {
-        var chatId = args["chatId"] as string;
+        var name = args["name"] as string;
+        var isPrivate = (args["private"] as string) == "true";
         var password = args["password"] as string;
         var connection = args["connection"] as HubCallerContext;
         var groups = args["groups"] as IGroupManager;
+        var user = await _userService.GetUserByUsernameAsync(connection.User.Identity.Name);
 
         if (connection == null)
         {
             return CommandResult.UnauthorizedResult(CommandName);
         }
 
-        var user = await _userService.GetUserByUsernameAsync(connection.User.Identity?.Name);
-
-        if (user.CurrentChat.Id == chatId)
+        if (isPrivate && password == null)
         {
-            return CommandResult.SuccessResult($"You are already in chat {chatId}", CommandName, "You are already in chat");
+            return CommandResult.FailureResult("Password is required for private chats", CommandName);
         }
 
-        var chat = await _chatService.GetChatByIdAsync(chatId);
-
-        if (chat == null)
-        {
-            return CommandResult.FailureResult("Failed to join chat.", CommandName);
-        }
-
-        if (!chat.IsGroup)
-        {
-            return CommandResult.FailureResult("Chat is not a group to join", CommandName);
-        }
-
-        if (!chat.IsPublic && password == null)
-        {
-            return CommandResult.FailureResult("Chat is private and no password provided", CommandName);
-        }
-
-        if (chat.Password != null && !BCrypt.Net.BCrypt.Verify(password, chat.Password))
-        {
-            return CommandResult.FailureResult("Invalid password", CommandName);
-        }
-
-        await _chatService.JoinChatAsync(chat.Id, user.Id);
-
-        user.CurrentChatId = chat.Id;
-        await _userService.UpdateUserAsync(user.Id, user);
-
-        await RemoveUserFromOtherChats(chat.Id, connection, groups);
-        await groups.AddToGroupAsync(connection.ConnectionId, chat.Id);
+        var chat = await _chatService.CreateChatAsync(name, new List<User> { user }, !isPrivate, true, password);
 
         return new JoinResult
         {
@@ -116,7 +97,7 @@ public class Join : Command
                 }).ToList(),
             },
             Result = CommandResultEnum.Success,
-            Message = "Chat joined successfully",
+            Message = $"Chat {chat.Name} ({chat.Id}) created successfully",
             Command = CommandName,
         };
     }

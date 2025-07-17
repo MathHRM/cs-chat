@@ -71,6 +71,7 @@ builder.Services.AddScoped<Register>();
 builder.Services.AddScoped<Join>();
 builder.Services.AddScoped<Logout>();
 builder.Services.AddScoped<Chat>();
+builder.Services.AddScoped<Create>();
 
 var app = builder.Build();
 

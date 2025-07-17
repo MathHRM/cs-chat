@@ -39,6 +39,9 @@ export default function handleCommand(command, messages, t) {
     case "chat":
       handleJoin(messages, command, t);
       break;
+    case "create":
+      handleJoin(messages, command, t);
+      break;
     default:
       console.log(command);
       alert(messages, t("alerts.command-handle"), 2);
@@ -94,5 +97,5 @@ function handleJoin(messages, command, t) {
 
   messages.value = [];
 
-  alert(messages, t("alerts.joined-chat", { chatId: data.chat.id }), 3);
+  alert(messages, t("alerts.joined-chat", { chatId: data.chat.name }), 3);
 }

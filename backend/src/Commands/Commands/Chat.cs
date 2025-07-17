@@ -63,10 +63,7 @@ public class Chat : Command
             return CommandResult.FailureResult("You cannot chat with yourself", CommandName);
         }
 
-        // Create chat ID in alphabetical order
-        var usernames = new[] { currentUser.Username, targetUsername };
-        Array.Sort(usernames, StringComparer.OrdinalIgnoreCase);
-        var chatId = $"{usernames[0]}.{usernames[1]}";
+        var chatId = _chatService.GeneratePrivateChatId(currentUser.Username, targetUsername);
 
         // Check if chat already exists
         var existingChat = await _chatService.GetChatByIdAsync(chatId);
@@ -86,6 +83,7 @@ public class Chat : Command
                     Chat = new ChatResponse
                     {
                         Id = chatId,
+                        Name = existingChat.Name,
                     },
                     User = new UserResponse
                     {
@@ -115,7 +113,7 @@ public class Chat : Command
 
         // Create new chat with both users
         var users = new List<Models.User> { currentUser, targetUser };
-        var createdChat = await _chatService.CreateChatAsync(chatId, users);
+        var createdChat = await _chatService.CreateChatAsync(null, users, false, false);
 
         if (createdChat == null)
         {
@@ -123,12 +121,12 @@ public class Chat : Command
         }
 
         // Update current user's chat
-        currentUser.CurrentChatId = chatId;
+        currentUser.CurrentChatId = createdChat.Id;
         await _userService.UpdateUserAsync(currentUser.Id, currentUser);
 
         // Join the chat group
-        await RemoveUserFromOtherChats(chatId, connection, groups);
-        await groups.AddToGroupAsync(connection.ConnectionId, chatId);
+        await RemoveUserFromOtherChats(createdChat.Id, connection, groups);
+        await groups.AddToGroupAsync(connection.ConnectionId, createdChat.Id);
 
         return new JoinResult
         {
@@ -136,7 +134,8 @@ public class Chat : Command
             {
                 Chat = new ChatResponse
                 {
-                    Id = chatId,
+                    Id = createdChat.Id,
+                    Name = createdChat.Name,
                 },
                 User = new UserResponse
                 {

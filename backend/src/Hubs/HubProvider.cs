@@ -60,7 +60,8 @@ public class HubProvider : Hub<IHubProvider>
             CreatedAt = DateTime.UtcNow,
             Chat = new ChatResponse
             {
-                Id = user.CurrentChatId
+                Id = user.CurrentChatId,
+                Name = user.CurrentChat?.Name
             }
         });
     }

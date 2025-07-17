@@ -31,6 +31,7 @@ public class ChatController : ControllerBase
         return Ok(chats.Select(c => new ChatUserResponse {
             Chat = new ChatResponse {
                 Id = c.Id,
+                Name = c.Name,
             },
             Users = c.ChatUsers.Select(cu => new UserResponse {
                 Id = cu.User.Id,
@@ -64,11 +65,12 @@ public class ChatController : ControllerBase
             }
         }
 
-        var createdChat = await _chatService.CreateChatAsync(request.Id, users);
+        var createdChat = await _chatService.CreateChatAsync(request.Id, users, true, false);
 
         return Ok(new ChatUserResponse {
             Chat = new ChatResponse {
                 Id = createdChat.Id,
+                Name = createdChat.Name,
             },
             Users = users.Select(u => new UserResponse {
                 Id = u.Id,
@@ -90,6 +92,7 @@ public class ChatController : ControllerBase
             return Ok(new ChatUserResponse {
                 Chat = new ChatResponse {
                     Id = user.CurrentChatId,
+                    Name = user.CurrentChat.Name,
                 },
                 User = new UserResponse {
                     Id = user.Id,
@@ -106,27 +109,26 @@ public class ChatController : ControllerBase
             });
         }
 
-        var chatUser = await _chatService.AddUserToChatAsync(request.ChatId, userId);
-        if (chatUser == null)
+        var chat = await _chatService.JoinChatAsync(request.ChatId, userId);
+        if (chat == null)
         {
             return BadRequest("Failed to join chat.");
         }
 
-        user.CurrentChatId = request.ChatId;
+        user.CurrentChatId = chat.Id;
         await _userService.UpdateUserAsync(user.Id, user);
-
-        var chat = await _chatService.GetChatByIdAsync(request.ChatId);
 
         return Ok(new ChatUserResponse {
             Chat = new ChatResponse {
-                Id = chatUser.ChatId,
+                Id = chat.Id,
+                Name = chat.Name,
             },
             User = new UserResponse {
                 Id = user.Id,
                 Username = user.Username,
                 CurrentChatId = user.CurrentChatId,
             },
-            Users = chatUser.Chat.ChatUsers.Select(cu => new UserResponse {
+            Users = chat.ChatUsers.Select(cu => new UserResponse {
                 Id = cu.User.Id,
                 Username = cu.User.Username,
                 CurrentChatId = cu.User.CurrentChatId,
@@ -146,6 +148,6 @@ public class ChatController : ControllerBase
             return NotFound("Chat not found.");
         }
 
-        return Ok(new ChatResponse { Id = chat.Id });
+        return Ok(new ChatResponse { Id = chat.Id, Name = chat.Name });
     }
 }

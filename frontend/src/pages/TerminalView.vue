@@ -36,6 +36,7 @@ onMounted(() => {
     .start()
     .then(() => {
       _hub.connection.on("ReceivedMessage", (msg) => {
+        console.log(msg);
         messages.value.push(msg);
       });
 

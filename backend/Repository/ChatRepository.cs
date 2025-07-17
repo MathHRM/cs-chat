@@ -17,6 +17,11 @@ namespace backend.Repository
             return await _context.Chats.FindAsync(id);
         }
 
+        public async Task<Chat?> GetChatByNameAsync(string name)
+        {
+            return await _context.Chats.FirstOrDefaultAsync(c => c.Name == name);
+        }
+
         public async Task<IEnumerable<Chat>> GetAllChatsAsync(int userId)
         {
             return await _context.Chats
