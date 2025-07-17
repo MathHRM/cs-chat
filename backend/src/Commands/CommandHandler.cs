@@ -35,11 +35,13 @@ public class CommandHandler
 
         if (
             command.RequiresAuthentication &&
-            (connection?.User.Identity?.IsAuthenticated ?? false) &&
-            (httpContext?.User.Identity?.IsAuthenticated ?? false)
+            !(
+                (connection?.User.Identity?.IsAuthenticated ?? false) ||
+                (httpContext?.User.Identity?.IsAuthenticated ?? false)
+            )
         )
         {
-            return CommandResult.UnauthorizedResult(command.CommandName);
+            return CommandResult.FailureResult("Invalid command", command.CommandName);
         }
 
         var validationResult = command.ValidateArguments(args);
