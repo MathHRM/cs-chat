@@ -1,9 +1,11 @@
 <template>
   <div class="terminal-input-line">
+    <span class="terminal-start">&rarr;</span>
     <span class="terminal-user">{{ getUser.username || "~" }}</span>
-    <span class="terminal-separator">@</span>
+    <span class="terminal-separator"> chat:( </span>
     <span class="terminal-chat">{{ getChat.id || chat || "chat" }}</span>
-    <span class="terminal-separator">:~$ </span>
+    <span class="terminal-separator"> )</span>
+    <span class="terminal-end"> x </span>
     <input
       ref="terminalInput"
       v-model="currentInput"
@@ -38,10 +40,15 @@ const emit = defineEmits(["send-message"]);
 const currentInput = ref("");
 const showCursor = ref(true);
 
+const terminalInput = ref(null);
+
 const handleSend = () => {
   if (currentInput.value.trim()) {
     emit("send-message", currentInput.value.trim());
     currentInput.value = "";
+  }
+  if (terminalInput.value) {
+    terminalInput.value.focus();
   }
 };
 
@@ -57,5 +64,9 @@ const startCursorBlink = () => {
 
 onMounted(() => {
   startCursorBlink();
+
+  if (terminalInput.value) {
+    terminalInput.value.focus();
+  }
 });
 </script>

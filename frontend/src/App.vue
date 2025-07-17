@@ -54,7 +54,6 @@ onMounted(async () => {
 }
 
 .terminal-wrapper {
-  padding: 20px;
   min-height: 100vh;
   background: #0f0f0f;
   display: flex;
@@ -64,7 +63,6 @@ onMounted(async () => {
 
 .terminal-wrapper .terminal-container {
   width: 100%;
-  max-width: 1200px;
 }
 
 /* Override Quasar's default styles */

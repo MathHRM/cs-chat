@@ -43,4 +43,3 @@ onUpdated(() => {
   scrollToBottom();
 });
 </script>
-

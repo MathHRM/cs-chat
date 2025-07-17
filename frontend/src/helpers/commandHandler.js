@@ -6,11 +6,15 @@ import router from "@/routes";
 export default function handleCommand(command, messages, t) {
   console.log(command);
 
-  if (!command.command) {
-    return;
-  }
-
   if (command.result != 0) {
+    if (command.errors && Object.keys(command.errors).length > 0) {
+      Object.values(command.errors).forEach((message) => {
+        alert(messages, message, 1);
+      });
+
+      return;
+    }
+
     alert(messages, command.message, 1);
 
     return;
