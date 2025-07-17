@@ -1,4 +1,5 @@
 using backend.Http.Responses;
+using backend.Models;
 using backend.Services;
 using Microsoft.AspNetCore.SignalR;
 
@@ -57,6 +58,7 @@ public class Create : Command
         var password = args["password"] as string;
         var connection = args["connection"] as HubCallerContext;
         var groups = args["groups"] as IGroupManager;
+        var user = await _userService.GetUserByUsernameAsync(connection.User.Identity.Name);
 
         if (connection == null)
         {
@@ -68,35 +70,36 @@ public class Create : Command
             return CommandResult.FailureResult("Password is required for private chats", CommandName);
         }
 
-        return CommandResult.SuccessResult("Chat created successfully", CommandName);
-        // return new JoinResult
-        // {
-        //     Response = new ChatUserResponse
-        //     {
-        //         Chat = new ChatResponse
-        //         {
-        //             Id = chat.Id,
-        //             Name = chat.Name,
-        //             IsPublic = chat.IsPublic,
-        //             IsGroup = chat.IsGroup,
-        //         },
-        //         User = new UserResponse
-        //         {
-        //             Id = user.Id,
-        //             Username = user.Username,
-        //             CurrentChatId = user.CurrentChatId,
-        //         },
-        //         Users = chat.ChatUsers.Select(cu => new UserResponse
-        //         {
-        //             Id = cu.User.Id,
-        //             Username = cu.User.Username,
-        //             CurrentChatId = cu.User.CurrentChatId,
-        //         }).ToList(),
-        //     },
-        //     Result = CommandResultEnum.Success,
-        //     Message = "Chat joined successfully",
-        //     Command = CommandName,
-        // };
+        var chat = await _chatService.CreateChatAsync(name, new List<User> { user }, !isPrivate, true, password);
+
+        return new JoinResult
+        {
+            Response = new ChatUserResponse
+            {
+                Chat = new ChatResponse
+                {
+                    Id = chat.Id,
+                    Name = chat.Name,
+                    IsPublic = chat.IsPublic,
+                    IsGroup = chat.IsGroup,
+                },
+                User = new UserResponse
+                {
+                    Id = user.Id,
+                    Username = user.Username,
+                    CurrentChatId = user.CurrentChatId,
+                },
+                Users = chat.ChatUsers.Select(cu => new UserResponse
+                {
+                    Id = cu.User.Id,
+                    Username = cu.User.Username,
+                    CurrentChatId = cu.User.CurrentChatId,
+                }).ToList(),
+            },
+            Result = CommandResultEnum.Success,
+            Message = $"Chat {chat.Name} ({chat.Id}) created successfully",
+            Command = CommandName,
+        };
     }
 
     private async Task RemoveUserFromOtherChats(string chatId, HubCallerContext connection, IGroupManager groups)

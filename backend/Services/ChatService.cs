@@ -31,7 +31,13 @@ namespace backend.Services
             return await _chatRepository.GetAllChatsAsync(userId);
         }
 
-        public async Task<Chat> CreateChatAsync(string? name, List<User> users, bool isPublic, bool isGroup)
+        public async Task<Chat> CreateChatAsync(
+            string? name,
+            List<User> users,
+            bool isPublic,
+            bool isGroup,
+            string? password = null
+        )
         {
             var chat = new Chat
             {
@@ -49,11 +55,11 @@ namespace backend.Services
                 };
 
                 chat.ChatUsers.Add(chatUser);
-                // await _context.ChatUsers.AddAsync(chatUser);
             }
 
-            chat.Id = isPublic ? GeneratePublicChatId() : GeneratePrivateChatId(users[0].Username, users[1].Username);
+            chat.Id = isGroup ? GeneratePublicChatId() : GeneratePrivateChatId(users[0].Username, users[1].Username);
             chat.Name = name ?? chat.Id;
+            chat.Password = password != null && !isPublic ? BCrypt.Net.BCrypt.HashPassword(password) : null;
 
             await _context.Chats.AddAsync(chat);
             await _context.SaveChangesAsync();
