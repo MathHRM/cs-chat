@@ -3,7 +3,7 @@
     <span class="terminal-start">&rarr;</span>
     <span class="terminal-user">{{ getUser.username || "~" }}</span>
     <span class="terminal-separator"> chat:( </span>
-    <span class="terminal-chat">{{ chatName }}</span>
+    <span class="terminal-chat">{{ getChat.id || "chat" }}</span>
     <span class="terminal-separator"> )</span>
     <span class="terminal-end"> x </span>
     <input
@@ -34,14 +34,6 @@ const chatStore = useChatStore();
 
 const getUser = computed(() => authStore.user);
 const getChat = computed(() => chatStore.chat);
-
-const chatName = computed(() => {
-  if (getChat.value?.name) {
-    return `${getChat.value.name}-${getChat.value.id}`;
-  }
-
-  return getChat.value?.id || "chat";
-});
 
 const emit = defineEmits(["send-message"]);
 
