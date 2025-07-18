@@ -1,24 +1,25 @@
 using backend.Http.Responses;
 using backend.Services;
 using Microsoft.AspNetCore.SignalR;
+using AutoMapper;
 
 namespace backend.Commands;
 
 public class Join : Command
 {
     private readonly UserService _userService;
-    private readonly TokenService _tokenService;
     private readonly ChatService _chatService;
+    private readonly IMapper _mapper;
 
     public override string CommandName => "join";
 
     public override string Description => "Join a chat";
 
-    public Join(UserService userService, TokenService tokenService, ChatService chatService)
+    public Join(UserService userService, ChatService chatService, IMapper mapper)
     {
         _userService = userService;
-        _tokenService = tokenService;
         _chatService = chatService;
+        _mapper = mapper;
     }
 
     public override Dictionary<string, CommandArgument>? Args => new Dictionary<string, CommandArgument>
@@ -42,19 +43,17 @@ public class Join : Command
         }
     };
 
-    public override async Task<CommandResult> Handle(Dictionary<string, object?> args)
+    public override async Task<CommandResult> Handle(Dictionary<string, string?> args)
     {
         var chatId = args["chatId"] as string;
         var password = args["password"] as string;
-        var connection = args["connection"] as HubCallerContext;
-        var groups = args["groups"] as IGroupManager;
 
-        if (connection == null)
+        if (HubCallerContext == null)
         {
             return CommandResult.UnauthorizedResult(CommandName);
         }
 
-        var user = await _userService.GetUserByUsernameAsync(connection.User.Identity?.Name);
+        var user = await _userService.GetUserByUsernameAsync(HubCallerContext.User.Identity?.Name);
 
         if (user.CurrentChat.Id == chatId)
         {
@@ -85,52 +84,19 @@ public class Join : Command
 
         await _chatService.JoinChatAsync(chat.Id, user.Id);
 
-        user.CurrentChatId = chat.Id;
-        await _userService.UpdateUserAsync(user.Id, user);
-
-        await RemoveUserFromOtherChats(chat.Id, connection, groups);
-        await groups.AddToGroupAsync(connection.ConnectionId, chat.Id);
+        await _userService.UpdateUserCurrentChatAsync(user, chat.Id, HubCallerContext, HubGroups);
 
         return new JoinResult
         {
             Response = new ChatUserResponse
             {
-                Chat = new ChatResponse
-                {
-                    Id = chat.Id,
-                    Name = chat.Name,
-                    IsPublic = chat.IsPublic,
-                    IsGroup = chat.IsGroup,
-                },
-                User = new UserResponse
-                {
-                    Id = user.Id,
-                    Username = user.Username,
-                    CurrentChatId = user.CurrentChatId,
-                },
-                Users = chat.ChatUsers.Select(cu => new UserResponse
-                {
-                    Id = cu.User.Id,
-                    Username = cu.User.Username,
-                    CurrentChatId = cu.User.CurrentChatId,
-                }).ToList(),
+                Chat = _mapper.Map<ChatResponse>(chat),
+                User = _mapper.Map<UserResponse>(user),
+                Users = chat.ChatUsers.Select(cu => _mapper.Map<UserResponse>(cu.User)).ToList(),
             },
             Result = CommandResultEnum.Success,
             Message = "Chat joined successfully",
             Command = CommandName,
         };
-    }
-
-    private async Task RemoveUserFromOtherChats(string chatId, HubCallerContext connection, IGroupManager groups)
-    {
-        var username = connection.User.Identity.Name;
-        var user = await _userService.GetUserWithChatsAsync(username);
-
-        Logger.Info($"Removing user {username} from other chats: {chatId}");
-
-        foreach (var chatUser in user.ChatUsers.Where(cu => cu.ChatId != chatId))
-        {
-            await groups.RemoveFromGroupAsync(connection.ConnectionId, chatUser.ChatId);
-        }
     }
 }

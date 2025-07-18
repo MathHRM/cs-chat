@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
 using backend.Http.Requests;
 using backend.Http.Responses;
+using AutoMapper;
 
 namespace backend.Http.Controllers;
 
@@ -14,11 +15,13 @@ public class ChatController : ControllerBase
 {
     private readonly ChatService _chatService;
     private readonly UserService _userService;
+    private readonly IMapper _mapper;
 
-    public ChatController(ChatService chatService, UserService userService)
+    public ChatController(ChatService chatService, UserService userService, IMapper mapper)
     {
         _chatService = chatService;
         _userService = userService;
+        _mapper = mapper;
     }
 
     [HttpGet]
@@ -29,14 +32,8 @@ public class ChatController : ControllerBase
         var chats = await _chatService.GetAllChatsAsync(int.Parse(userId));
 
         return Ok(chats.Select(c => new ChatUserResponse {
-            Chat = new ChatResponse {
-                Id = c.Id,
-                Name = c.Name,
-            },
-            Users = c.ChatUsers.Select(cu => new UserResponse {
-                Id = cu.User.Id,
-                Username = cu.User.Username,
-            }).ToList(),
+            Chat = _mapper.Map<ChatResponse>(c),
+            Users = c.ChatUsers.Select(cu => _mapper.Map<UserResponse>(cu.User)).ToList(),
         }));
     }
 
@@ -68,14 +65,8 @@ public class ChatController : ControllerBase
         var createdChat = await _chatService.CreateChatAsync(request.Id, users, true, false);
 
         return Ok(new ChatUserResponse {
-            Chat = new ChatResponse {
-                Id = createdChat.Id,
-                Name = createdChat.Name,
-            },
-            Users = users.Select(u => new UserResponse {
-                Id = u.Id,
-                Username = u.Username,
-            }).ToList(),
+            Chat = _mapper.Map<ChatResponse>(createdChat),
+            Users = users.Select(u => _mapper.Map<UserResponse>(u)).ToList(),
         });
     }
 
@@ -90,22 +81,9 @@ public class ChatController : ControllerBase
         if (user.CurrentChatId == request.ChatId)
         {
             return Ok(new ChatUserResponse {
-                Chat = new ChatResponse {
-                    Id = user.CurrentChatId,
-                    Name = user.CurrentChat.Name,
-                },
-                User = new UserResponse {
-                    Id = user.Id,
-                    Username = user.Username,
-                    CurrentChatId = user.CurrentChatId,
-                },
-                Users = new List<UserResponse> {
-                    new UserResponse {
-                        Id = user.Id,
-                        Username = user.Username,
-                        CurrentChatId = user.CurrentChatId,
-                    },
-                },
+                Chat = _mapper.Map<ChatResponse>(user.CurrentChat),
+                User = _mapper.Map<UserResponse>(user),
+                Users = user.CurrentChat.ChatUsers.Select(cu => _mapper.Map<UserResponse>(cu.User)).ToList(),
             });
         }
 
@@ -119,20 +97,9 @@ public class ChatController : ControllerBase
         await _userService.UpdateUserAsync(user.Id, user);
 
         return Ok(new ChatUserResponse {
-            Chat = new ChatResponse {
-                Id = chat.Id,
-                Name = chat.Name,
-            },
-            User = new UserResponse {
-                Id = user.Id,
-                Username = user.Username,
-                CurrentChatId = user.CurrentChatId,
-            },
-            Users = chat.ChatUsers.Select(cu => new UserResponse {
-                Id = cu.User.Id,
-                Username = cu.User.Username,
-                CurrentChatId = cu.User.CurrentChatId,
-            }).ToList(),
+            Chat = _mapper.Map<ChatResponse>(chat),
+            User = _mapper.Map<UserResponse>(user),
+            Users = chat.ChatUsers.Select(cu => _mapper.Map<UserResponse>(cu.User)).ToList(),
         });
     }
 
@@ -148,6 +115,6 @@ public class ChatController : ControllerBase
             return NotFound("Chat not found.");
         }
 
-        return Ok(new ChatResponse { Id = chat.Id, Name = chat.Name });
+        return Ok(_mapper.Map<ChatResponse>(chat));
     }
 }

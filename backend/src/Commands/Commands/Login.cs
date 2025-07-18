@@ -1,7 +1,7 @@
 using backend.Services;
 using backend.Commands;
 using backend.Http.Responses;
-using backend.Commands;
+using AutoMapper;
 
 namespace backend.Commands;
 
@@ -10,17 +10,19 @@ public class Login : Command
     private readonly UserService _userService;
     private readonly TokenService _tokenService;
     private readonly ChatService _chatService;
+    private readonly IMapper _mapper;
     public override string CommandName => "login";
 
     public override string Description => "Login to the system";
 
     public override bool RequiresAuthentication => false;
 
-    public Login(UserService userService, TokenService tokenService, ChatService chatService)
+    public Login(UserService userService, TokenService tokenService, ChatService chatService, IMapper mapper)
     {
         _userService = userService;
         _tokenService = tokenService;
         _chatService = chatService;
+        _mapper = mapper;
     }
 
     public override Dictionary<string, CommandArgument>? Args => new Dictionary<string, CommandArgument>
@@ -43,7 +45,7 @@ public class Login : Command
         }
     };
 
-    public override async Task<CommandResult> Handle(Dictionary<string, object?> args)
+    public override async Task<CommandResult> Handle(Dictionary<string, string?> args)
     {
         var user = await _userService.ValidateUserCredentialsAsync(args["username"] as string, args["password"] as string);
         if (user == null)
@@ -60,16 +62,8 @@ public class Login : Command
             Response = new LoginResponse
             {
                 Token = token,
-                User = new UserResponse
-                {
-                    Id = user.Id,
-                    Username = user.Username,
-                    CurrentChatId = user.CurrentChatId!
-                },
-                Chat = new ChatResponse
-                {
-                    Id = chat.Id,
-                }
+                User = _mapper.Map<UserResponse>(user),
+                Chat = _mapper.Map<ChatResponse>(chat)
             },
             Command = CommandName,
             Result = CommandResultEnum.Success,

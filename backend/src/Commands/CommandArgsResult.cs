@@ -3,7 +3,7 @@ namespace backend.Commands;
 public class CommandArgsResult
 {
     public Dictionary<string, string> Errors { get; set; } = new Dictionary<string, string>();
-    public Dictionary<string, object?> Args { get; set; } = new Dictionary<string, object?>();
+    public Dictionary<string, string?> Args { get; set; } = new Dictionary<string, string?>();
 
     public bool Validated()
     {
@@ -15,7 +15,7 @@ public class CommandArgsResult
         Errors.Add(arg, error);
     }
 
-    public void AddArg(string arg, object? value)
+    public void AddArg(string arg, string? value)
     {
         Args.Add(arg, value);
     }

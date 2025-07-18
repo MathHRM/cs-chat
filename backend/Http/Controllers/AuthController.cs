@@ -5,6 +5,7 @@ using backend.Http.Requests;
 using backend.Services;
 using backend.Http.Responses;
 using Microsoft.AspNetCore.Authorization;
+using AutoMapper;
 
 namespace backend.Http.Controllers
 {
@@ -14,11 +15,13 @@ namespace backend.Http.Controllers
     {
         private readonly TokenService _tokenService;
         private readonly UserService _userService;
+        private readonly IMapper _mapper;
 
-        public AuthController(TokenService tokenService, UserService userService)
+        public AuthController(TokenService tokenService, UserService userService, IMapper mapper)
         {
             _tokenService = tokenService;
             _userService = userService;
+            _mapper = mapper;
         }
 
         [HttpPost]
@@ -41,12 +44,7 @@ namespace backend.Http.Controllers
             return Ok(new LoginResponse
             {
                 Token = _tokenService.GenerateToken(createdUser),
-                User = new UserResponse
-                {
-                    Id = createdUser.Id,
-                    Username = createdUser.Username,
-                    CurrentChatId = createdUser.CurrentChatId ?? "general"
-                }
+                User = _mapper.Map<UserResponse>(createdUser)
             });
         }
 
@@ -65,12 +63,7 @@ namespace backend.Http.Controllers
             return Ok(new LoginResponse
             {
                 Token = token,
-                User = new UserResponse
-                {
-                    Id = user.Id,
-                    Username = user.Username,
-                    CurrentChatId = user.CurrentChatId ?? "general"
-                }
+                User = _mapper.Map<UserResponse>(user)
             });
         }
 
@@ -85,12 +78,7 @@ namespace backend.Http.Controllers
             return Ok(new LoginResponse
             {
                 Token = token,
-                User = new UserResponse
-                {
-                    Id = user.Id,
-                    Username = user.Username,
-                    CurrentChatId = user.CurrentChatId ?? "general"
-                }
+                User = _mapper.Map<UserResponse>(user)
             });
         }
     }

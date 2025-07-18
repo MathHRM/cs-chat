@@ -2,6 +2,7 @@
 using backend.Models;
 using backend.Http.Responses;
 using backend.Services;
+using AutoMapper;
 using Microsoft.AspNetCore.SignalR;
 
 namespace backend.src.Hubs;
@@ -10,11 +11,13 @@ public class HubProvider : Hub<IHubProvider>
 {
     private readonly UserService _userService;
     private readonly CommandHandler _commandHandler;
+    private readonly IMapper _mapper;
 
-    public HubProvider(UserService userService, CommandHandler commandHandler)
+    public HubProvider(UserService userService, CommandHandler commandHandler, IMapper mapper)
     {
         _userService = userService;
         _commandHandler = commandHandler;
+        _mapper = mapper;
     }
 
     public override async Task OnConnectedAsync()
@@ -47,22 +50,13 @@ public class HubProvider : Hub<IHubProvider>
             return;
         }
 
-        await Clients.Group(user.CurrentChatId!).ReceivedMessage(new MessageResource
+        await Clients.Group(user.CurrentChatId!).ReceivedMessage(new MessageResponse
         {
-            User = new UserResponse
-            {
-                Id = user.Id,
-                Username = user.Username,
-                CurrentChatId = user.CurrentChatId
-            },
+            User = _mapper.Map<UserResponse>(user),
             Content = message.Content,
             Type = message.Type,
             CreatedAt = DateTime.UtcNow,
-            Chat = new ChatResponse
-            {
-                Id = user.CurrentChatId,
-                Name = user.CurrentChat?.Name
-            }
+            Chat = _mapper.Map<ChatResponse>(user.CurrentChat)
         });
     }
 

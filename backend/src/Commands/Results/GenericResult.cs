@@ -4,5 +4,5 @@ namespace backend.Commands;
 
 public class GenericResult : CommandResult
 {
-    public MessageResource? Response { get; set; }
+    public MessageResponse? Response { get; set; }
 }
