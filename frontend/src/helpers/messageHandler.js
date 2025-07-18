@@ -1,13 +1,14 @@
 import { HubConnectionState } from "@aspnet/signalr";
+import { useMessagesStore } from "@/stores/messages";
 
 export default function handleMessage(
   message,
   hubConnection,
-  messages,
   user,
   chat,
   t
 ) {
+  const messagesStore = useMessagesStore();
   message = message.trim();
 
   if (!message) {
@@ -15,12 +16,12 @@ export default function handleMessage(
   }
 
   if (!hubConnection || hubConnection.state != HubConnectionState.Connected) {
-    alert(messages, t("alerts.connection-failed"), 1);
+    alert(t("alerts.connection-failed"), 1);
     return;
   }
 
   if (isCommand(message)) {
-    messages.value.push({
+    messagesStore.addMessage({
       content: message,
       type: 0,
       user: {
@@ -39,8 +40,10 @@ export function isCommand(message) {
   return message.trim().startsWith("/");
 }
 
-export function alert(messages, content, type) {
-  messages.value.push({
+export function alert(content, type) {
+  const messagesStore = useMessagesStore();
+
+  messagesStore.addMessage({
     content,
     type,
   });

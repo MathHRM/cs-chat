@@ -9,19 +9,21 @@
 <script setup>
 import CommandLine from "@/components/CommandLine.vue";
 import CommandsComponent from "@/components/CommandsComponent.vue";
-import { ref, onMounted } from "vue";
+import { onMounted, computed } from "vue";
 import { isCommand, alert } from "@/helpers/messageHandler";
 import { sendCommand } from "@/api/sendCommand";
 import handleCommand from "@/helpers/commandHandler";
 import { useI18n } from "vue-i18n";
+import { useMessagesStore } from "@/stores/messages";
 
 const { t } = useI18n();
 
-let messages = ref([]);
+const messagesStore = useMessagesStore();
+const messages = computed(() => messagesStore.messages);
 
 async function handleInput(message) {
   if (!isCommand(message)) {
-    messages.value.push({
+    messagesStore.addMessage({
       content: message,
       type: 0,
       user: {
@@ -29,12 +31,12 @@ async function handleInput(message) {
       },
     });
 
-    alert(messages, t("alerts.not-logged-in"), 2);
+    alert(t("alerts.not-logged-in"), 2);
 
     return;
   }
 
-  messages.value.push({
+  messagesStore.addMessage({
     content: message,
     type: 0,
     user: {
@@ -47,12 +49,12 @@ async function handleInput(message) {
 
   const command = await sendCommand(message);
 
-  handleCommand(command, messages, t);
+  handleCommand(command, t);
 }
 
 onMounted(async () => {
   const command = await sendCommand("/help");
 
-  handleCommand(command, messages, t);
+  handleCommand(command, t);
 });
 </script>

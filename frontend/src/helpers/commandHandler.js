@@ -1,65 +1,68 @@
 import { alert } from "./messageHandler";
 import { useAuthStore } from "@/stores/auth";
 import { useChatStore } from "@/stores/chat";
+import { useMessagesStore } from "@/stores/messages";
 import router from "@/routes";
 
-export default function handleCommand(command, messages, t) {
+export default function handleCommand(command, t) {
   console.log(command);
 
   if (command.result != 0) {
     if (command.errors && Object.keys(command.errors).length > 0) {
       Object.values(command.errors).forEach((message) => {
-        alert(messages, message, 1);
+        alert(message, 1);
       });
 
       return;
     }
 
-    alert(messages, command.message, 1);
+    alert(command.message, 1);
 
     return;
   }
 
   switch (command.command) {
     case "help":
-      handleHelp(messages, command);
+      handleHelp(command);
       break;
     case "login":
-      handleLogin(messages, command);
+      handleLogin(command);
       break;
     case "register":
-      handleLogin(messages, command);
+      handleLogin(command);
       break;
     case "logout":
-      handleLogout(messages, command);
+      handleLogout(command);
       break;
     case "join":
-      handleJoin(messages, command, t);
+      handleJoin(command, t);
       break;
     case "chat":
-      handleJoin(messages, command, t);
+      handleJoin(command, t);
       break;
     case "create":
-      handleJoin(messages, command, t);
+      handleJoin(command, t);
       break;
     default:
       console.log(command);
-      alert(messages, t("alerts.command-handle"), 2);
+      alert(t("alerts.command-handle"), 2);
       break;
   }
 }
 
-function handleHelp(messages, command) {
-  messages.value.push(command.response);
+function handleHelp(command) {
+  const messagesStore = useMessagesStore();
+
+  messagesStore.addMessage(command.response);
 }
 
-function handleLogin(messages, command) {
+function handleLogin(command) {
   const authStore = useAuthStore();
   const chatStore = useChatStore();
   const data = command.response;
 
   if (!data?.user?.id) {
-    alert(messages, command.message, 1);
+    alert(command.message, 1);
 
     return;
   }
@@ -82,11 +85,11 @@ function handleLogout() {
   router.push("/login");
 }
 
-function handleJoin(messages, command, t) {
+function handleJoin(command, t) {
   const data = command.response;
 
   if (!data?.chat?.id) {
-    alert(messages, command.message, 1);
+    alert(command.message, 1);
 
     return;
   }
@@ -95,7 +98,8 @@ function handleJoin(messages, command, t) {
 
   chatStore.setChat(data.chat);
 
-  messages.value = [];
+  const messagesStore = useMessagesStore();
+  messagesStore.clearMessages();
 
-  alert(messages, t("alerts.joined-chat", { chatId: data.chat.name }), 3);
+  alert(t("alerts.joined-chat", { chatId: data.chat.name }), 3);
 }

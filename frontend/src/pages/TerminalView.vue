@@ -9,18 +9,20 @@
 <script setup>
 import CommandsComponent from "@/components/CommandsComponent.vue";
 import CommandLine from "@/components/CommandLine.vue";
-import { ref, onMounted, computed } from "vue";
+import { onMounted, computed } from "vue";
 import Hub from "../Hub";
 import { useAuthStore } from "@/stores/auth";
 import handleCommand from "@/helpers/commandHandler";
 import handleMessage from "@/helpers/messageHandler";
 import { useChatStore } from "@/stores/chat";
 import { useI18n } from "vue-i18n";
+import { useMessagesStore } from "@/stores/messages";
 
 const { t } = useI18n();
 
 const _hub = new Hub();
-let messages = ref([]);
+const messagesStore = useMessagesStore();
+const messages = computed(() => messagesStore.messages);
 
 const authStore = useAuthStore();
 const chatStore = useChatStore();
@@ -28,7 +30,7 @@ const user = computed(() => authStore.user);
 const chat = computed(() => chatStore.chat);
 
 function handleSendMessage(content) {
-  handleMessage(content, _hub.connection, messages, user.value, chat.value, t);
+  handleMessage(content, _hub.connection, user.value, chat.value, t);
 }
 
 onMounted(() => {
@@ -37,11 +39,11 @@ onMounted(() => {
     .then(() => {
       _hub.connection.on("ReceivedMessage", (msg) => {
         console.log(msg);
-        messages.value.push(msg);
+        messagesStore.addMessage(msg);
       });
 
       _hub.connection.on("ReceivedCommand", (command) => {
-        handleCommand(command, messages, t);
+        handleCommand(command, t);
       });
     })
     .catch((e) => console.log("Error: Connection failed", e));
