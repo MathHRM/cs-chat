@@ -45,7 +45,7 @@ public class Register : Command
         }
     };
 
-    public override async Task<CommandResult> Handle(Dictionary<string, object> args)
+    public override async Task<CommandResult> Handle(Dictionary<string, string?> args)
     {
         if (await _userService.UserExistsAsync(args["username"] as string))
         {
