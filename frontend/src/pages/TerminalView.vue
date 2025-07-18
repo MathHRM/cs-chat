@@ -1,6 +1,9 @@
 <template>
   <div class="terminal-container">
-    <CommandsComponent :messages="messages" />
+    <CommandsComponent
+      :messages="messages"
+      @load-more-messages="handleLoadMoreMessages"
+    />
 
     <CommandLine @send-message="handleSendMessage" />
   </div>
@@ -32,6 +35,18 @@ const chat = computed(() => chatStore.chat);
 
 function handleSendMessage(content) {
   handleMessage(content, _hub.connection, user.value, chat.value, t);
+}
+
+function handleLoadMoreMessages() {
+  const firstMessageId = messages.value[0]?.id;
+
+  if (!firstMessageId) {
+    return;
+  }
+
+  getMessages(firstMessageId).then((newMessages) => {
+    messagesStore.prependMessages(newMessages);
+  });
 }
 
 onMounted(() => {
