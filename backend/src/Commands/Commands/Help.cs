@@ -49,7 +49,9 @@ public class Help : Command
                     continue;
                 }
 
-                helpMessage.AppendLine($"    --{argument.Name} | -{argument.Name[0]} - {argument.Description}");
+                string alias = argument.Alias != null ? $"| -{argument.Alias}" : "";
+
+                helpMessage.AppendLine($"    --{argument.Name} {alias} - {argument.Description}");
             }
 
             helpMessage.AppendLine();

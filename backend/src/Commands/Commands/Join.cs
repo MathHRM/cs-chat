@@ -32,6 +32,7 @@ public class Join : Command
                 Description = "The chat to join",
                 ByPosition = true,
                 Position = 0,
+                Alias = "c",
             }
         },
         {
@@ -39,6 +40,7 @@ public class Join : Command
             new CommandArgument {
                 Name = "password",
                 Description = "The password of the chat",
+                Alias = "pass",
             }
         }
     };

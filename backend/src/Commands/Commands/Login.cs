@@ -32,7 +32,8 @@ public class Login : Command
             new CommandArgument {
                 Name = "username",
                 IsRequired = true,
-                Description = "The username to login with"
+                Description = "The username to login with",
+                Alias = "u",
             }
         },
         {
@@ -40,7 +41,8 @@ public class Login : Command
             new CommandArgument {
                 Name = "password",
                 IsRequired = true,
-                Description = "The password to login with"
+                Description = "The password to login with",
+                Alias = "pass",
             }
         }
     };

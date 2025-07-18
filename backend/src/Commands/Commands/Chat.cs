@@ -34,6 +34,7 @@ public class Chat : Command
                 Description = "The username to chat with",
                 ByPosition = true,
                 Position = 0,
+                Alias = "u",
             }
         }
     };

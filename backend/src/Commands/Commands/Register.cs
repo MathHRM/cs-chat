@@ -32,7 +32,8 @@ public class Register : Command
             new CommandArgument {
                 Name = "username",
                 IsRequired = true,
-                Description = "The username to register with"
+                Description = "The username to register with",
+                Alias = "u",
             }
         },
         {
@@ -40,7 +41,8 @@ public class Register : Command
             new CommandArgument {
                 Name = "password",
                 IsRequired = true,
-                Description = "The password to register with"
+                Description = "The password to register with",
+                Alias = "pass",
             }
         }
     };

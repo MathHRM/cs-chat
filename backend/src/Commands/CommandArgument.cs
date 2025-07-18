@@ -8,4 +8,5 @@ public class CommandArgument
     public bool ByPosition { get; set; } = false;
     public int Position { get; set; } = 0;
     public bool IsFlag { get; set; } = false;
+    public string? Alias { get; set; } = null;
 }

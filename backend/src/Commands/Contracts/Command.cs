@@ -44,14 +44,44 @@ public abstract class Command
             return args[arg.Position.ToString()];
         }
 
-        if (!arg.ByPosition && args.ContainsKey(arg.Name) && !arg.IsFlag)
+        if (!arg.ByPosition && ArgContains(arg, args) && !arg.IsFlag)
         {
-            return args[arg.Name];
+            return GetByNameOrAlias(arg, args);
         }
 
         if (arg.IsFlag)
         {
-            return args.ContainsKey(arg.Name) ? "true" : "false";
+            return ArgContains(arg, args) ? "true" : "false";
+        }
+
+        return null;
+    }
+
+    private bool ArgContains(CommandArgument arg, Dictionary<string, string> args)
+    {
+        if (args.ContainsKey(arg.Name))
+        {
+            return true;
+        }
+
+        if (arg.Alias != null && args.ContainsKey(arg.Alias))
+        {
+            return true;
+        }
+
+        return false;
+    }
+
+    private string? GetByNameOrAlias(CommandArgument arg, Dictionary<string, string> args)
+    {
+        if (args.ContainsKey(arg.Name))
+        {
+            return args[arg.Name];
+        }
+
+        if (arg.Alias != null && args.ContainsKey(arg.Alias))
+        {
+            return args[arg.Alias];
         }
 
         return null;

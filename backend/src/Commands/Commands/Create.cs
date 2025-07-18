@@ -31,6 +31,7 @@ public class Create : Command
                 Name = "private",
                 Description = "Whether the chat is private",
                 IsFlag = true,
+                Alias = "p",
             }
         },
         {
@@ -38,6 +39,7 @@ public class Create : Command
             new CommandArgument {
                 Name = "password",
                 Description = "The password of the chat",
+                Alias = "pass",
             }
         },
     };
