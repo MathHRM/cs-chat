@@ -62,6 +62,7 @@ builder.Services.AddScoped<UserRepository>();
 builder.Services.AddScoped<ChatRepository>();
 builder.Services.AddScoped<UserService>();
 builder.Services.AddScoped<ChatService>();
+builder.Services.AddScoped<MessageService>();
 
 // Add command services
 builder.Services.AddScoped<ICommandResolver, CommandResolver>();
