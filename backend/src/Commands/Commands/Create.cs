@@ -29,10 +29,7 @@ public class Create : Command
             "name",
             new CommandArgument {
                 Name = "name",
-                IsRequired = true,
                 Description = "The name of the chat to create",
-                ByPosition = true,
-                Position = 0,
             }
         },
         {
