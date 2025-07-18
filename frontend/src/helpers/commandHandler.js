@@ -59,6 +59,7 @@ function handleHelp(command) {
 function handleLogin(command) {
   const authStore = useAuthStore();
   const chatStore = useChatStore();
+  const messagesStore = useMessagesStore();
   const data = command.response;
 
   if (!data?.user?.id) {
@@ -69,6 +70,7 @@ function handleLogin(command) {
 
   authStore.setUser(data.user);
   chatStore.setChat(data.chat);
+  messagesStore.$reset();
   localStorage.setItem("@auth", `${data.token}`);
 
   router.push("/");
@@ -77,9 +79,11 @@ function handleLogin(command) {
 function handleLogout() {
   const authStore = useAuthStore();
   const chatStore = useChatStore();
+  const messagesStore = useMessagesStore();
 
   authStore.$reset();
   chatStore.$reset();
+  messagesStore.$reset();
   localStorage.removeItem("@auth");
 
   router.push("/login");
@@ -99,7 +103,7 @@ function handleJoin(command, t) {
   chatStore.setChat(data.chat);
 
   const messagesStore = useMessagesStore();
-  messagesStore.clearMessages();
+  messagesStore.$reset();
 
   alert(t("alerts.joined-chat", { chatId: data.chat.name }), 3);
 }
