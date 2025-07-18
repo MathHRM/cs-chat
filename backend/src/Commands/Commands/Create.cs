@@ -26,13 +26,6 @@ public class Create : Command
     public override Dictionary<string, CommandArgument>? Args => new Dictionary<string, CommandArgument>
     {
         {
-            "name",
-            new CommandArgument {
-                Name = "name",
-                Description = "The name of the chat to create",
-            }
-        },
-        {
             "private",
             new CommandArgument {
                 Name = "private",
@@ -51,7 +44,6 @@ public class Create : Command
 
     public override async Task<CommandResult> Handle(Dictionary<string, string?> args)
     {
-        var name = args["name"] as string;
         var isPrivate = (args["private"] as string) == "true";
         var password = args["password"] as string;
         var user = await _userService.GetUserByUsernameAsync(HubCallerContext.User.Identity.Name);
@@ -66,7 +58,7 @@ public class Create : Command
             return CommandResult.FailureResult("Password is required for private chats", CommandName);
         }
 
-        var chat = await _chatService.CreateChatAsync(name, new List<User> { user }, !isPrivate, true, password);
+        var chat = await _chatService.CreateChatAsync(new List<User> { user }, !isPrivate, true, password);
 
         await _userService.UpdateUserCurrentChatAsync(user, chat.Id, HubCallerContext, HubGroups);
 
@@ -79,7 +71,7 @@ public class Create : Command
                 Users = chat.ChatUsers.Select(cu => _mapper.Map<UserResponse>(cu.User)).ToList(),
             },
             Result = CommandResultEnum.Success,
-            Message = $"Chat {chat.Name} ({chat.Id}) created successfully",
+            Message = $"Chat {chat.Id} created successfully",
             Command = CommandName,
         };
     }

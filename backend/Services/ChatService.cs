@@ -32,7 +32,6 @@ namespace backend.Services
         }
 
         public async Task<Chat> CreateChatAsync(
-            string? name,
             List<User> users,
             bool isPublic,
             bool isGroup,
@@ -58,7 +57,6 @@ namespace backend.Services
             }
 
             chat.Id = isGroup ? GeneratePublicChatId() : GeneratePrivateChatId(users[0].Username, users[1].Username);
-            chat.Name = name;
             chat.Password = password != null && !isPublic ? BCrypt.Net.BCrypt.HashPassword(password) : null;
 
             await _context.Chats.AddAsync(chat);
