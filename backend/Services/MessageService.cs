@@ -37,16 +37,13 @@ namespace backend.Services
             return message;
         }
 
-        public async Task<IEnumerable<Message>> GetMessagesAsync(string chatId, int page = 1, int pageSize = 50)
+        public async Task<IEnumerable<Message>> GetMessagesAsync(string chatId, int? lastMessageId)
         {
-            if (page < 1) page = 1;
-            if (pageSize < 1) pageSize = 50;
-
             return await _context.Messages
                 .Where(m => m.ChatId == chatId)
-                .OrderBy(m => m.Id)
-                .Skip((page - 1) * pageSize)
-                .Take(pageSize)
+                .Where(m => lastMessageId == null || m.Id < lastMessageId)
+                .OrderByDescending(m => m.Id)
+                .Take(50)
                 .ToListAsync();
         }
     }

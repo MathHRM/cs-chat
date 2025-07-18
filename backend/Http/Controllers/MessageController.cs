@@ -26,7 +26,7 @@ public class MessageController : ControllerBase
 
     [HttpGet]
     [Authorize]
-    public async Task<ActionResult<IEnumerable<MessageResponse>>> GetMessages([FromQuery] int page = 1, [FromQuery] int pageSize = 50)
+    public async Task<ActionResult<IEnumerable<MessageResponse>>> GetMessages([FromQuery] int? lastMessageId = null)
     {
         var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
         var user = await _userService.GetUserByIdAsync(int.Parse(userId));
@@ -41,7 +41,7 @@ public class MessageController : ControllerBase
             return BadRequest("User does not have a current chat.");
         }
 
-        var messages = await _messageService.GetMessagesAsync(user.CurrentChatId, page, pageSize);
+        var messages = await _messageService.GetMessagesAsync(user.CurrentChatId, lastMessageId);
 
         return Ok(messages.Select(m => _mapper.Map<MessageResponse>(m)));
     }
