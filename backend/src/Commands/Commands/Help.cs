@@ -18,14 +18,12 @@ public class Help : Command
         _commandResolver = commandResolver;
     }
 
-    public override async Task<CommandResult> Handle(Dictionary<string, object?> args)
+    public override async Task<CommandResult> Handle(Dictionary<string, string?> args)
     {
         var helpMessage = new StringBuilder("Available commands:\n\n");
         var commands = _commandResolver.GetAllCommands();
 
-        var connection = args["connection"] as HubCallerContext;
-
-        if (connection == null || !(connection.User.Identity?.IsAuthenticated ?? false))
+        if (HubCallerContext == null || !(HubCallerContext.User.Identity?.IsAuthenticated ?? false))
         {
             commands = commands.Where(c => !c.RequiresAuthentication).ToList();
         }

@@ -38,18 +38,16 @@ public class Chat : Command
         }
     };
 
-    public override async Task<CommandResult> Handle(Dictionary<string, object?> args)
+    public override async Task<CommandResult> Handle(Dictionary<string, string?> args)
     {
         var targetUsername = args["username"] as string;
-        var connection = args["connection"] as HubCallerContext;
-        var groups = args["groups"] as IGroupManager;
 
-        if (connection == null)
+        if (HubCallerContext == null)
         {
             return CommandResult.UnauthorizedResult(CommandName);
         }
 
-        var currentUser = await _userService.GetUserByUsernameAsync(connection.User.Identity?.Name);
+        var currentUser = await _userService.GetUserByUsernameAsync(HubCallerContext.User.Identity?.Name);
         if (currentUser == null)
         {
             return CommandResult.UnauthorizedResult(CommandName);
@@ -70,7 +68,7 @@ public class Chat : Command
         var existingChat = await _chatService.GetChatByIdAsync(chatId);
         if (existingChat != null)
         {
-            await _userService.UpdateUserCurrentChatAsync(currentUser, chatId, connection, groups);
+            await _userService.UpdateUserCurrentChatAsync(currentUser, chatId, HubCallerContext, HubGroups);
 
             return new JoinResult
             {
@@ -100,7 +98,7 @@ public class Chat : Command
             return CommandResult.FailureResult("Failed to create chat", CommandName);
         }
 
-        await _userService.UpdateUserCurrentChatAsync(currentUser, createdChat.Id, connection, groups);
+        await _userService.UpdateUserCurrentChatAsync(currentUser, createdChat.Id, HubCallerContext, HubGroups);
 
         return new JoinResult
         {

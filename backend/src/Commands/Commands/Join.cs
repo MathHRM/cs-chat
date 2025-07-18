@@ -8,7 +8,6 @@ namespace backend.Commands;
 public class Join : Command
 {
     private readonly UserService _userService;
-    private readonly TokenService _tokenService;
     private readonly ChatService _chatService;
     private readonly IMapper _mapper;
 
@@ -16,10 +15,9 @@ public class Join : Command
 
     public override string Description => "Join a chat";
 
-    public Join(UserService userService, TokenService tokenService, ChatService chatService, IMapper mapper)
+    public Join(UserService userService, ChatService chatService, IMapper mapper)
     {
         _userService = userService;
-        _tokenService = tokenService;
         _chatService = chatService;
         _mapper = mapper;
     }
@@ -45,19 +43,17 @@ public class Join : Command
         }
     };
 
-    public override async Task<CommandResult> Handle(Dictionary<string, object?> args)
+    public override async Task<CommandResult> Handle(Dictionary<string, string?> args)
     {
         var chatId = args["chatId"] as string;
         var password = args["password"] as string;
-        var connection = args["connection"] as HubCallerContext;
-        var groups = args["groups"] as IGroupManager;
 
-        if (connection == null)
+        if (HubCallerContext == null)
         {
             return CommandResult.UnauthorizedResult(CommandName);
         }
 
-        var user = await _userService.GetUserByUsernameAsync(connection.User.Identity?.Name);
+        var user = await _userService.GetUserByUsernameAsync(HubCallerContext.User.Identity?.Name);
 
         if (user.CurrentChat.Id == chatId)
         {
@@ -88,7 +84,7 @@ public class Join : Command
 
         await _chatService.JoinChatAsync(chat.Id, user.Id);
 
-        await _userService.UpdateUserCurrentChatAsync(user, chat.Id, connection, groups);
+        await _userService.UpdateUserCurrentChatAsync(user, chat.Id, HubCallerContext, HubGroups);
 
         return new JoinResult
         {

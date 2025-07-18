@@ -1,11 +1,15 @@
 using backend.Commands;
+using Microsoft.AspNetCore.SignalR;
 
 public abstract class Command
 {
     public abstract string CommandName { get; }
     public abstract string Description { get; }
+    public HubCallerContext? HubCallerContext { get; set; }
+    public IGroupManager? HubGroups { get; set; }
+    public HttpContext? HttpContext { get; set; }
     public abstract Dictionary<string, CommandArgument>? Args { get; }
-    public abstract Task<CommandResult> Handle(Dictionary<string, object?> args);
+    public abstract Task<CommandResult> Handle(Dictionary<string, string?> args);
     public virtual bool RequiresAuthentication => true;
 
     public CommandArgsResult ValidateArguments(Dictionary<string, string> args)

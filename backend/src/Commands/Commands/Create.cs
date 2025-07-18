@@ -52,16 +52,14 @@ public class Create : Command
         },
     };
 
-    public override async Task<CommandResult> Handle(Dictionary<string, object?> args)
+    public override async Task<CommandResult> Handle(Dictionary<string, string?> args)
     {
         var name = args["name"] as string;
         var isPrivate = (args["private"] as string) == "true";
         var password = args["password"] as string;
-        var connection = args["connection"] as HubCallerContext;
-        var groups = args["groups"] as IGroupManager;
-        var user = await _userService.GetUserByUsernameAsync(connection.User.Identity.Name);
+        var user = await _userService.GetUserByUsernameAsync(HubCallerContext.User.Identity.Name);
 
-        if (connection == null)
+        if (HubCallerContext == null)
         {
             return CommandResult.UnauthorizedResult(CommandName);
         }
@@ -73,7 +71,7 @@ public class Create : Command
 
         var chat = await _chatService.CreateChatAsync(name, new List<User> { user }, !isPrivate, true, password);
 
-        await _userService.UpdateUserCurrentChatAsync(user, chat.Id, connection, groups);
+        await _userService.UpdateUserCurrentChatAsync(user, chat.Id, HubCallerContext, HubGroups);
 
         return new JoinResult
         {

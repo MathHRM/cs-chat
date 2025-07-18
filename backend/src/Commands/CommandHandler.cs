@@ -55,10 +55,9 @@ public class CommandHandler
             );
         }
 
-        validationResult.Args.Add("connection", connection);
-        validationResult.Args.Add("groups", groups);
-        validationResult.Args.Add("httpContext", httpContext);
-
+        command.HubCallerContext = connection;
+        command.HubGroups = groups;
+        command.HttpContext = httpContext;
         var result = await command.Handle(validationResult.Args);
 
         return result;
