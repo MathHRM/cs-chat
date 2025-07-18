@@ -15,6 +15,7 @@ namespace backend.Repository
         public async Task<User?> GetUserByIdAsync(int id)
         {
             return await _context.Users
+                .Include(u => u.CurrentChat)
                 .Include(u => u.ChatUsers)
                 .ThenInclude(cu => cu.Chat)
                 .FirstOrDefaultAsync(u => u.Id == id);
