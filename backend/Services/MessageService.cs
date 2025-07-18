@@ -42,7 +42,9 @@ namespace backend.Services
             return await _context.Messages
                 .Where(m => m.ChatId == chatId)
                 .Where(m => lastMessageId == null || m.Id < lastMessageId)
-                .OrderBy(m => m.Id)
+                .Include(m => m.User)
+                .Include(m => m.Chat)
+                .OrderByDescending(m => m.Id)
                 .Take(50)
                 .ToListAsync();
         }

@@ -8,6 +8,8 @@ export const getMessages = async (lastMessageId = null) => {
       },
     });
 
+    console.log(data);
+
     return data;
   } catch (err) {
     console.log(err);

@@ -43,6 +43,6 @@ public class MessageController : ControllerBase
 
         var messages = await _messageService.GetMessagesAsync(user.CurrentChatId, lastMessageId);
 
-        return Ok(messages.Select(m => _mapper.Map<MessageResponse>(m)));
+        return Ok(messages.Select(m => _mapper.Map<MessageResponse>(m)).Reverse());
     }
 }
