@@ -12,18 +12,6 @@ public class Message
     public int UserId { get; set; }
     public User User { get; set; } = null!;
     public string Content { get; set; }
-    public DateTime CreatedAT { get; set; } = DateTime.Now;
+    public DateTime CreatedAT { get; set; } = DateTime.UtcNow;
     public MessageType Type { get; set; } = MessageType.Text;
-
-    public Message()
-    {
-    }
-
-    public Message(int id, string chatId, int userId, string content)
-    {
-        Id = id;
-        ChatId = chatId;
-        UserId = userId;
-        Content = content;
-    }
 }
