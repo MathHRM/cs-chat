@@ -3,6 +3,7 @@ import { useAuthStore } from "@/stores/auth";
 import { useChatStore } from "@/stores/chat";
 import { useMessagesStore } from "@/stores/messages";
 import router from "@/routes";
+import { useCommandHistoryStore } from "@/stores/commandHistory";
 
 export default function handleCommand(command, t) {
   console.log(command);
@@ -60,6 +61,7 @@ function handleLogin(command) {
   const authStore = useAuthStore();
   const chatStore = useChatStore();
   const messagesStore = useMessagesStore();
+  const commandHistoryStore = useCommandHistoryStore();
   const data = command.response;
 
   if (!data?.user?.id) {
@@ -71,6 +73,7 @@ function handleLogin(command) {
   authStore.setUser(data.user);
   chatStore.setChat(data.chat);
   messagesStore.$reset();
+  commandHistoryStore.$reset();
   localStorage.setItem("@auth", `${data.token}`);
 
   router.push("/");
@@ -80,10 +83,12 @@ function handleLogout() {
   const authStore = useAuthStore();
   const chatStore = useChatStore();
   const messagesStore = useMessagesStore();
+  const commandHistoryStore = useCommandHistoryStore();
 
   authStore.$reset();
   chatStore.$reset();
   messagesStore.$reset();
+  commandHistoryStore.$reset();
   localStorage.removeItem("@auth");
 
   router.push("/login");

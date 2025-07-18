@@ -10,6 +10,8 @@
       ref="terminalInput"
       v-model="currentInput"
       @keyup.enter="handleSend"
+      @keyup.up="handleUp"
+      @keyup.down="handleDown"
       @input="handleInput"
       class="terminal-input"
       autofocus
@@ -22,6 +24,8 @@
 import { ref, onMounted, defineEmits, computed, defineProps } from "vue";
 import { useAuthStore } from "@/stores/auth";
 import { useChatStore } from "@/stores/chat";
+import { saveCommandHistory, nextCommand, previousCommand } from "@/helpers/commandHistoryHelper";
+import { isCommand } from "@/helpers/messageHandler";
 
 defineProps({
   chat: {
@@ -43,13 +47,28 @@ const showCursor = ref(true);
 const terminalInput = ref(null);
 
 const handleSend = () => {
-  if (currentInput.value.trim()) {
-    emit("send-message", currentInput.value.trim());
+  const message = currentInput.value.trim();
+
+  if (message) {
+    emit("send-message", message);
     currentInput.value = "";
   }
+
+  if (isCommand(message)) {
+    saveCommandHistory(message);
+  }
+
   if (terminalInput.value) {
     terminalInput.value.focus();
   }
+};
+
+const handleUp = () => {
+  currentInput.value = nextCommand();
+};
+
+const handleDown = () => {
+  currentInput.value = previousCommand();
 };
 
 const handleInput = () => {

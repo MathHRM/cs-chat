@@ -15,9 +15,13 @@ import { getUser } from "@/api/getUser";
 import { getChat } from "@/api/getChat";
 import { useChatStore } from "@/stores/chat";
 import router from "@/routes";
+import { useCommandHistoryStore } from "@/stores/commandHistory";
+import { useMessagesStore } from "./stores/messages";
 
 const authStore = useAuthStore();
 const chatStore = useChatStore();
+useCommandHistoryStore();
+useMessagesStore();
 
 onMounted(async () => {
   const token = localStorage.getItem("@auth");
