@@ -1,6 +1,6 @@
 import axios from "axios";
 
-export const getMessages = async (lastMessageId = 0) => {
+export const getMessages = async (lastMessageId = null) => {
   try {
     const { data } = await axios.get(`/messages`, {
       params: {

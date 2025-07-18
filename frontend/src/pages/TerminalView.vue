@@ -17,6 +17,7 @@ import handleMessage from "@/helpers/messageHandler";
 import { useChatStore } from "@/stores/chat";
 import { useI18n } from "vue-i18n";
 import { useMessagesStore } from "@/stores/messages";
+import { getMessages } from "@/api/getMessages";
 
 const { t } = useI18n();
 
@@ -47,5 +48,9 @@ onMounted(() => {
       });
     })
     .catch((e) => console.log("Error: Connection failed", e));
+
+  getMessages().then((messages) => {
+    messagesStore.setMessages(messages);
+  });
 });
 </script>
