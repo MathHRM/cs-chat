@@ -70,11 +70,7 @@ public class Chat : Command
         var existingChat = await _chatService.GetChatByIdAsync(chatId);
         if (existingChat != null)
         {
-            currentUser.CurrentChatId = chatId;
-            await _userService.UpdateUserAsync(currentUser.Id, currentUser);
-
-            await RemoveUserFromOtherChats(chatId, connection, groups);
-            await groups.AddToGroupAsync(connection.ConnectionId, chatId);
+            await _userService.UpdateUserCurrentChatAsync(currentUser, chatId, connection, groups);
 
             return new JoinResult
             {
@@ -104,11 +100,7 @@ public class Chat : Command
             return CommandResult.FailureResult("Failed to create chat", CommandName);
         }
 
-        currentUser.CurrentChatId = createdChat.Id;
-        await _userService.UpdateUserAsync(currentUser.Id, currentUser);
-
-        await RemoveUserFromOtherChats(createdChat.Id, connection, groups);
-        await groups.AddToGroupAsync(connection.ConnectionId, createdChat.Id);
+        await _userService.UpdateUserCurrentChatAsync(currentUser, createdChat.Id, connection, groups);
 
         return new JoinResult
         {
@@ -122,18 +114,5 @@ public class Chat : Command
             Message = "Chat created successfully",
             Command = CommandName,
         };
-    }
-
-    private async Task RemoveUserFromOtherChats(string chatId, HubCallerContext connection, IGroupManager groups)
-    {
-        var username = connection.User.Identity.Name;
-        var user = await _userService.GetUserWithChatsAsync(username);
-
-        Logger.Info($"Removing user {username} from other chats: {chatId}");
-
-        foreach (var chatUser in user.ChatUsers.Where(cu => cu.ChatId != chatId))
-        {
-            await groups.RemoveFromGroupAsync(connection.ConnectionId, chatUser.ChatId);
-        }
     }
 }

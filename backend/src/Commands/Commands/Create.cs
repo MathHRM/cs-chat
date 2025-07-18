@@ -9,7 +9,6 @@ namespace backend.Commands;
 public class Create : Command
 {
     private readonly UserService _userService;
-    private readonly TokenService _tokenService;
     private readonly ChatService _chatService;
     private readonly IMapper _mapper;
 
@@ -17,10 +16,9 @@ public class Create : Command
 
     public override string Description => "Create a chat";
 
-    public Create(UserService userService, TokenService tokenService, ChatService chatService, IMapper mapper)
+    public Create(UserService userService, ChatService chatService, IMapper mapper)
     {
         _userService = userService;
-        _tokenService = tokenService;
         _chatService = chatService;
         _mapper = mapper;
     }
@@ -75,6 +73,8 @@ public class Create : Command
 
         var chat = await _chatService.CreateChatAsync(name, new List<User> { user }, !isPrivate, true, password);
 
+        await _userService.UpdateUserCurrentChatAsync(user, chat.Id, connection, groups);
+
         return new JoinResult
         {
             Response = new ChatUserResponse
@@ -87,18 +87,5 @@ public class Create : Command
             Message = $"Chat {chat.Name} ({chat.Id}) created successfully",
             Command = CommandName,
         };
-    }
-
-    private async Task RemoveUserFromOtherChats(string chatId, HubCallerContext connection, IGroupManager groups)
-    {
-        var username = connection.User.Identity.Name;
-        var user = await _userService.GetUserWithChatsAsync(username);
-
-        Logger.Info($"Removing user {username} from other chats: {chatId}");
-
-        foreach (var chatUser in user.ChatUsers.Where(cu => cu.ChatId != chatId))
-        {
-            await groups.RemoveFromGroupAsync(connection.ConnectionId, chatUser.ChatId);
-        }
     }
 }

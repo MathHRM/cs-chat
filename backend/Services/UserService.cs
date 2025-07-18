@@ -1,5 +1,6 @@
 using backend.Models;
 using backend.Repository;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 
 namespace backend.Services
@@ -121,6 +122,28 @@ namespace backend.Services
                 .Include(u => u.ChatUsers)
                 .ThenInclude(chatUser => chatUser.Chat)
                 .FirstOrDefaultAsync(u => u.Username == username);
+        }
+
+        public async Task UpdateUserCurrentChatAsync(User user, string chatId, HubCallerContext connection, IGroupManager groups)
+        {
+            user.CurrentChatId = chatId;
+            await UpdateUserAsync(user.Id, user);
+
+            await RemoveUserFromOtherChats(chatId, connection, groups);
+            await groups.AddToGroupAsync(connection.ConnectionId, chatId);
+        }
+
+        private async Task RemoveUserFromOtherChats(string chatId, HubCallerContext connection, IGroupManager groups)
+        {
+            var username = connection.User.Identity.Name;
+            var user = await GetUserWithChatsAsync(username);
+
+            Logger.Info($"Removing user {username} from other chats: {chatId}");
+
+            foreach (var chatUser in user.ChatUsers.Where(cu => cu.ChatId != chatId))
+            {
+                await groups.RemoveFromGroupAsync(connection.ConnectionId, chatUser.ChatId);
+            }
         }
     }
 }

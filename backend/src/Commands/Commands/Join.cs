@@ -88,11 +88,7 @@ public class Join : Command
 
         await _chatService.JoinChatAsync(chat.Id, user.Id);
 
-        user.CurrentChatId = chat.Id;
-        await _userService.UpdateUserAsync(user.Id, user);
-
-        await RemoveUserFromOtherChats(chat.Id, connection, groups);
-        await groups.AddToGroupAsync(connection.ConnectionId, chat.Id);
+        await _userService.UpdateUserCurrentChatAsync(user, chat.Id, connection, groups);
 
         return new JoinResult
         {
@@ -106,18 +102,5 @@ public class Join : Command
             Message = "Chat joined successfully",
             Command = CommandName,
         };
-    }
-
-    private async Task RemoveUserFromOtherChats(string chatId, HubCallerContext connection, IGroupManager groups)
-    {
-        var username = connection.User.Identity.Name;
-        var user = await _userService.GetUserWithChatsAsync(username);
-
-        Logger.Info($"Removing user {username} from other chats: {chatId}");
-
-        foreach (var chatUser in user.ChatUsers.Where(cu => cu.ChatId != chatId))
-        {
-            await groups.RemoveFromGroupAsync(connection.ConnectionId, chatUser.ChatId);
-        }
     }
 }
