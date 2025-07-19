@@ -10,7 +10,8 @@ public abstract class Command
     public HttpContext? HttpContext { get; set; }
     public abstract Dictionary<string, CommandArgument>? Args { get; }
     public abstract Task<CommandResult> Handle(Dictionary<string, string?> args);
-    public virtual bool RequiresAuthentication => true;
+    public virtual bool ForAuthenticatedUsers => false;
+    public virtual bool ForGuestUsers => false;
 
     public bool UserIsAuthenticated
     {

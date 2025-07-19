@@ -33,10 +33,7 @@ public class CommandHandler
             return CommandResult.FailureResult("Command not found", commandName);
         }
 
-        if (
-            (command.RequiresAuthentication && !UserIsAuthenticated(connection, httpContext)) ||
-            (!command.RequiresAuthentication && UserIsAuthenticated(connection, httpContext))
-        )
+        if (!UserCanUseCommand(command, connection, httpContext))
         {
             return CommandResult.FailureResult("Invalid command", command.CommandName);
         }
@@ -127,5 +124,20 @@ public class CommandHandler
         }
 
         return false;
+    }
+
+    public bool UserCanUseCommand(Command command, HubCallerContext? hubCallerContext, HttpContext? httpContext)
+    {
+        if (command.ForAuthenticatedUsers && !UserIsAuthenticated(hubCallerContext, httpContext) && !command.ForGuestUsers)
+        {
+            return false;
+        }
+
+        if (command.ForGuestUsers && UserIsAuthenticated(hubCallerContext, httpContext) && !command.ForAuthenticatedUsers)
+        {
+            return false;
+        }
+
+        return true;
     }
 }

@@ -15,6 +15,9 @@ public class Join : Command
 
     public override string Description => "Join a chat";
 
+    public override bool ForAuthenticatedUsers => true;
+    public override bool ForGuestUsers => false;
+
     public Join(UserService userService, ChatService chatService, IMapper mapper)
     {
         _userService = userService;

@@ -16,6 +16,9 @@ public class Create : Command
 
     public override string Description => "Create a chat";
 
+    public override bool ForAuthenticatedUsers => true;
+    public override bool ForGuestUsers => false;
+
     public Create(UserService userService, ChatService chatService, IMapper mapper)
     {
         _userService = userService;

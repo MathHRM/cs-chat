@@ -15,7 +15,8 @@ public class Login : Command
 
     public override string Description => "Login to the system";
 
-    public override bool RequiresAuthentication => false;
+    public override bool ForAuthenticatedUsers => false;
+    public override bool ForGuestUsers => true;
 
     public Login(UserService userService, TokenService tokenService, ChatService chatService, IMapper mapper)
     {

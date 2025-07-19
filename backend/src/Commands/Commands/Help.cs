@@ -11,7 +11,8 @@ public class Help : Command
     public override string CommandName => "help";
     public override string Description => "Show help for all commands";
     public override Dictionary<string, CommandArgument>? Args => null;
-    public override bool RequiresAuthentication => false;
+    public override bool ForAuthenticatedUsers => true;
+    public override bool ForGuestUsers => true;
 
     public Help(ICommandResolver commandResolver)
     {
@@ -77,9 +78,9 @@ public class Help : Command
     {
         if (UserIsAuthenticated)
         {
-            return _commandResolver.GetAllCommands().Where(c => c.RequiresAuthentication).ToList();
+            return _commandResolver.GetAllCommands().Where(c => c.ForAuthenticatedUsers).ToList();
         }
 
-        return _commandResolver.GetAllCommands().Where(c => !c.RequiresAuthentication).ToList();
+        return _commandResolver.GetAllCommands().Where(c => c.ForGuestUsers).ToList();
     }
 }

@@ -16,6 +16,9 @@ public class Chat : Command
 
     public override string Description => "Chat with a user";
 
+    public override bool ForAuthenticatedUsers => true;
+    public override bool ForGuestUsers => false;
+
     public Chat(UserService userService, TokenService tokenService, ChatService chatService, IMapper mapper)
     {
         _userService = userService;
