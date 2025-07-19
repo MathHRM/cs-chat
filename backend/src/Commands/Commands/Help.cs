@@ -20,8 +20,10 @@ public class Help : Command
 
     public override async Task<CommandResult> Handle(Dictionary<string, string?> args)
     {
-        var helpMessage = new StringBuilder("Available commands:\n\n");
         var commands = _commandResolver.GetAllCommands();
+        var helpMessage = new StringBuilder("Available commands:\n\n")
+            .AppendLine("    For multiple word names, use quotes.")
+            .AppendLine();
 
         if (HubCallerContext == null || !(HubCallerContext.User.Identity?.IsAuthenticated ?? false))
         {
