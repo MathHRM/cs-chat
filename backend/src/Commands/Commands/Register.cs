@@ -15,7 +15,8 @@ public class Register : Command
 
     public override string Description => "Register a new user";
 
-    public override bool RequiresAuthentication => false;
+    public override bool ForAuthenticatedUsers => false;
+    public override bool ForGuestUsers => true;
 
     public Register(UserService userService, TokenService tokenService, ChatService chatService, IMapper mapper)
     {

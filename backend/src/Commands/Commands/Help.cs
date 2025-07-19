@@ -11,7 +11,8 @@ public class Help : Command
     public override string CommandName => "help";
     public override string Description => "Show help for all commands";
     public override Dictionary<string, CommandArgument>? Args => null;
-    public override bool RequiresAuthentication => false;
+    public override bool ForAuthenticatedUsers => true;
+    public override bool ForGuestUsers => true;
 
     public Help(ICommandResolver commandResolver)
     {
@@ -20,13 +21,10 @@ public class Help : Command
 
     public override async Task<CommandResult> Handle(Dictionary<string, string?> args)
     {
-        var helpMessage = new StringBuilder("Available commands:\n\n");
-        var commands = _commandResolver.GetAllCommands();
-
-        if (HubCallerContext == null || !(HubCallerContext.User.Identity?.IsAuthenticated ?? false))
-        {
-            commands = commands.Where(c => !c.RequiresAuthentication).ToList();
-        }
+        var commands = CommandsForUser();
+        var helpMessage = new StringBuilder("Available commands:\n\n")
+            .AppendLine("    For multiple word names, use quotes.")
+            .AppendLine();
 
         foreach (var command in commands)
         {
@@ -74,5 +72,15 @@ public class Help : Command
             },
             Command = CommandName
         };
+    }
+
+    private List<Command> CommandsForUser()
+    {
+        if (UserIsAuthenticated)
+        {
+            return _commandResolver.GetAllCommands().Where(c => c.ForAuthenticatedUsers).ToList();
+        }
+
+        return _commandResolver.GetAllCommands().Where(c => c.ForGuestUsers).ToList();
     }
 }

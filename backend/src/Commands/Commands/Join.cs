@@ -15,6 +15,9 @@ public class Join : Command
 
     public override string Description => "Join a chat";
 
+    public override bool ForAuthenticatedUsers => true;
+    public override bool ForGuestUsers => false;
+
     public Join(UserService userService, ChatService chatService, IMapper mapper)
     {
         _userService = userService;
@@ -74,17 +77,21 @@ public class Join : Command
             return CommandResult.FailureResult("Chat is not a group to join", CommandName);
         }
 
-        if (!chat.IsPublic && password == null)
+        var userBelongsToChat = await _chatService.UserBelongsToChatAsync(user.Id, chat.Id);
+
+        if (!userBelongsToChat && chat.Password != null && password == null)
         {
             return CommandResult.FailureResult("Chat is private and no password provided", CommandName);
         }
 
-        if (chat.Password != null && !BCrypt.Net.BCrypt.Verify(password, chat.Password))
+        if (!userBelongsToChat && chat.Password != null && !BCrypt.Net.BCrypt.Verify(password, chat.Password))
         {
             return CommandResult.FailureResult("Invalid password", CommandName);
         }
 
-        await _chatService.JoinChatAsync(chat.Id, user.Id);
+        if (!userBelongsToChat) {
+            await _chatService.JoinChatAsync(chat.Id, user.Id);
+        }
 
         await _userService.UpdateUserCurrentChatAsync(user, chat.Id, HubCallerContext, HubGroups);
 

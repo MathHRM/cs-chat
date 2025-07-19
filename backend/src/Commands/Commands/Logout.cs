@@ -7,7 +7,8 @@ public class Logout : Command
     public override string CommandName => "logout";
     public override string Description => "Logout from the chat";
     public override Dictionary<string, CommandArgument>? Args => null;
-    public override bool RequiresAuthentication => true;
+    public override bool ForAuthenticatedUsers => true;
+    public override bool ForGuestUsers => false;
 
     public override async Task<CommandResult> Handle(Dictionary<string, string?> args)
     {

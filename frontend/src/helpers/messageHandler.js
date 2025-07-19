@@ -29,6 +29,7 @@ export default function handleMessage(
       },
       chat: {
         id: chat.id,
+        name: chat.name,
       },
     });
   }
