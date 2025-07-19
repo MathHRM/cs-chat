@@ -34,11 +34,8 @@ public class CommandHandler
         }
 
         if (
-            command.RequiresAuthentication &&
-            !(
-                (connection?.User.Identity?.IsAuthenticated ?? false) ||
-                (httpContext?.User.Identity?.IsAuthenticated ?? false)
-            )
+            (command.RequiresAuthentication && !UserIsAuthenticated(connection, httpContext)) ||
+            (!command.RequiresAuthentication && UserIsAuthenticated(connection, httpContext))
         )
         {
             return CommandResult.FailureResult("Invalid command", command.CommandName);
@@ -115,5 +112,20 @@ public class CommandHandler
     public bool IsCommand(string input)
     {
         return !string.IsNullOrWhiteSpace(input) && input.Trim().StartsWith("/");
+    }
+
+    public bool UserIsAuthenticated(HubCallerContext? hubCallerContext, HttpContext? httpContext)
+    {
+        if (hubCallerContext != null && hubCallerContext.User?.Identity?.IsAuthenticated == true)
+        {
+            return true;
+        }
+
+        if (httpContext != null && httpContext.User?.Identity?.IsAuthenticated == true)
+        {
+            return true;
+        }
+
+        return false;
     }
 }
