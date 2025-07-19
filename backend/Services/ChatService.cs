@@ -131,6 +131,11 @@ namespace backend.Services
             return chat;
         }
 
+        public async Task<bool> UserBelongsToChatAsync(int userId, string chatId)
+        {
+            return await _context.ChatUsers.AnyAsync(cu => cu.UserId == userId && cu.ChatId == chatId);
+        }
+
         public string GeneratePrivateChatId(string username1, string username2)
         {
             if (username1.CompareTo(username2) > 0)
