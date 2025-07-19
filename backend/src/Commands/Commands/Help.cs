@@ -20,15 +20,10 @@ public class Help : Command
 
     public override async Task<CommandResult> Handle(Dictionary<string, string?> args)
     {
-        var commands = _commandResolver.GetAllCommands();
+        var commands = CommandsForUser();
         var helpMessage = new StringBuilder("Available commands:\n\n")
             .AppendLine("    For multiple word names, use quotes.")
             .AppendLine();
-
-        if (HubCallerContext == null || !(HubCallerContext.User.Identity?.IsAuthenticated ?? false))
-        {
-            commands = commands.Where(c => !c.RequiresAuthentication).ToList();
-        }
 
         foreach (var command in commands)
         {
@@ -76,5 +71,15 @@ public class Help : Command
             },
             Command = CommandName
         };
+    }
+
+    private List<Command> CommandsForUser()
+    {
+        if (UserIsAuthenticated)
+        {
+            return _commandResolver.GetAllCommands().Where(c => c.RequiresAuthentication).ToList();
+        }
+
+        return _commandResolver.GetAllCommands().Where(c => !c.RequiresAuthentication).ToList();
     }
 }
