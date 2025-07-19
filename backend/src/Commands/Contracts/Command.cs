@@ -12,7 +12,7 @@ public abstract class Command
     public abstract Task<CommandResult> Handle(Dictionary<string, string?> args);
     public virtual bool RequiresAuthentication => true;
 
-    public CommandArgsResult ValidateArguments(Dictionary<string, string> args)
+    public CommandArgsResult ValidateArguments(Dictionary<string, string?> args)
     {
         var result = new CommandArgsResult();
 
@@ -25,6 +25,7 @@ public abstract class Command
         {
             var argName = arg.Value.Name;
             var argValue = GetArgValue(arg.Value, args);
+            argValue = string.IsNullOrEmpty(argValue) ? null : argValue;
 
             if (argValue == null && arg.Value.IsRequired)
             {
@@ -37,7 +38,7 @@ public abstract class Command
         return result;
     }
 
-    private string? GetArgValue(CommandArgument arg, Dictionary<string, string> args)
+    private string? GetArgValue(CommandArgument arg, Dictionary<string, string?> args)
     {
         if (arg.ByPosition && args.ContainsKey(arg.Position.ToString()) && !arg.IsFlag)
         {
@@ -51,13 +52,13 @@ public abstract class Command
 
         if (arg.IsFlag)
         {
-            return ArgContains(arg, args) ? "true" : "false";
+            return ArgContains(arg, args) ? "true" : null;
         }
 
         return null;
     }
 
-    private bool ArgContains(CommandArgument arg, Dictionary<string, string> args)
+    private bool ArgContains(CommandArgument arg, Dictionary<string, string?> args)
     {
         if (args.ContainsKey(arg.Name))
         {
@@ -72,7 +73,7 @@ public abstract class Command
         return false;
     }
 
-    private string? GetByNameOrAlias(CommandArgument arg, Dictionary<string, string> args)
+    private string? GetByNameOrAlias(CommandArgument arg, Dictionary<string, string?> args)
     {
         if (args.ContainsKey(arg.Name))
         {

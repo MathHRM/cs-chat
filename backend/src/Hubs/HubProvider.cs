@@ -12,12 +12,14 @@ public class HubProvider : Hub<IHubProvider>
     private readonly UserService _userService;
     private readonly CommandHandler _commandHandler;
     private readonly IMapper _mapper;
+    private readonly MessageService _messageService;
 
-    public HubProvider(UserService userService, CommandHandler commandHandler, IMapper mapper)
+    public HubProvider(UserService userService, CommandHandler commandHandler, IMapper mapper, MessageService messageService)
     {
         _userService = userService;
         _commandHandler = commandHandler;
         _mapper = mapper;
+        _messageService = messageService;
     }
 
     public override async Task OnConnectedAsync()
@@ -50,14 +52,9 @@ public class HubProvider : Hub<IHubProvider>
             return;
         }
 
-        await Clients.Group(user.CurrentChatId!).ReceivedMessage(new MessageResponse
-        {
-            User = _mapper.Map<UserResponse>(user),
-            Content = message.Content,
-            Type = message.Type,
-            CreatedAt = DateTime.UtcNow,
-            Chat = _mapper.Map<ChatResponse>(user.CurrentChat)
-        });
+        var messageModel = await _messageService.CreateMessageAsync(user.CurrentChat!, user, message.Content, message.Type);
+
+        await Clients.Group(user.CurrentChatId!).ReceivedMessage(_mapper.Map<MessageResponse>(messageModel));
     }
 
     private async Task HandleGuestUser(Message message)

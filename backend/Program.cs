@@ -21,7 +21,9 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddSignalR();
 
 builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("JwtSettings"));
+builder.Services.Configure<AllowedConfig>(builder.Configuration.GetSection("AllowedConfig"));
 var jwtSettings = builder.Configuration.GetSection("JwtSettings").Get<JwtSettings>();
+var allowedConfig = builder.Configuration.GetSection("AllowedConfig").Get<AllowedConfig>();
 
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
@@ -62,6 +64,7 @@ builder.Services.AddScoped<UserRepository>();
 builder.Services.AddScoped<ChatRepository>();
 builder.Services.AddScoped<UserService>();
 builder.Services.AddScoped<ChatService>();
+builder.Services.AddScoped<MessageService>();
 
 // Add command services
 builder.Services.AddScoped<ICommandResolver, CommandResolver>();
@@ -89,7 +92,7 @@ app.UseCors(cors =>
 {
     cors.AllowAnyHeader()
     .AllowAnyMethod()
-    .AllowCredentials().WithOrigins("http://localhost:8080");
+    .AllowCredentials().WithOrigins(allowedConfig.Origins);
 });
 
 app.UseHttpsRedirection();

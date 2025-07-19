@@ -63,14 +63,14 @@ public class CommandHandler
         return result;
     }
 
-    public static Dictionary<string, string>? ParseCommand(string input)
+    public static Dictionary<string, string?>? ParseCommand(string input)
     {
         if (string.IsNullOrWhiteSpace(input) || !input.Trim().StartsWith("/"))
         {
             return null;
         }
 
-        var results = new Dictionary<string, string>();
+        var results = new Dictionary<string, string?>();
 
         var parts = Regex.Matches(input, @"[\""].+?[\""]|[^ ]+")
             .Cast<Match>()
@@ -100,7 +100,7 @@ public class CommandHandler
                     continue;
                 }
 
-                results[argName] = "true";
+                results[argName] = null;
 
                 continue;
             }

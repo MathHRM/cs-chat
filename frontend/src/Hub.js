@@ -5,7 +5,7 @@ export default class Hub {
         this.loginToken = localStorage.getItem('@auth');
 
         this.connection = new HubConnectionBuilder()
-            .withUrl('http://localhost:5136/Hub', { accessTokenFactory: () => this.loginToken })
+            .withUrl(`${process.env.VUE_APP_API_URL}/Hub`, { accessTokenFactory: () => this.loginToken })
             .configureLogging(LogLevel.Information)
             .build();
     }
