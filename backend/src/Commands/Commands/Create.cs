@@ -26,12 +26,32 @@ public class Create : Command
     public override Dictionary<string, CommandArgument>? Args => new Dictionary<string, CommandArgument>
     {
         {
+            "name",
+            new CommandArgument {
+                Name = "name",
+                Description = "The name of the chat",
+                Alias = "n",
+                IsRequired = true,
+                ByPosition = true,
+                Position = 0,
+            }
+        },
+        {
             "private",
             new CommandArgument {
                 Name = "private",
                 Description = "Whether the chat is private",
                 IsFlag = true,
                 Alias = "p",
+            }
+        },
+        {
+            "description",
+            new CommandArgument {
+                Name = "description",
+                Description = "The description of the chat",
+                IsFlag = true,
+                Alias = "d",
             }
         },
         {
@@ -46,7 +66,9 @@ public class Create : Command
 
     public override async Task<CommandResult> Handle(Dictionary<string, string?> args)
     {
-        var isPrivate = (args["private"] as string) == "true";
+        var name = args["name"] as string;
+        var description = args["description"] as string;
+        var isPrivate = args.ContainsKey("private");
         var password = args["password"] as string;
         var user = await _userService.GetUserByUsernameAsync(HubCallerContext.User.Identity.Name);
 
