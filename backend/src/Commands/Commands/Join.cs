@@ -74,7 +74,7 @@ public class Join : Command
             return CommandResult.FailureResult("Chat is not a group to join", CommandName);
         }
 
-        if (!chat.IsPublic && password == null)
+        if (chat.Password != null && password == null)
         {
             return CommandResult.FailureResult("Chat is private and no password provided", CommandName);
         }

@@ -92,7 +92,12 @@ public class Chat : Command
         }
 
         var users = new List<Models.User> { currentUser, targetUser };
-        var createdChat = await _chatService.CreateChatAsync(users, false, false);
+        var orderedUsernames = users.Select(u => u.Username).OrderBy(u => u, StringComparer.OrdinalIgnoreCase).ToList();
+        var description = $"Chat between {orderedUsernames[0]} and {orderedUsernames[1]}";
+        var name = $"{orderedUsernames[0]}.{orderedUsernames[1]}";
+        var password = Guid.NewGuid().ToString();
+
+        var createdChat = await _chatService.CreateChatAsync(name, description, password, false, false, users);
 
         if (createdChat == null)
         {

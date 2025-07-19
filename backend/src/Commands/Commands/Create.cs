@@ -37,15 +37,6 @@ public class Create : Command
             }
         },
         {
-            "private",
-            new CommandArgument {
-                Name = "private",
-                Description = "Whether the chat is private",
-                IsFlag = true,
-                Alias = "p",
-            }
-        },
-        {
             "description",
             new CommandArgument {
                 Name = "description",
@@ -68,8 +59,8 @@ public class Create : Command
     {
         var name = args["name"] as string;
         var description = args["description"] as string;
-        var isPrivate = args.ContainsKey("private");
         var password = args["password"] as string;
+        var isPrivate = password != null;
         var user = await _userService.GetUserByUsernameAsync(HubCallerContext.User.Identity.Name);
 
         if (HubCallerContext == null)
@@ -77,12 +68,7 @@ public class Create : Command
             return CommandResult.UnauthorizedResult(CommandName);
         }
 
-        if (isPrivate && password == null)
-        {
-            return CommandResult.FailureResult("Password is required for private chats", CommandName);
-        }
-
-        var chat = await _chatService.CreateChatAsync(new List<User> { user }, !isPrivate, true, password);
+        var chat = await _chatService.CreateChatAsync(name, description, password, !isPrivate, true, new List<User> { user });
 
         await _userService.UpdateUserCurrentChatAsync(user, chat.Id, HubCallerContext, HubGroups);
 
