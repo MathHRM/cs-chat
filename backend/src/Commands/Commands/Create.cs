@@ -41,7 +41,6 @@ public class Create : Command
             new CommandArgument {
                 Name = "description",
                 Description = "The description of the chat",
-                IsFlag = true,
                 Alias = "d",
             }
         },

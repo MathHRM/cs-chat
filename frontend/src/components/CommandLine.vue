@@ -3,7 +3,8 @@
     <span class="terminal-start">&rarr;</span>
     <span class="terminal-user">{{ getUser.username || "~" }}</span>
     <span class="terminal-separator"> chat:( </span>
-    <span class="terminal-chat">{{ getChat.id || "chat" }}</span>
+    <span class="terminal-chat" v-if="getChat?.id">{{ `${getChat.name} (${getChat.id})` }}</span>
+    <span class="terminal-chat" v-else>{{ chat || "chat" }}</span>
     <span class="terminal-separator"> )</span>
     <span class="terminal-end"> x </span>
     <input
