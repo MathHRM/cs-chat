@@ -63,7 +63,7 @@ public class Create : Command
         var description = args["description"] as string;
         var password = args["password"] as string;
         var isPrivate = password != null;
-        var user = await _userService.GetUserByUsernameAsync(HubCallerContext.User.Identity.Name);
+        var user = await _userService.GetUserByIdAsync(AuthenticatedUserId);
 
         if (HubCallerContext == null)
         {

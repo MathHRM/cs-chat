@@ -51,7 +51,7 @@ public class Chat : Command
             return CommandResult.UnauthorizedResult(CommandName);
         }
 
-        var currentUser = await _userService.GetUserByUsernameAsync(HubCallerContext.User.Identity?.Name);
+        var currentUser = await _userService.GetUserByIdAsync(AuthenticatedUserId);
         if (currentUser == null)
         {
             return CommandResult.UnauthorizedResult(CommandName);

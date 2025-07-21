@@ -25,7 +25,7 @@ public class Logout : Command
             return CommandResult.FailureResult("You are not logged in", CommandName);
         }
 
-        var user = await _userService.GetUserByUsernameAsync(HubCallerContext.User.Identity.Name);
+        var user = await _userService.GetUserByIdAsync(AuthenticatedUserId);
 
         if (user == null)
         {

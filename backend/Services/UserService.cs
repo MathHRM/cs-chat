@@ -16,8 +16,13 @@ namespace backend.Services
             _context = context;
         }
 
-        public async Task<User?> GetUserByIdAsync(int id)
+        public async Task<User?> GetUserByIdAsync(int? id)
         {
+            if (id == null)
+            {
+                return null;
+            }
+
             return await _userRepository.GetUserByIdAsync(id);
         }
 
@@ -59,6 +64,32 @@ namespace backend.Services
 
             existingUser.Username = user.Username ?? existingUser.Username;
             existingUser.CurrentChatId = user.CurrentChatId ?? existingUser.CurrentChatId;
+
+            await _userRepository.UpdateUserAsync(existingUser);
+            return existingUser;
+        }
+
+        public async Task<User?> UpdateUserAsync(int id, User user, string? password)
+        {
+            var existingUser = await GetUserByIdAsync(id);
+            if (existingUser == null)
+            {
+                return null;
+            }
+
+            var existingUsername = await GetUserByUsernameAsync(user.Username);
+
+            if (existingUsername != null && existingUsername.Id != id)
+            {
+                return null;
+            }
+
+            existingUser.Username = user.Username ?? existingUser.Username;
+
+            if (password != null)
+            {
+                existingUser.Password = BCrypt.Net.BCrypt.HashPassword(password);
+            }
 
             await _userRepository.UpdateUserAsync(existingUser);
             return existingUser;

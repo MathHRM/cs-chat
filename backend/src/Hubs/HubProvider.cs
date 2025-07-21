@@ -4,6 +4,7 @@ using backend.Http.Responses;
 using backend.Services;
 using AutoMapper;
 using Microsoft.AspNetCore.SignalR;
+using System.Security.Claims;
 
 namespace backend.src.Hubs;
 
@@ -24,10 +25,13 @@ public class HubProvider : Hub<IHubProvider>
 
     public override async Task OnConnectedAsync()
     {
-        if (! Context.User.Identity.IsAuthenticated)
+        if (!Context.User.Identity.IsAuthenticated)
+        {
             return;
+        }
 
-        var user = await _userService.GetUserByUsernameAsync(Context.User.Identity.Name);
+        var authenticatedUserId = int.Parse(Context.User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
+        var user = await _userService.GetUserByIdAsync(authenticatedUserId);
 
         await Groups.AddToGroupAsync(Context.ConnectionId, user.CurrentChatId!);
     }
@@ -41,9 +45,8 @@ public class HubProvider : Hub<IHubProvider>
             return;
         }
 
-        var user = await _userService.GetUserByUsernameAsync(Context.User.Identity.Name);
-        Logger.Info($"Sending message from user {user.Username} to chat {user.CurrentChatId}");
-        Logger.Info(message.Content);
+        var authenticatedUserId = int.Parse(Context.User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
+        var user = await _userService.GetUserByIdAsync(authenticatedUserId);
 
         if (_commandHandler.IsCommand(message.Content))
         {

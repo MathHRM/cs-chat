@@ -44,6 +44,9 @@ export default function handleCommand(command, t) {
     case "create":
       handleJoin(command, t);
       break;
+    case "profile":
+      handleProfile(command, t);
+      break;
     default:
       console.log(command);
       alert(t("alerts.command-handle"), 2);
@@ -111,4 +114,20 @@ function handleJoin(command, t) {
   messagesStore.$reset();
 
   alert(t("alerts.joined-chat", { chatId: data.chat.name }), 3);
+}
+
+function handleProfile(command, t) {
+  const data = command.response;
+
+  if (!data?.id) {
+    alert(command.message, 1);
+
+    return;
+  }
+
+  const authStore = useAuthStore();
+
+  authStore.setUser(data);
+
+  alert(t("alerts.profile-updated"), 3);
 }

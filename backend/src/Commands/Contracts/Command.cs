@@ -1,4 +1,5 @@
 using backend.Commands;
+using System.Security.Claims;
 using Microsoft.AspNetCore.SignalR;
 
 public abstract class Command
@@ -17,13 +18,11 @@ public abstract class Command
     {
         get
         {
-            // Check SignalR context
             if (HubCallerContext != null && HubCallerContext.User?.Identity?.IsAuthenticated == true)
             {
                 return true;
             }
 
-            // Check HTTP context
             if (HttpContext != null && HttpContext.User?.Identity?.IsAuthenticated == true)
             {
                 return true;
@@ -32,6 +31,27 @@ public abstract class Command
             return false;
         }
 
+    }
+
+    public int? AuthenticatedUserId
+    {
+        get
+        {
+            if (!UserIsAuthenticated)
+            {
+                return null;
+            }
+
+            var userId = HubCallerContext?.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value
+                ?? HttpContext?.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            if (userId == null)
+            {
+                return null;
+            }
+
+            return int.Parse(userId);
+        }
     }
 
     public CommandArgsResult ValidateArguments(Dictionary<string, string?> args)
