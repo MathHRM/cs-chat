@@ -48,9 +48,9 @@ public class Profile : CommandBase
 
     public override async Task<CommandResult> Handle(ParseResult parseResult)
     {
-        var username = parseResult.GetValue<string>(_username);
-        var password = parseResult.GetValue<string>(_password);
-        var confirmPassword = parseResult.GetValue<string>(_confirmPassword);
+        var username = parseResult.GetValue(_username);
+        var password = parseResult.GetValue(_password);
+        var confirmPassword = parseResult.GetValue(_confirmPassword);
         var user = await _userService.GetUserByIdAsync(AuthenticatedUserId);
 
         if (username == null && password == null)
@@ -66,6 +66,11 @@ public class Profile : CommandBase
         if (password != null && confirmPassword != null && password != confirmPassword)
         {
             return CommandResult.FailureResult("Password and confirm password do not match", CommandName);
+        }
+
+        if (username != null && await _userService.UserExistsAsync(username))
+        {
+            return CommandResult.FailureResult("User with this username already exists", CommandName);
         }
 
         user.Username = username ?? user.Username;

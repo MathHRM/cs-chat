@@ -39,8 +39,8 @@ public class Login : CommandBase
 
     public override async Task<CommandResult> Handle(ParseResult parseResult)
     {
-        var username = parseResult.GetValue<string>(_username);
-        var password = parseResult.GetValue<string>(_password);
+        var username = parseResult.GetValue(_username);
+        var password = parseResult.GetValue(_password);
 
         var user = await _userService.ValidateUserCredentialsAsync(username, password);
         if (user == null)

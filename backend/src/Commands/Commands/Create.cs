@@ -53,9 +53,9 @@ public class Create : CommandBase
 
     public override async Task<CommandResult> Handle(ParseResult parseResult)
     {
-        var name = parseResult.GetValue<string>(_name);
-        var description = parseResult.GetValue<string>(_description);
-        var password = parseResult.GetValue<string>(_password);
+        var name = parseResult.GetValue(_name);
+        var description = parseResult.GetValue(_description);
+        var password = parseResult.GetValue(_password);
         var isPrivate = password != null;
         var user = await _userService.GetUserByIdAsync(AuthenticatedUserId);
 

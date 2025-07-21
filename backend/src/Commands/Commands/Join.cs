@@ -47,8 +47,8 @@ public class Join : CommandBase
 
     public override async Task<CommandResult> Handle(ParseResult parseResult)
     {
-        var chatId = parseResult.GetValue<string>(_chatId);
-        var password = parseResult.GetValue<string>(_password);
+        var chatId = parseResult.GetValue(_chatId);
+        var password = parseResult.GetValue(_password);
 
         if (HubCallerContext == null)
         {
