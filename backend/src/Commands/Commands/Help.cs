@@ -10,7 +10,6 @@ public class Help : CommandBase
 
     public override string CommandName => "help";
     public override string Description => "Show help for all commands";
-    public override Dictionary<string, CommandArgument>? Args => null;
     public override bool ForAuthenticatedUsers => true;
     public override bool ForGuestUsers => true;
 
@@ -30,28 +29,17 @@ public class Help : CommandBase
         {
             var commandInstance = command.GetCommandInstance();
 
-            helpMessage.AppendLine($"/{command.CommandName} - {command.Description}");
+            helpMessage.AppendLine($"/{commandInstance.Name} - {commandInstance.Description}");
 
-            if (command.Args == null || !command.Args.Any())
+            foreach (var argument in commandInstance.Arguments)
             {
-                helpMessage.AppendLine("    No arguments required");
-                helpMessage.AppendLine();
-
-                continue;
+                helpMessage.AppendLine($"    [{argument.Name}] - {argument.Description}");
             }
 
-            foreach (var argument in command.Args.Values)
+            foreach (var option in commandInstance.Options)
             {
-                if (argument.ByPosition)
-                {
-                    helpMessage.AppendLine($"    [{argument.Name}] - {argument.Description}");
-
-                    continue;
-                }
-
-                string alias = argument.Alias != null ? $"| -{argument.Alias}" : "";
-
-                helpMessage.AppendLine($"    --{argument.Name} {alias} - {argument.Description}");
+                string alias = $" | {string.Join(", ", option.Aliases)}";
+                helpMessage.AppendLine($"    {option.Name}{alias} - {option.Description}");
             }
 
             helpMessage.AppendLine();

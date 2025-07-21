@@ -27,28 +27,6 @@ public class Register : CommandBase
         _mapper = mapper;
     }
 
-    public override Dictionary<string, CommandArgument>? Args => new Dictionary<string, CommandArgument>
-    {
-        {
-            "username",
-            new CommandArgument {
-                Name = "username",
-                IsRequired = true,
-                Description = "The username to register with",
-                Alias = "u",
-            }
-        },
-        {
-            "password",
-            new CommandArgument {
-                Name = "password",
-                IsRequired = true,
-                Description = "The password to register with",
-                Alias = "pass",
-            }
-        }
-    };
-
     public override async Task<CommandResult> Handle(ParseResult parseResult)
     {
         var username = parseResult.GetValue<string>(_username);

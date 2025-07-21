@@ -8,7 +8,6 @@ public class Logout : CommandBase
 {
     public override string CommandName => "logout";
     public override string Description => "Logout from the chat";
-    public override Dictionary<string, CommandArgument>? Args => null;
     public override bool ForAuthenticatedUsers => true;
     public override bool ForGuestUsers => false;
 

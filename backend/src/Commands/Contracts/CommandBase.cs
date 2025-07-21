@@ -10,7 +10,6 @@ public abstract class CommandBase
     public HubCallerContext? HubCallerContext { get; set; }
     public IGroupManager? HubGroups { get; set; }
     public HttpContext? HttpContext { get; set; }
-    public abstract Dictionary<string, CommandArgument>? Args { get; }
     public abstract Task<CommandResult> Handle(ParseResult parseResult);
     public virtual bool ForAuthenticatedUsers => false;
     public virtual bool ForGuestUsers => false;

@@ -25,34 +25,6 @@ public class Profile : CommandBase
         _mapper = mapper;
     }
 
-    public override Dictionary<string, CommandArgument>? Args => new Dictionary<string, CommandArgument>
-    {
-        {
-            "username",
-            new CommandArgument {
-                Name = "username",
-                Description = "Update your username",
-                Alias = "u",
-            }
-        },
-        {
-            "password",
-            new CommandArgument {
-                Name = "password",
-                Description = "Update your password",
-                Alias = "pass",
-            }
-        },
-        {
-            "confirm-password",
-            new CommandArgument {
-                Name = "confirm-password",
-                Description = "Confirm your new password",
-                Alias = "confirm",
-            }
-        }
-    };
-
     public override async Task<CommandResult> Handle(ParseResult parseResult)
     {
         var username = parseResult.GetValue<string>(_username);

@@ -28,21 +28,6 @@ public class Chat : CommandBase
         _mapper = mapper;
     }
 
-    public override Dictionary<string, CommandArgument>? Args => new Dictionary<string, CommandArgument>
-    {
-        {
-            "username",
-            new CommandArgument {
-                Name = "username",
-                IsRequired = true,
-                Description = "The username to chat with",
-                ByPosition = true,
-                Position = 0,
-                Alias = "u",
-            }
-        }
-    };
-
     public override async Task<CommandResult> Handle(ParseResult parseResult)
     {
         var targetUsername = parseResult.GetValue(_username);

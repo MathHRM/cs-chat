@@ -27,37 +27,6 @@ public class Create : CommandBase
         _mapper = mapper;
     }
 
-    public override Dictionary<string, CommandArgument>? Args => new Dictionary<string, CommandArgument>
-    {
-        {
-            "name",
-            new CommandArgument {
-                Name = "name",
-                Description = "The name of the chat",
-                Alias = "n",
-                IsRequired = true,
-                ByPosition = true,
-                Position = 0,
-            }
-        },
-        {
-            "description",
-            new CommandArgument {
-                Name = "description",
-                Description = "The description of the chat",
-                Alias = "d",
-            }
-        },
-        {
-            "password",
-            new CommandArgument {
-                Name = "password",
-                Description = "The password of the chat",
-                Alias = "pass",
-            }
-        },
-    };
-
     public override async Task<CommandResult> Handle(ParseResult parseResult)
     {
         var name = parseResult.GetValue<string>(_name);

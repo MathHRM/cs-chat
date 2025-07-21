@@ -26,29 +26,6 @@ public class Join : CommandBase
         _mapper = mapper;
     }
 
-    public override Dictionary<string, CommandArgument>? Args => new Dictionary<string, CommandArgument>
-    {
-        {
-            "chatId",
-            new CommandArgument {
-                Name = "chatId",
-                IsRequired = true,
-                Description = "The chat to join",
-                ByPosition = true,
-                Position = 0,
-                Alias = "c",
-            }
-        },
-        {
-            "password",
-            new CommandArgument {
-                Name = "password",
-                Description = "The password of the chat",
-                Alias = "pass",
-            }
-        }
-    };
-
     public override async Task<CommandResult> Handle(ParseResult parseResult)
     {
         var chatId = parseResult.GetValue<string>(_chatId);
@@ -125,7 +102,7 @@ public class Join : CommandBase
     private readonly Argument<string> _chatId = new Argument<string>("chatId") {
         Description = "The chat to join",
     };
-    private readonly Option<string> _password = new Option<string>("password", "-pass") {
+    private readonly Option<string> _password = new Option<string>("--password", "-pass") {
         Description = "The password of the chat",
     };
 }
