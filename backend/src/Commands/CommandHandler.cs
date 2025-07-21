@@ -19,9 +19,10 @@ public class CommandHandler
         HttpContext? httpContext = null
     )
     {
-        var args = ParseCommand(commandInput);
+        var commandArgs = commandInput.Substring(1).Split(' ');
+        var commandName = commandArgs.FirstOrDefault();
 
-        if (args == null || !args.TryGetValue("command", out var commandName) || string.IsNullOrWhiteSpace(commandName))
+        if (string.IsNullOrWhiteSpace(commandName))
         {
             return CommandResult.FailureResult("Invalid command");
         }
@@ -38,72 +39,24 @@ public class CommandHandler
             return CommandResult.FailureResult("Invalid command", command.CommandName);
         }
 
-        var validationResult = command.ValidateArguments(args);
+        var commandInstance = command.GetCommandInstance();
+        var validationResult = commandInstance.Parse(commandArgs);
 
-        if (!validationResult.Validated())
+        if (validationResult.Errors.Any())
         {
             return CommandResult.FailureResult(
                 "Invalid arguments",
                 command.CommandName,
-                validationResult.Errors
+                validationResult.Errors.ToDictionary(e => e.SymbolResult.ToString(), e => e.Message)
             );
         }
 
         command.HubCallerContext = connection;
         command.HubGroups = groups;
         command.HttpContext = httpContext;
-        var result = await command.Handle(validationResult.Args);
+        var result = await command.Handle(validationResult);
 
         return result;
-    }
-
-    public static Dictionary<string, string?>? ParseCommand(string input)
-    {
-        if (string.IsNullOrWhiteSpace(input) || !input.Trim().StartsWith("/"))
-        {
-            return null;
-        }
-
-        var results = new Dictionary<string, string?>();
-
-        var parts = Regex.Matches(input, @"[\""].+?[\""]|[^ ]+")
-            .Cast<Match>()
-            .Select(m => m.Value.Trim('"'))
-            .ToList();
-
-        if (parts.Count > 0)
-        {
-            results["command"] = parts[0].Substring(1);
-        }
-
-        int nonNamedArgIndex = 0;
-
-        for (int i = 1; i < parts.Count; i++)
-        {
-            var part = parts[i];
-
-            if (part.StartsWith("-"))
-            {
-                string[] argParts = part.Split(new[] { '=' }, 2);
-                string argName = argParts[0].TrimStart('-');
-
-                if (argParts.Length == 2)
-                {
-                    results[argName] = argParts[1];
-
-                    continue;
-                }
-
-                results[argName] = null;
-
-                continue;
-            }
-
-            results[nonNamedArgIndex.ToString()] = part;
-            nonNamedArgIndex++;
-        }
-
-        return results;
     }
 
     public bool IsCommand(string input)
@@ -139,54 +92,5 @@ public class CommandHandler
         }
 
         return true;
-    }
-
-    public static Dictionary<string, string?>? ParseCommand2(string input)
-    {
-        if (string.IsNullOrWhiteSpace(input) || !input.Trim().StartsWith("/"))
-        {
-            return null;
-        }
-
-        var results = new Dictionary<string, string?>();
-
-        var parts = Regex.Matches(input, @"[\""].+?[\""]|[^ ]+")
-            .Cast<Match>()
-            .Select(m => m.Value.Trim('"'))
-            .ToList();
-
-        if (parts.Count > 0)
-        {
-            results["command"] = parts[0].Substring(1);
-        }
-
-        int nonNamedArgIndex = 0;
-
-        for (int i = 1; i < parts.Count; i++)
-        {
-            var part = parts[i];
-
-            if (part.StartsWith("-"))
-            {
-                string[] argParts = part.Split(new[] { '=' }, 2);
-                string argName = argParts[0].TrimStart('-');
-
-                if (argParts.Length == 2)
-                {
-                    results[argName] = argParts[1];
-
-                    continue;
-                }
-
-                results[argName] = null;
-
-                continue;
-            }
-
-            results[nonNamedArgIndex.ToString()] = part;
-            nonNamedArgIndex++;
-        }
-
-        return results;
     }
 }

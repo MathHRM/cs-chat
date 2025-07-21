@@ -3,6 +3,7 @@ using backend.Services;
 using Microsoft.AspNetCore.SignalR;
 using AutoMapper;
 using backend.Models;
+using System.CommandLine;
 
 namespace backend.Commands;
 
@@ -52,11 +53,11 @@ public class Profile : CommandBase
         }
     };
 
-    public override async Task<CommandResult> Handle(Dictionary<string, string?> args)
+    public override async Task<CommandResult> Handle(ParseResult parseResult)
     {
-        var username = args["username"];
-        var password = args["password"];
-        var confirmPassword = args["confirm-password"];
+        var username = parseResult.GetValue<string>(_username);
+        var password = parseResult.GetValue<string>(_password);
+        var confirmPassword = parseResult.GetValue<string>(_confirmPassword);
         var user = await _userService.GetUserByIdAsync(AuthenticatedUserId);
 
         if (username == null && password == null)
@@ -85,4 +86,25 @@ public class Profile : CommandBase
             Message = "Profile updated successfully",
         };
     }
+
+    public override Command GetCommandInstance()
+    {
+        return new Command(CommandName, Description)
+        {
+            _username,
+            _password,
+            _confirmPassword
+        };
+    }
+
+    // Arguments
+    private readonly Option<string> _username = new Option<string>("--username", "-u") {
+        Description = "Update your username",
+    };
+    private readonly Option<string> _password = new Option<string>("--password", "-pass") {
+        Description = "Update your password",
+    };
+    private readonly Option<string> _confirmPassword = new Option<string>("--confirm-password", "-confirm") {
+        Description = "Confirm your new password",
+    };
 }

@@ -2,6 +2,7 @@ using backend.Http.Responses;
 using backend.Services;
 using Microsoft.AspNetCore.SignalR;
 using AutoMapper;
+using System.CommandLine;
 
 namespace backend.Commands;
 
@@ -48,10 +49,10 @@ public class Join : CommandBase
         }
     };
 
-    public override async Task<CommandResult> Handle(Dictionary<string, string?> args)
+    public override async Task<CommandResult> Handle(ParseResult parseResult)
     {
-        var chatId = args["chatId"] as string;
-        var password = args["password"] as string;
+        var chatId = parseResult.GetValue<string>(_chatId);
+        var password = parseResult.GetValue<string>(_password);
 
         if (HubCallerContext == null)
         {
@@ -108,4 +109,21 @@ public class Join : CommandBase
             Command = CommandName,
         };
     }
+
+    public override Command GetCommandInstance()
+    {
+        return new Command(CommandName, Description)
+        {
+            _chatId,
+            _password
+        };
+    }
+
+    // Arguments
+    private readonly Argument<string> _chatId = new Argument<string>("chatId") {
+        Description = "The chat to join",
+    };
+    private readonly Option<string> _password = new Option<string>("password", "-pass") {
+        Description = "The password of the chat",
+    };
 }

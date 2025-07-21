@@ -2,6 +2,7 @@ using backend.Http.Responses;
 using backend.Services;
 using Microsoft.AspNetCore.SignalR;
 using AutoMapper;
+using System.CommandLine;
 
 namespace backend.Commands;
 
@@ -42,9 +43,9 @@ public class Chat : CommandBase
         }
     };
 
-    public override async Task<CommandResult> Handle(Dictionary<string, string?> args)
+    public override async Task<CommandResult> Handle(ParseResult parseResult)
     {
-        var targetUsername = args["username"] as string;
+        var targetUsername = parseResult.GetValue(_username);
 
         if (HubCallerContext == null)
         {
@@ -122,4 +123,17 @@ public class Chat : CommandBase
             Command = CommandName,
         };
     }
+
+    public override Command GetCommandInstance()
+    {
+        return new Command(CommandName, Description)
+        {
+            _username,
+        };
+    }
+
+    // Arguments
+    private readonly Argument<string> _username = new Argument<string>("username") {
+        Description = "The username to chat with",
+    };
 }

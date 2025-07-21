@@ -1,4 +1,5 @@
 using System.Text;
+using System.CommandLine;
 using backend.Http.Responses;
 using Microsoft.AspNetCore.SignalR;
 
@@ -19,7 +20,7 @@ public class Help : CommandBase
         _commandResolver = commandResolver;
     }
 
-    public override async Task<CommandResult> Handle(Dictionary<string, string?> args)
+    public override async Task<CommandResult> Handle(ParseResult parseResult)
     {
         var commands = CommandsForUser();
         var helpMessage = new StringBuilder("Available commands:\n\n")
@@ -82,5 +83,10 @@ public class Help : CommandBase
         }
 
         return _commandResolver.GetAllCommands().Where(c => c.ForGuestUsers).ToList();
+    }
+
+    public override Command GetCommandInstance()
+    {
+        return new Command(CommandName, Description);
     }
 }

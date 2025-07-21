@@ -3,6 +3,7 @@ using backend.Models;
 using backend.Services;
 using Microsoft.AspNetCore.SignalR;
 using AutoMapper;
+using System.CommandLine;
 
 namespace backend.Commands;
 
@@ -57,11 +58,11 @@ public class Create : CommandBase
         },
     };
 
-    public override async Task<CommandResult> Handle(Dictionary<string, string?> args)
+    public override async Task<CommandResult> Handle(ParseResult parseResult)
     {
-        var name = args["name"] as string;
-        var description = args["description"] as string;
-        var password = args["password"] as string;
+        var name = parseResult.GetValue<string>(_name);
+        var description = parseResult.GetValue<string>(_description);
+        var password = parseResult.GetValue<string>(_password);
         var isPrivate = password != null;
         var user = await _userService.GetUserByIdAsync(AuthenticatedUserId);
 
@@ -87,4 +88,25 @@ public class Create : CommandBase
             Command = CommandName,
         };
     }
+
+    public override Command GetCommandInstance()
+    {
+        return new Command(CommandName, Description)
+        {
+            _name,
+            _description,
+            _password
+        };
+    }
+
+    // Arguments
+    private readonly Argument<string> _name = new Argument<string>("name") {
+        Description = "The name of the chat",
+    };
+    private readonly Option<string> _description = new Option<string>("--description", "-d") {
+        Description = "The description of the chat",
+    };
+    private readonly Option<string> _password = new Option<string>("--password", "-pass") {
+        Description = "The password of the chat",
+    };
 }

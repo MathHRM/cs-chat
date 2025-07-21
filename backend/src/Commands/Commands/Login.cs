@@ -2,7 +2,7 @@ using backend.Services;
 using backend.Commands;
 using backend.Http.Responses;
 using AutoMapper;
-
+using System.CommandLine;
 namespace backend.Commands;
 
 public class Login : CommandBase
@@ -17,6 +17,16 @@ public class Login : CommandBase
 
     public override bool ForAuthenticatedUsers => false;
     public override bool ForGuestUsers => true;
+
+    // Arguments
+    private readonly Option<string> _username = new Option<string>("--username", "-u") {
+        Description = "The username to login with",
+        Required = true,
+    };
+    private readonly Option<string> _password = new Option<string>("--password", "-pass") {
+        Description = "The password to login with",
+        Required = true,
+    };
 
     public Login(UserService userService, TokenService tokenService, ChatService chatService, IMapper mapper)
     {
@@ -48,9 +58,12 @@ public class Login : CommandBase
         }
     };
 
-    public override async Task<CommandResult> Handle(Dictionary<string, string?> args)
+    public override async Task<CommandResult> Handle(ParseResult parseResult)
     {
-        var user = await _userService.ValidateUserCredentialsAsync(args["username"] as string, args["password"] as string);
+        var username = parseResult.GetValue<string>(_username);
+        var password = parseResult.GetValue<string>(_password);
+
+        var user = await _userService.ValidateUserCredentialsAsync(username, password);
         if (user == null)
         {
             return CommandResult.FailureResult("Invalid email or password", CommandName);
@@ -71,6 +84,15 @@ public class Login : CommandBase
             Command = CommandName,
             Result = CommandResultEnum.Success,
             Message = "Login successful"
+        };
+    }
+
+    public override Command GetCommandInstance()
+    {
+        return new Command(CommandName, Description)
+        {
+            _username,
+            _password
         };
     }
 }

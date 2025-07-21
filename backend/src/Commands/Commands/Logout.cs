@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.SignalR;
 using backend.Services;
+using System.CommandLine;
 
 namespace backend.Commands;
 
@@ -18,7 +19,7 @@ public class Logout : CommandBase
         _userService = userService;
     }
 
-    public override async Task<CommandResult> Handle(Dictionary<string, string?> args)
+    public override async Task<CommandResult> Handle(ParseResult parseResult)
     {
         if (HubCallerContext == null || !(HubCallerContext.User.Identity?.IsAuthenticated ?? false))
         {
@@ -35,5 +36,10 @@ public class Logout : CommandBase
         await _userService.DisconnectUserFromAllChatsAsync(user, HubCallerContext, HubGroups);
 
         return CommandResult.SuccessResult("You have been logged out", CommandName);
+    }
+
+    public override Command GetCommandInstance()
+    {
+        return new Command(CommandName, Description);
     }
 }
