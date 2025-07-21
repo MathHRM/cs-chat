@@ -2,7 +2,7 @@ using backend.Commands;
 using System.Security.Claims;
 using Microsoft.AspNetCore.SignalR;
 
-public abstract class Command
+public abstract class CommandBase
 {
     public abstract string CommandName { get; }
     public abstract string Description { get; }

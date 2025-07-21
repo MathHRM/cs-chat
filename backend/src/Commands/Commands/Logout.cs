@@ -3,7 +3,7 @@ using backend.Services;
 
 namespace backend.Commands;
 
-public class Logout : Command
+public class Logout : CommandBase
 {
     public override string CommandName => "logout";
     public override string Description => "Logout from the chat";

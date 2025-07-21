@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.SignalR;
 
 namespace backend.Commands;
 
-public class Help : Command
+public class Help : CommandBase
 {
     private readonly ICommandResolver _commandResolver;
 
@@ -74,7 +74,7 @@ public class Help : Command
         };
     }
 
-    private List<Command> CommandsForUser()
+    private List<CommandBase> CommandsForUser()
     {
         if (UserIsAuthenticated)
         {

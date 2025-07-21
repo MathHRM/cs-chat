@@ -5,7 +5,7 @@ using AutoMapper;
 
 namespace backend.Commands;
 
-public class Chat : Command
+public class Chat : CommandBase
 {
     private readonly UserService _userService;
     private readonly TokenService _tokenService;

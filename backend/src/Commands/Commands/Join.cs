@@ -5,7 +5,7 @@ using AutoMapper;
 
 namespace backend.Commands;
 
-public class Join : Command
+public class Join : CommandBase
 {
     private readonly UserService _userService;
     private readonly ChatService _chatService;

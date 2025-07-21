@@ -6,7 +6,7 @@ using AutoMapper;
 
 namespace backend.Commands;
 
-public class Create : Command
+public class Create : CommandBase
 {
     private readonly UserService _userService;
     private readonly ChatService _chatService;

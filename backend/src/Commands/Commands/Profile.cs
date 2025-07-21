@@ -6,7 +6,7 @@ using backend.Models;
 
 namespace backend.Commands;
 
-public class Profile : Command
+public class Profile : CommandBase
 {
     private readonly UserService _userService;
     private readonly IMapper _mapper;

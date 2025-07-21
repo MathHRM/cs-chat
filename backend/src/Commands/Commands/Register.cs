@@ -5,7 +5,7 @@ using AutoMapper;
 
 namespace backend.Commands;
 
-public class Register : Command
+public class Register : CommandBase
 {
     private readonly UserService _userService;
     private readonly TokenService _tokenService;
