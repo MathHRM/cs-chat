@@ -8,22 +8,33 @@ namespace backend.Commands;
 
 public class Chat : CommandBase
 {
-    private readonly UserService _userService;
-    private readonly TokenService _tokenService;
-    private readonly ChatService _chatService;
-    private readonly IMapper _mapper;
-
     public override string CommandName => "chat";
-
     public override string Description => "Chat with a user";
-
     public override bool ForAuthenticatedUsers => true;
     public override bool ForGuestUsers => false;
 
-    public Chat(UserService userService, TokenService tokenService, ChatService chatService, IMapper mapper)
+    public override Command GetCommandInstance()
+    {
+        var command = new Command(CommandName, Description)
+        {
+            _username,
+        };
+        command.TreatUnmatchedTokensAsErrors = false;
+        return command;
+    }
+
+    // Arguments
+    private readonly Argument<string> _username = new Argument<string>("username") {
+        Description = "The username to chat with",
+    };
+
+    private readonly UserService _userService;
+    private readonly ChatService _chatService;
+    private readonly IMapper _mapper;
+
+    public Chat(UserService userService, ChatService chatService, IMapper mapper)
     {
         _userService = userService;
-        _tokenService = tokenService;
         _chatService = chatService;
         _mapper = mapper;
     }
@@ -108,19 +119,4 @@ public class Chat : CommandBase
             Command = CommandName,
         };
     }
-
-    public override Command GetCommandInstance()
-    {
-        var command = new Command(CommandName, Description)
-        {
-            _username,
-        };
-        command.TreatUnmatchedTokensAsErrors = false;
-        return command;
-    }
-
-    // Arguments
-    private readonly Argument<string> _username = new Argument<string>("username") {
-        Description = "The username to chat with",
-    };
 }

@@ -6,12 +6,19 @@ namespace backend.Commands;
 
 public class Help : CommandBase
 {
-    private readonly ICommandResolver _commandResolver;
-
     public override string CommandName => "help";
     public override string Description => "Show help for all commands";
     public override bool ForAuthenticatedUsers => true;
     public override bool ForGuestUsers => true;
+
+    public override Command GetCommandInstance()
+    {
+        var command = new Command(CommandName, Description);
+        command.TreatUnmatchedTokensAsErrors = false;
+        return command;
+    }
+
+    private readonly ICommandResolver _commandResolver;
 
     public Help(ICommandResolver commandResolver)
     {
@@ -72,12 +79,5 @@ public class Help : CommandBase
         }
 
         return _commandResolver.GetAllCommands().Where(c => c.ForGuestUsers).ToList();
-    }
-
-    public override Command GetCommandInstance()
-    {
-        var command = new Command(CommandName, Description);
-        command.TreatUnmatchedTokensAsErrors = false;
-        return command;
     }
 }

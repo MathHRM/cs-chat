@@ -11,6 +11,13 @@ public class Logout : CommandBase
     public override bool ForAuthenticatedUsers => true;
     public override bool ForGuestUsers => false;
 
+    public override Command GetCommandInstance()
+    {
+        var command = new Command(CommandName, Description);
+        command.TreatUnmatchedTokensAsErrors = false;
+        return command;
+    }
+
     private readonly UserService _userService;
 
     public Logout(UserService userService)
@@ -35,12 +42,5 @@ public class Logout : CommandBase
         await _userService.DisconnectUserFromAllChatsAsync(user, HubCallerContext, HubGroups);
 
         return CommandResult.SuccessResult("You have been logged out", CommandName);
-    }
-
-    public override Command GetCommandInstance()
-    {
-        var command = new Command(CommandName, Description);
-        command.TreatUnmatchedTokensAsErrors = false;
-        return command;
     }
 }

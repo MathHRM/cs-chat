@@ -9,16 +9,40 @@ namespace backend.Commands;
 
 public class Create : CommandBase
 {
+    public override string CommandName => "create";
+    public override string Description => "Create a chat";
+    public override bool ForAuthenticatedUsers => true;
+    public override bool ForGuestUsers => false;
+
+    public override Command GetCommandInstance()
+    {
+        var command = new Command(CommandName, Description)
+        {
+            _name,
+            _description,
+            _password
+        };
+        command.TreatUnmatchedTokensAsErrors = false;
+        return command;
+    }
+
+    // Arguments
+    private readonly Argument<string> _name = new Argument<string>("name")
+    {
+        Description = "The name of the chat",
+    };
+    private readonly Option<string> _description = new Option<string>("--description", "-d")
+    {
+        Description = "The description of the chat",
+    };
+    private readonly Option<string> _password = new Option<string>("--password", "-pass")
+    {
+        Description = "The password of the chat",
+    };
+
     private readonly UserService _userService;
     private readonly ChatService _chatService;
     private readonly IMapper _mapper;
-
-    public override string CommandName => "create";
-
-    public override string Description => "Create a chat";
-
-    public override bool ForAuthenticatedUsers => true;
-    public override bool ForGuestUsers => false;
 
     public Create(UserService userService, ChatService chatService, IMapper mapper)
     {
@@ -57,27 +81,4 @@ public class Create : CommandBase
             Command = CommandName,
         };
     }
-
-    public override Command GetCommandInstance()
-    {
-        var command = new Command(CommandName, Description)
-        {
-            _name,
-            _description,
-            _password
-        };
-        command.TreatUnmatchedTokensAsErrors = false;
-        return command;
-    }
-
-    // Arguments
-    private readonly Argument<string> _name = new Argument<string>("name") {
-        Description = "The name of the chat",
-    };
-    private readonly Option<string> _description = new Option<string>("--description", "-d") {
-        Description = "The description of the chat",
-    };
-    private readonly Option<string> _password = new Option<string>("--password", "-pass") {
-        Description = "The password of the chat",
-    };
 }

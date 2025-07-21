@@ -8,16 +8,36 @@ namespace backend.Commands;
 
 public class Register : CommandBase
 {
+    public override string CommandName => "register";
+    public override string Description => "Register a new user";
+    public override bool ForAuthenticatedUsers => false;
+    public override bool ForGuestUsers => true;
+
+    public override Command GetCommandInstance()
+    {
+        var command = new Command(CommandName, Description)
+        {
+            _username,
+            _password
+        };
+        command.TreatUnmatchedTokensAsErrors = false;
+        return command;
+    }
+
+    // Arguments
+    private readonly Option<string> _username = new Option<string>("--username", "-u") {
+        Description = "The username to register with",
+        Required = true,
+    };
+    private readonly Option<string> _password = new Option<string>("--password", "-pass") {
+        Description = "The password to register with",
+        Required = true,
+    };
+
     private readonly UserService _userService;
     private readonly TokenService _tokenService;
     private readonly ChatService _chatService;
     private readonly IMapper _mapper;
-    public override string CommandName => "register";
-
-    public override string Description => "Register a new user";
-
-    public override bool ForAuthenticatedUsers => false;
-    public override bool ForGuestUsers => true;
 
     public Register(UserService userService, TokenService tokenService, ChatService chatService, IMapper mapper)
     {
@@ -60,25 +80,4 @@ public class Register : CommandBase
             Message = "Register successful"
         };
     }
-
-    public override Command GetCommandInstance()
-    {
-        var command = new Command(CommandName, Description)
-        {
-            _username,
-            _password
-        };
-        command.TreatUnmatchedTokensAsErrors = false;
-        return command;
-    }
-
-    // Arguments
-    private readonly Option<string> _username = new Option<string>("--username", "-u") {
-        Description = "The username to register with",
-        Required = true,
-    };
-    private readonly Option<string> _password = new Option<string>("--password", "-pass") {
-        Description = "The password to register with",
-        Required = true,
-    };
 }

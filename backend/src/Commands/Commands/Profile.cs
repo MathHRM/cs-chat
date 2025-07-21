@@ -9,15 +9,36 @@ namespace backend.Commands;
 
 public class Profile : CommandBase
 {
-    private readonly UserService _userService;
-    private readonly IMapper _mapper;
-
     public override string CommandName => "profile";
-
     public override string Description => "Update your profile";
-
     public override bool ForAuthenticatedUsers => true;
     public override bool ForGuestUsers => false;
+
+    public override Command GetCommandInstance()
+    {
+        var command = new Command(CommandName, Description)
+        {
+            _username,
+            _password,
+            _confirmPassword
+        };
+        command.TreatUnmatchedTokensAsErrors = false;
+        return command;
+    }
+
+    // Arguments
+    private readonly Option<string> _username = new Option<string>("--username", "-u") {
+        Description = "Update your username",
+    };
+    private readonly Option<string> _password = new Option<string>("--password", "-pass") {
+        Description = "Update your password",
+    };
+    private readonly Option<string> _confirmPassword = new Option<string>("--confirm-password", "-confirm") {
+        Description = "Confirm your new password",
+    };
+
+    private readonly UserService _userService;
+    private readonly IMapper _mapper;
 
     public Profile(UserService userService, IMapper mapper)
     {
@@ -58,27 +79,4 @@ public class Profile : CommandBase
             Message = "Profile updated successfully",
         };
     }
-
-    public override Command GetCommandInstance()
-    {
-        var command = new Command(CommandName, Description)
-        {
-            _username,
-            _password,
-            _confirmPassword
-        };
-        command.TreatUnmatchedTokensAsErrors = false;
-        return command;
-    }
-
-    // Arguments
-    private readonly Option<string> _username = new Option<string>("--username", "-u") {
-        Description = "Update your username",
-    };
-    private readonly Option<string> _password = new Option<string>("--password", "-pass") {
-        Description = "Update your password",
-    };
-    private readonly Option<string> _confirmPassword = new Option<string>("--confirm-password", "-confirm") {
-        Description = "Confirm your new password",
-    };
 }
