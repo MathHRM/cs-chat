@@ -1,4 +1,4 @@
-import { HubConnectionState } from "@aspnet/signalr";
+import { HubConnectionState } from "@microsoft/signalr";
 import { useMessagesStore } from "@/stores/messages";
 
 export default function handleMessage(

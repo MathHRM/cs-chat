@@ -1,5 +1,4 @@
 {
-    "connection-failed": "Connection failed, try reloading the page",
     "not-logged-in": "You are not logged in, please log or register to start chatting",
     "command-handle": "Command could not be processed",
     "joined-chat": "You have joined the chat { chatId }",
