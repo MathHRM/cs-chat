@@ -1,7 +1,6 @@
 using System.Text;
 using System.CommandLine;
 using backend.Http.Responses;
-using Microsoft.AspNetCore.SignalR;
 
 namespace backend.Commands;
 
@@ -29,6 +28,8 @@ public class Help : CommandBase
 
         foreach (var command in commands)
         {
+            var commandInstance = command.GetCommandInstance();
+
             helpMessage.AppendLine($"/{command.CommandName} - {command.Description}");
 
             if (command.Args == null || !command.Args.Any())
@@ -87,6 +88,8 @@ public class Help : CommandBase
 
     public override Command GetCommandInstance()
     {
-        return new Command(CommandName, Description);
+        var command = new Command(CommandName, Description);
+        command.TreatUnmatchedTokensAsErrors = false;
+        return command;
     }
 }

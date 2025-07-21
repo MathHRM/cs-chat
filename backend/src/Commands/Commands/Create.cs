@@ -91,12 +91,14 @@ public class Create : CommandBase
 
     public override Command GetCommandInstance()
     {
-        return new Command(CommandName, Description)
+        var command = new Command(CommandName, Description)
         {
             _name,
             _description,
             _password
         };
+        command.TreatUnmatchedTokensAsErrors = false;
+        return command;
     }
 
     // Arguments

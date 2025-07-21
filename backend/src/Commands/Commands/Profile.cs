@@ -89,12 +89,14 @@ public class Profile : CommandBase
 
     public override Command GetCommandInstance()
     {
-        return new Command(CommandName, Description)
+        var command = new Command(CommandName, Description)
         {
             _username,
             _password,
             _confirmPassword
         };
+        command.TreatUnmatchedTokensAsErrors = false;
+        return command;
     }
 
     // Arguments

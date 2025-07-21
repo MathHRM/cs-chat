@@ -40,6 +40,8 @@ public class Logout : CommandBase
 
     public override Command GetCommandInstance()
     {
-        return new Command(CommandName, Description);
+        var command = new Command(CommandName, Description);
+        command.TreatUnmatchedTokensAsErrors = false;
+        return command;
     }
 }

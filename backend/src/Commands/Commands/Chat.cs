@@ -126,10 +126,12 @@ public class Chat : CommandBase
 
     public override Command GetCommandInstance()
     {
-        return new Command(CommandName, Description)
+        var command = new Command(CommandName, Description)
         {
             _username,
         };
+        command.TreatUnmatchedTokensAsErrors = false;
+        return command;
     }
 
     // Arguments

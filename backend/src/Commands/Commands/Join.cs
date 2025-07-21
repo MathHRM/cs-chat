@@ -112,11 +112,13 @@ public class Join : CommandBase
 
     public override Command GetCommandInstance()
     {
-        return new Command(CommandName, Description)
+        var command = new Command(CommandName, Description)
         {
             _chatId,
             _password
         };
+        command.TreatUnmatchedTokensAsErrors = false;
+        return command;
     }
 
     // Arguments
