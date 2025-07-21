@@ -1,11 +1,13 @@
 <template>
   <div class="terminal-line">
-    <span v-if="message.type === 0">
-      <span class="terminal-user">{{ message.user.username }}</span>
-      <span class="terminal-separator"> chat:( </span>
-      <span class="terminal-chat" v-if="message.chat?.id">{{ `${message.chat?.name} (${message.chat?.id})` }}</span>
-      <span class="terminal-chat" v-else>{{ "chat" }}</span>
-      <span class="terminal-separator"> )</span>
+    <span v-if="message.type === 0" class="message-wrapper">
+      <span class="user-chat-info">
+        <span class="terminal-user">{{ message.user.username }}</span>
+        <span class="terminal-separator"> chat:( </span>
+        <span class="terminal-chat" v-if="message.chat?.id">{{ `${message.chat?.name} (${message.chat?.id})` }}</span>
+        <span class="terminal-chat" v-else>{{ "chat" }}</span>
+        <span class="terminal-separator"> )</span>
+      </span>
       <span class="terminal-message">{{ message.content }}</span>
     </span>
     <span v-else>
@@ -35,6 +37,27 @@ const getAlertClass = (type) => {
 </script>
 
 <style scoped>
+.terminal-line {
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+
+.message-wrapper {
+  display: inline;
+}
+
+.user-chat-info {
+  white-space: nowrap;
+  display: inline;
+}
+
+.terminal-message {
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  display: inline;
+}
+
 .alert {
   display: block;
   width: 100%;
@@ -46,6 +69,8 @@ const getAlertClass = (type) => {
   padding-top: 20px;
   padding-bottom: 20px;
   border-radius: 1px;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
 }
 
 .alert-error {
@@ -61,9 +86,5 @@ const getAlertClass = (type) => {
 .alert-success {
   background-color: #43d465;
   color: #000000;
-}
-
-.terminal-message {
-  white-space: pre-wrap;
 }
 </style>

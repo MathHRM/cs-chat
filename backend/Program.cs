@@ -41,7 +41,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 ValidAudience = jwtSettings.Audience,
                 IssuerSigningKey = new SymmetricSecurityKey(
                     Encoding.UTF8.GetBytes(jwtSettings.Secret)
-                )
+                ),
             };
             options.Events = new JwtBearerEvents
             {
@@ -78,6 +78,7 @@ builder.Services.AddScoped<Join>();
 builder.Services.AddScoped<Logout>();
 builder.Services.AddScoped<Chat>();
 builder.Services.AddScoped<Create>();
+builder.Services.AddScoped<Profile>();
 
 var app = builder.Build();
 

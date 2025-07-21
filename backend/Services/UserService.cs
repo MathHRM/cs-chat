@@ -16,8 +16,13 @@ namespace backend.Services
             _context = context;
         }
 
-        public async Task<User?> GetUserByIdAsync(int id)
+        public async Task<User?> GetUserByIdAsync(int? id)
         {
+            if (id == null)
+            {
+                return null;
+            }
+
             return await _userRepository.GetUserByIdAsync(id);
         }
 
@@ -25,6 +30,7 @@ namespace backend.Services
         {
             return await _context.Users
                 .Include(u => u.CurrentChat)
+                .Include(u => u.ChatUsers)
                 .FirstOrDefaultAsync(u => u.Username == username);
         }
 
@@ -58,6 +64,32 @@ namespace backend.Services
 
             existingUser.Username = user.Username ?? existingUser.Username;
             existingUser.CurrentChatId = user.CurrentChatId ?? existingUser.CurrentChatId;
+
+            await _userRepository.UpdateUserAsync(existingUser);
+            return existingUser;
+        }
+
+        public async Task<User?> UpdateUserAsync(int id, User user, string? password)
+        {
+            var existingUser = await GetUserByIdAsync(id);
+            if (existingUser == null)
+            {
+                return null;
+            }
+
+            var existingUsername = await GetUserByUsernameAsync(user.Username);
+
+            if (existingUsername != null && existingUsername.Id != id)
+            {
+                return null;
+            }
+
+            existingUser.Username = user.Username ?? existingUser.Username;
+
+            if (password != null)
+            {
+                existingUser.Password = BCrypt.Net.BCrypt.HashPassword(password);
+            }
 
             await _userRepository.UpdateUserAsync(existingUser);
             return existingUser;
@@ -141,6 +173,19 @@ namespace backend.Services
             Logger.Info($"Removing user {username} from other chats: {chatId}");
 
             foreach (var chatUser in user.ChatUsers.Where(cu => cu.ChatId != chatId))
+            {
+                await groups.RemoveFromGroupAsync(connection.ConnectionId, chatUser.ChatId);
+            }
+        }
+
+        public async Task DisconnectUserFromAllChatsAsync(User user, HubCallerContext connection, IGroupManager groups)
+        {
+            if (user == null || user.ChatUsers == null)
+            {
+                return;
+            }
+
+            foreach (var chatUser in user.ChatUsers)
             {
                 await groups.RemoveFromGroupAsync(connection.ConnectionId, chatUser.ChatId);
             }

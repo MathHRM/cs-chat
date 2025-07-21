@@ -58,7 +58,7 @@ public class Join : Command
             return CommandResult.UnauthorizedResult(CommandName);
         }
 
-        var user = await _userService.GetUserByUsernameAsync(HubCallerContext.User.Identity?.Name);
+        var user = await _userService.GetUserByIdAsync(AuthenticatedUserId);
 
         if (user.CurrentChat.Id == chatId)
         {

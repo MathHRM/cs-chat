@@ -11,5 +11,6 @@ public static class CommandsList
         { "logout", typeof(Logout) },
         { "chat", typeof(Chat) },
         { "create", typeof(Create) },
+        { "profile", typeof(Profile) },
     };
 }
