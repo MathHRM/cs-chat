@@ -1,23 +1,31 @@
 <template>
   <div class="terminal-input-line">
-    <span class="terminal-start">&rarr;</span>
-    <span class="terminal-user">{{ getUser.username || "~" }}</span>
-    <span class="terminal-separator"> chat:( </span>
-    <span class="terminal-chat" v-if="getChat?.id">{{ `${getChat.name} (${getChat.id})` }}</span>
-    <span class="terminal-chat" v-else>{{ chat || "chat" }}</span>
-    <span class="terminal-separator"> )</span>
-    <span class="terminal-end"> x </span>
-    <input
-      ref="terminalInput"
-      v-model="currentInput"
-      @keyup.enter="handleSend"
-      @keyup.up="handleUp"
-      @keyup.down="handleDown"
-      @input="handleInput"
-      class="terminal-input"
-      autofocus
-    />
-    <span class="terminal-cursor" :class="{ blink: showCursor }">█</span>
+    <div class="input-wrapper">
+      <span class="terminal-prompt">
+        <span class="terminal-start">&rarr;</span>
+        <span class="user-chat-info">
+          <span class="terminal-user">{{ getUser.username || "~" }}</span>
+          <span class="terminal-separator"> chat:( </span>
+          <span class="terminal-chat" v-if="getChat?.id">{{ `${getChat.name} (${getChat.id})` }}</span>
+          <span class="terminal-chat" v-else>{{ chat || "chat" }}</span>
+          <span class="terminal-separator"> )</span>
+        </span>
+        <span class="terminal-end"> x </span>
+      </span>
+      <div class="input-section">
+        <input
+          ref="terminalInput"
+          v-model="currentInput"
+          @keyup.enter="handleSend"
+          @keyup.up="handleUp"
+          @keyup.down="handleDown"
+          @input="handleInput"
+          class="terminal-input"
+          autofocus
+        />
+        <span class="terminal-cursor" :class="{ blink: showCursor }">█</span>
+      </div>
+    </div>
   </div>
 </template>
 
