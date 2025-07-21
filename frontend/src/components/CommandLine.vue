@@ -22,7 +22,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, defineEmits, computed, defineProps } from "vue";
+import { ref, onMounted, onUnmounted, defineEmits, computed, defineProps } from "vue";
 import { useAuthStore } from "@/stores/auth";
 import { useChatStore } from "@/stores/chat";
 import { saveCommandHistory, nextCommand, previousCommand } from "@/helpers/commandHistoryHelper";
@@ -47,6 +47,16 @@ const showCursor = ref(true);
 
 const terminalInput = ref(null);
 
+const focusInput = () => {
+  if (terminalInput.value) {
+    terminalInput.value.focus();
+  }
+};
+
+const handleWindowClick = () => {
+  focusInput();
+};
+
 const handleSend = () => {
   const message = currentInput.value.trim();
 
@@ -59,9 +69,7 @@ const handleSend = () => {
     saveCommandHistory(message);
   }
 
-  if (terminalInput.value) {
-    terminalInput.value.focus();
-  }
+  focusInput();
 };
 
 const handleUp = () => {
@@ -84,9 +92,14 @@ const startCursorBlink = () => {
 
 onMounted(() => {
   startCursorBlink();
+  focusInput();
 
-  if (terminalInput.value) {
-    terminalInput.value.focus();
-  }
+  // Add window click event listener to focus input
+  window.addEventListener('click', handleWindowClick);
+});
+
+onUnmounted(() => {
+  // Clean up event listener when component is destroyed
+  window.removeEventListener('click', handleWindowClick);
 });
 </script>
