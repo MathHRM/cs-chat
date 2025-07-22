@@ -4,7 +4,7 @@
       <span class="terminal-prompt">
         <span class="terminal-start">&rarr;</span>
         <span class="user-chat-info">
-          <span class="terminal-user">{{ getUser?.username || "guest" }}</span>
+          <span class="terminal-user">{{ getUser?.username || "Visitante" }}</span>
           <span class="terminal-separator"> chat:( </span>
           <span class="terminal-chat" v-if="getChat?.id">{{ `${getChat.name} (${getChat.id})` }}</span>
           <span class="terminal-chat" v-else>{{ chat || "chat" }}</span>

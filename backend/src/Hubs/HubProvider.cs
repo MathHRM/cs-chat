@@ -87,7 +87,7 @@ public class HubProvider : Hub<IHubProvider>
             User = new User
             {
                 Id = 0,
-                Username = "Visitante",
+                Username = $"Visitante-{Context.ConnectionId.Substring(0, 5)}",
                 CurrentChatId = "guest",
             },
         };
