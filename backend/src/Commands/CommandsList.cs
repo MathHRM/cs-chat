@@ -1,3 +1,5 @@
+using System.CommandLine;
+
 namespace backend.Commands;
 
 public static class CommandsList

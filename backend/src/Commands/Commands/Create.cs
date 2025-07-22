@@ -3,21 +3,46 @@ using backend.Models;
 using backend.Services;
 using Microsoft.AspNetCore.SignalR;
 using AutoMapper;
+using System.CommandLine;
 
 namespace backend.Commands;
 
-public class Create : Command
+public class Create : CommandBase
 {
+    public override string CommandName => "create";
+    public override string Description => "Create a chat";
+    public override bool ForAuthenticatedUsers => true;
+    public override bool ForGuestUsers => false;
+
+    public override Command GetCommandInstance()
+    {
+        var command = new Command(CommandName, Description)
+        {
+            _name,
+            _description,
+            _password
+        };
+        command.TreatUnmatchedTokensAsErrors = false;
+        return command;
+    }
+
+    // Arguments
+    private readonly Argument<string> _name = new Argument<string>("name")
+    {
+        Description = "The name of the chat",
+    };
+    private readonly Option<string> _description = new Option<string>("--description", "-d")
+    {
+        Description = "The description of the chat",
+    };
+    private readonly Option<string> _password = new Option<string>("--password", "-pass")
+    {
+        Description = "The password of the chat",
+    };
+
     private readonly UserService _userService;
     private readonly ChatService _chatService;
     private readonly IMapper _mapper;
-
-    public override string CommandName => "create";
-
-    public override string Description => "Create a chat";
-
-    public override bool ForAuthenticatedUsers => true;
-    public override bool ForGuestUsers => false;
 
     public Create(UserService userService, ChatService chatService, IMapper mapper)
     {
@@ -26,42 +51,11 @@ public class Create : Command
         _mapper = mapper;
     }
 
-    public override Dictionary<string, CommandArgument>? Args => new Dictionary<string, CommandArgument>
+    public override async Task<CommandResult> Handle(ParseResult parseResult)
     {
-        {
-            "name",
-            new CommandArgument {
-                Name = "name",
-                Description = "The name of the chat",
-                Alias = "n",
-                IsRequired = true,
-                ByPosition = true,
-                Position = 0,
-            }
-        },
-        {
-            "description",
-            new CommandArgument {
-                Name = "description",
-                Description = "The description of the chat",
-                Alias = "d",
-            }
-        },
-        {
-            "password",
-            new CommandArgument {
-                Name = "password",
-                Description = "The password of the chat",
-                Alias = "pass",
-            }
-        },
-    };
-
-    public override async Task<CommandResult> Handle(Dictionary<string, string?> args)
-    {
-        var name = args["name"] as string;
-        var description = args["description"] as string;
-        var password = args["password"] as string;
+        var name = parseResult.GetValue(_name);
+        var description = parseResult.GetValue(_description);
+        var password = parseResult.GetValue(_password);
         var isPrivate = password != null;
         var user = await _userService.GetUserByIdAsync(AuthenticatedUserId);
 

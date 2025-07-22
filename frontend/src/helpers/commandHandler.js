@@ -8,7 +8,16 @@ import { useCommandHistoryStore } from "@/stores/commandHistory";
 export default function handleCommand(command, t) {
   console.log(command);
 
-  if (command.result != 0) {
+  if (command.error != null) {
+    switch (command.error) {
+      case 0:
+        alert(t("alerts.command-not-found"), 2);
+        break;
+      case 1:
+        alert(t("alerts.unauthorized"), 1);
+        break;
+    }
+
     if (command.errors && Object.keys(command.errors).length > 0) {
       Object.values(command.errors).forEach((message) => {
         alert(message, 1);

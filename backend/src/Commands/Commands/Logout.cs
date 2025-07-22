@@ -1,15 +1,22 @@
 using Microsoft.AspNetCore.SignalR;
 using backend.Services;
+using System.CommandLine;
 
 namespace backend.Commands;
 
-public class Logout : Command
+public class Logout : CommandBase
 {
     public override string CommandName => "logout";
     public override string Description => "Logout from the chat";
-    public override Dictionary<string, CommandArgument>? Args => null;
     public override bool ForAuthenticatedUsers => true;
     public override bool ForGuestUsers => false;
+
+    public override Command GetCommandInstance()
+    {
+        var command = new Command(CommandName, Description);
+        command.TreatUnmatchedTokensAsErrors = false;
+        return command;
+    }
 
     private readonly UserService _userService;
 
@@ -18,7 +25,7 @@ public class Logout : Command
         _userService = userService;
     }
 
-    public override async Task<CommandResult> Handle(Dictionary<string, string?> args)
+    public override async Task<CommandResult> Handle(ParseResult parseResult)
     {
         if (HubCallerContext == null || !(HubCallerContext.User.Identity?.IsAuthenticated ?? false))
         {

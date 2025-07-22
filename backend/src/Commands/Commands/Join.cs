@@ -2,21 +2,41 @@ using backend.Http.Responses;
 using backend.Services;
 using Microsoft.AspNetCore.SignalR;
 using AutoMapper;
+using System.CommandLine;
 
 namespace backend.Commands;
 
-public class Join : Command
+public class Join : CommandBase
 {
+    public override string CommandName => "join";
+    public override string Description => "Join a chat";
+    public override bool ForAuthenticatedUsers => true;
+    public override bool ForGuestUsers => false;
+
+    public override Command GetCommandInstance()
+    {
+        var command = new Command(CommandName, Description)
+        {
+            _chatId,
+            _password
+        };
+        command.TreatUnmatchedTokensAsErrors = false;
+        return command;
+    }
+
+    // Arguments
+    private readonly Argument<string> _chatId = new Argument<string>("chatId")
+    {
+        Description = "The chat to join",
+    };
+    private readonly Option<string> _password = new Option<string>("--password", "-pass")
+    {
+        Description = "The password of the chat",
+    };
+
     private readonly UserService _userService;
     private readonly ChatService _chatService;
     private readonly IMapper _mapper;
-
-    public override string CommandName => "join";
-
-    public override string Description => "Join a chat";
-
-    public override bool ForAuthenticatedUsers => true;
-    public override bool ForGuestUsers => false;
 
     public Join(UserService userService, ChatService chatService, IMapper mapper)
     {
@@ -25,33 +45,10 @@ public class Join : Command
         _mapper = mapper;
     }
 
-    public override Dictionary<string, CommandArgument>? Args => new Dictionary<string, CommandArgument>
+    public override async Task<CommandResult> Handle(ParseResult parseResult)
     {
-        {
-            "chatId",
-            new CommandArgument {
-                Name = "chatId",
-                IsRequired = true,
-                Description = "The chat to join",
-                ByPosition = true,
-                Position = 0,
-                Alias = "c",
-            }
-        },
-        {
-            "password",
-            new CommandArgument {
-                Name = "password",
-                Description = "The password of the chat",
-                Alias = "pass",
-            }
-        }
-    };
-
-    public override async Task<CommandResult> Handle(Dictionary<string, string?> args)
-    {
-        var chatId = args["chatId"] as string;
-        var password = args["password"] as string;
+        var chatId = parseResult.GetValue(_chatId);
+        var password = parseResult.GetValue(_password);
 
         if (HubCallerContext == null)
         {
@@ -89,7 +86,8 @@ public class Join : Command
             return CommandResult.FailureResult("Invalid password", CommandName);
         }
 
-        if (!userBelongsToChat) {
+        if (!userBelongsToChat)
+        {
             await _chatService.JoinChatAsync(chat.Id, user.Id);
         }
 

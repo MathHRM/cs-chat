@@ -1,25 +1,31 @@
 using System.Text;
+using System.CommandLine;
 using backend.Http.Responses;
-using Microsoft.AspNetCore.SignalR;
 
 namespace backend.Commands;
 
-public class Help : Command
+public class Help : CommandBase
 {
-    private readonly ICommandResolver _commandResolver;
-
     public override string CommandName => "help";
     public override string Description => "Show help for all commands";
-    public override Dictionary<string, CommandArgument>? Args => null;
     public override bool ForAuthenticatedUsers => true;
     public override bool ForGuestUsers => true;
+
+    public override Command GetCommandInstance()
+    {
+        var command = new Command(CommandName, Description);
+        command.TreatUnmatchedTokensAsErrors = false;
+        return command;
+    }
+
+    private readonly ICommandResolver _commandResolver;
 
     public Help(ICommandResolver commandResolver)
     {
         _commandResolver = commandResolver;
     }
 
-    public override async Task<CommandResult> Handle(Dictionary<string, string?> args)
+    public override async Task<CommandResult> Handle(ParseResult parseResult)
     {
         var commands = CommandsForUser();
         var helpMessage = new StringBuilder("Available commands:\n\n")
@@ -28,28 +34,19 @@ public class Help : Command
 
         foreach (var command in commands)
         {
-            helpMessage.AppendLine($"/{command.CommandName} - {command.Description}");
+            var commandInstance = command.GetCommandInstance();
 
-            if (command.Args == null || !command.Args.Any())
+            helpMessage.AppendLine($"/{commandInstance.Name} - {commandInstance.Description}");
+
+            foreach (var argument in commandInstance.Arguments)
             {
-                helpMessage.AppendLine("    No arguments required");
-                helpMessage.AppendLine();
-
-                continue;
+                helpMessage.AppendLine($"    [{argument.Name}] - {argument.Description}");
             }
 
-            foreach (var argument in command.Args.Values)
+            foreach (var option in commandInstance.Options)
             {
-                if (argument.ByPosition)
-                {
-                    helpMessage.AppendLine($"    [{argument.Name}] - {argument.Description}");
-
-                    continue;
-                }
-
-                string alias = argument.Alias != null ? $"| -{argument.Alias}" : "";
-
-                helpMessage.AppendLine($"    --{argument.Name} {alias} - {argument.Description}");
+                string alias = $" | {string.Join(", ", option.Aliases)}";
+                helpMessage.AppendLine($"    {option.Name}{alias} - {option.Description}");
             }
 
             helpMessage.AppendLine();
@@ -74,7 +71,7 @@ public class Help : Command
         };
     }
 
-    private List<Command> CommandsForUser()
+    private List<CommandBase> CommandsForUser()
     {
         if (UserIsAuthenticated)
         {

@@ -29,6 +29,10 @@ async function handleInput(message) {
       user: {
         username: "~",
       },
+      chat: {
+        id: "login-register",
+        name: "Login Register",
+      },
     });
 
     alert(t("alerts.not-logged-in"), 2);
