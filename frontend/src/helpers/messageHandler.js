@@ -15,7 +15,7 @@ export default function handleMessage(
     return;
   }
 
-  if (!hubConnection || hubConnection.state != HubConnectionState.Connected) {
+  if (!hubConnection || hubConnection?.state != HubConnectionState.Connected) {
     alert(t("alerts.connection-failed"), 1);
     return;
   }
