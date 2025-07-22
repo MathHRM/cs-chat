@@ -2,20 +2,42 @@ using backend.Services;
 using backend.Http.Responses;
 using backend.Models;
 using AutoMapper;
+using System.CommandLine;
 
 namespace backend.Commands;
 
-public class Register : Command
+public class Register : CommandBase
 {
+    public override string CommandName => "register";
+    public override string Description => "Register a new user";
+    public override bool ForAuthenticatedUsers => false;
+    public override bool ForGuestUsers => true;
+
+    public override Command GetCommandInstance()
+    {
+        var command = new Command(CommandName, Description)
+        {
+            _username,
+            _password
+        };
+        command.TreatUnmatchedTokensAsErrors = false;
+        return command;
+    }
+
+    // Arguments
+    private readonly Option<string> _username = new Option<string>("--username", "-u") {
+        Description = "The username to register with",
+        Required = true,
+    };
+    private readonly Option<string> _password = new Option<string>("--password", "-pass") {
+        Description = "The password to register with",
+        Required = true,
+    };
+
     private readonly UserService _userService;
     private readonly TokenService _tokenService;
     private readonly ChatService _chatService;
     private readonly IMapper _mapper;
-    public override string CommandName => "register";
-
-    public override string Description => "Register a new user";
-
-    public override bool RequiresAuthentication => false;
 
     public Register(UserService userService, TokenService tokenService, ChatService chatService, IMapper mapper)
     {
@@ -25,39 +47,20 @@ public class Register : Command
         _mapper = mapper;
     }
 
-    public override Dictionary<string, CommandArgument>? Args => new Dictionary<string, CommandArgument>
+    public override async Task<CommandResult> Handle(ParseResult parseResult)
     {
-        {
-            "username",
-            new CommandArgument {
-                Name = "username",
-                IsRequired = true,
-                Description = "The username to register with",
-                Alias = "u",
-            }
-        },
-        {
-            "password",
-            new CommandArgument {
-                Name = "password",
-                IsRequired = true,
-                Description = "The password to register with",
-                Alias = "pass",
-            }
-        }
-    };
+        var username = parseResult.GetValue(_username);
+        var password = parseResult.GetValue(_password);
 
-    public override async Task<CommandResult> Handle(Dictionary<string, string?> args)
-    {
-        if (await _userService.UserExistsAsync(args["username"] as string))
+        if (await _userService.UserExistsAsync(username))
         {
             return CommandResult.FailureResult("User with this Username already exists", CommandName);
         }
 
         var user = new User
         {
-            Username = args["username"] as string,
-            Password = args["password"] as string,
+            Username = username,
+            Password = password,
         };
 
         var createdUser = await _userService.CreateUserAsync(user);

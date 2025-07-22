@@ -1,6 +1,9 @@
 {
-    "connection-failed": "Connection failed, try reloading the page",
     "not-logged-in": "You are not logged in, please log or register to start chatting",
     "command-handle": "Command could not be processed",
-    "joined-chat": "You have joined the chat { chatId }"
+    "joined-chat": "You have joined the chat { chatId }",
+    "profile-updated": "Profile updated successfully",
+    "command-not-found": "Command not found, please use the /help command to see the available commands",
+    "unauthorized": "Unauthorized, please log in to continue",
+    "unknown-error": "Unknown error, please try again later"
 }

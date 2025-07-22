@@ -1,26 +1,20 @@
 <template>
   <div class="terminal-line">
-    <span v-if="message.type === 1">
-      <span class="terminal-message alert message-error">
-        {{ message.content }}
+    <span v-if="message.type === 0" class="message-wrapper">
+      <span class="user-chat-info">
+        <span class="terminal-user">{{ message.user.username }}</span>
+        <span class="terminal-separator"> chat:( </span>
+        <span class="terminal-chat" v-if="message.chat?.id">{{ `${message.chat?.name} (${message.chat?.id})` }}</span>
+        <span class="terminal-chat" v-else>{{ "chat" }}</span>
+        <span class="terminal-separator"> )</span>
       </span>
-    </span>
-    <span v-else-if="message.type === 2">
-      <span class="terminal-message alert message-info">
-        {{ message.content }}
-      </span>
-    </span>
-    <span v-else-if="message.type === 3">
-      <span class="terminal-message alert message-success">
-        {{ message.content }}
-      </span>
+      <span class="terminal-message">{{ message.content }}</span>
     </span>
     <span v-else>
-      <span class="terminal-user">{{ message.user.username }}</span>
-      <span class="terminal-separator"> chat:( </span>
-      <span class="terminal-chat">{{ message.chat?.id || "chat" }}</span>
-      <span class="terminal-separator"> )</span>
-      <span class="terminal-message">{{ message.content }}</span>
+      <span class="alert"
+      :class="getAlertClass(message.type)">
+        {{ message.content }}
+      </span>
     </span>
   </div>
 </template>
@@ -31,9 +25,39 @@ import { defineProps } from "vue";
 defineProps({
   message: Object,
 });
+
+const getAlertClass = (type) => {
+  switch (type) {
+    case 1: return "alert-error";
+    case 2: return "alert-info";
+    case 3: return "alert-success";
+    default: return "";
+  }
+}
 </script>
 
 <style scoped>
+.terminal-line {
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+
+.message-wrapper {
+  display: inline;
+}
+
+.user-chat-info {
+  white-space: nowrap;
+  display: inline;
+}
+
+.terminal-message {
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  display: inline;
+}
+
 .alert {
   display: block;
   width: 100%;
@@ -45,24 +69,22 @@ defineProps({
   padding-top: 20px;
   padding-bottom: 20px;
   border-radius: 1px;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
 }
 
-.message-error {
+.alert-error {
   background-color: #e33c3c;
   color: #000000;
 }
 
-.message-info {
+.alert-info {
   background-color: #bdc42c;
   color: #000000;
 }
 
-.message-success {
+.alert-success {
   background-color: #43d465;
   color: #000000;
-}
-
-.terminal-message {
-  white-space: pre-wrap;
 }
 </style>

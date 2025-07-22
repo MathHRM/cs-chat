@@ -32,16 +32,20 @@ namespace backend.Services
         }
 
         public async Task<Chat> CreateChatAsync(
-            List<User> users,
+            string name,
+            string? description,
+            string? password,
             bool isPublic,
             bool isGroup,
-            string? password = null
+            List<User> users
         )
         {
             var chat = new Chat
             {
                 IsPublic = isPublic,
                 IsGroup = isGroup,
+                Name = name,
+                Description = description,
                 ChatUsers = new List<ChatUser>(),
             };
 
@@ -57,7 +61,7 @@ namespace backend.Services
             }
 
             chat.Id = isGroup ? GeneratePublicChatId() : GeneratePrivateChatId(users[0].Username, users[1].Username);
-            chat.Password = password != null && !isPublic ? BCrypt.Net.BCrypt.HashPassword(password) : null;
+            chat.Password = password != null ? BCrypt.Net.BCrypt.HashPassword(password) : null;
 
             await _context.Chats.AddAsync(chat);
             await _context.SaveChangesAsync();
@@ -125,6 +129,11 @@ namespace backend.Services
             await AddUserToChatAsync(chat, user);
 
             return chat;
+        }
+
+        public async Task<bool> UserBelongsToChatAsync(int userId, string chatId)
+        {
+            return await _context.ChatUsers.AnyAsync(cu => cu.UserId == userId && cu.ChatId == chatId);
         }
 
         public string GeneratePrivateChatId(string username1, string username2)

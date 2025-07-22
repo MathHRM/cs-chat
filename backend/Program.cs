@@ -21,7 +21,9 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddSignalR();
 
 builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("JwtSettings"));
+builder.Services.Configure<AllowedConfig>(builder.Configuration.GetSection("AllowedConfig"));
 var jwtSettings = builder.Configuration.GetSection("JwtSettings").Get<JwtSettings>();
+var allowedConfig = builder.Configuration.GetSection("AllowedConfig").Get<AllowedConfig>();
 
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
@@ -39,7 +41,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 ValidAudience = jwtSettings.Audience,
                 IssuerSigningKey = new SymmetricSecurityKey(
                     Encoding.UTF8.GetBytes(jwtSettings.Secret)
-                )
+                ),
             };
             options.Events = new JwtBearerEvents
             {
@@ -76,6 +78,7 @@ builder.Services.AddScoped<Join>();
 builder.Services.AddScoped<Logout>();
 builder.Services.AddScoped<Chat>();
 builder.Services.AddScoped<Create>();
+builder.Services.AddScoped<Profile>();
 
 var app = builder.Build();
 
@@ -90,7 +93,7 @@ app.UseCors(cors =>
 {
     cors.AllowAnyHeader()
     .AllowAnyMethod()
-    .AllowCredentials().WithOrigins("http://localhost:8080");
+    .AllowCredentials().WithOrigins(allowedConfig.Origins);
 });
 
 app.UseHttpsRedirection();

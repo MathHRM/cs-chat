@@ -2,53 +2,53 @@ using backend.Http.Responses;
 using backend.Services;
 using Microsoft.AspNetCore.SignalR;
 using AutoMapper;
+using System.CommandLine;
 
 namespace backend.Commands;
 
-public class Chat : Command
+public class Chat : CommandBase
 {
+    public override string CommandName => "chat";
+    public override string Description => "Chat with a user";
+    public override bool ForAuthenticatedUsers => true;
+    public override bool ForGuestUsers => false;
+
+    public override Command GetCommandInstance()
+    {
+        var command = new Command(CommandName, Description)
+        {
+            _username,
+        };
+        command.TreatUnmatchedTokensAsErrors = false;
+        return command;
+    }
+
+    // Arguments
+    private readonly Argument<string> _username = new Argument<string>("username") {
+        Description = "The username to chat with",
+    };
+
     private readonly UserService _userService;
-    private readonly TokenService _tokenService;
     private readonly ChatService _chatService;
     private readonly IMapper _mapper;
 
-    public override string CommandName => "chat";
-
-    public override string Description => "Chat with a user";
-
-    public Chat(UserService userService, TokenService tokenService, ChatService chatService, IMapper mapper)
+    public Chat(UserService userService, ChatService chatService, IMapper mapper)
     {
         _userService = userService;
-        _tokenService = tokenService;
         _chatService = chatService;
         _mapper = mapper;
     }
 
-    public override Dictionary<string, CommandArgument>? Args => new Dictionary<string, CommandArgument>
+    public override async Task<CommandResult> Handle(ParseResult parseResult)
     {
-        {
-            "username",
-            new CommandArgument {
-                Name = "username",
-                IsRequired = true,
-                Description = "The username to chat with",
-                ByPosition = true,
-                Position = 0,
-                Alias = "u",
-            }
-        }
-    };
-
-    public override async Task<CommandResult> Handle(Dictionary<string, string?> args)
-    {
-        var targetUsername = args["username"] as string;
+        var targetUsername = parseResult.GetValue(_username);
 
         if (HubCallerContext == null)
         {
             return CommandResult.UnauthorizedResult(CommandName);
         }
 
-        var currentUser = await _userService.GetUserByUsernameAsync(HubCallerContext.User.Identity?.Name);
+        var currentUser = await _userService.GetUserByIdAsync(AuthenticatedUserId);
         if (currentUser == null)
         {
             return CommandResult.UnauthorizedResult(CommandName);
@@ -92,7 +92,12 @@ public class Chat : Command
         }
 
         var users = new List<Models.User> { currentUser, targetUser };
-        var createdChat = await _chatService.CreateChatAsync(users, false, false);
+        var orderedUsernames = users.Select(u => u.Username).OrderBy(u => u, StringComparer.OrdinalIgnoreCase).ToList();
+        var description = $"Chat between {orderedUsernames[0]} and {orderedUsernames[1]}";
+        var name = $"{orderedUsernames[0]}.{orderedUsernames[1]}";
+        var password = Guid.NewGuid().ToString();
+
+        var createdChat = await _chatService.CreateChatAsync(name, description, password, false, false, users);
 
         if (createdChat == null)
         {

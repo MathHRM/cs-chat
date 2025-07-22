@@ -2,20 +2,32 @@ using backend.Services;
 using backend.Commands;
 using backend.Http.Responses;
 using AutoMapper;
-
+using System.CommandLine;
 namespace backend.Commands;
 
-public class Login : Command
+public class Login : CommandBase
 {
+    public override string CommandName => "login";
+    public override string Description => "Login to the system";
+    public override bool ForAuthenticatedUsers => false;
+    public override bool ForGuestUsers => true;
+
     private readonly UserService _userService;
     private readonly TokenService _tokenService;
     private readonly ChatService _chatService;
     private readonly IMapper _mapper;
-    public override string CommandName => "login";
 
-    public override string Description => "Login to the system";
-
-    public override bool RequiresAuthentication => false;
+    // Arguments
+    private readonly Option<string> _username = new Option<string>("--username", "-u")
+    {
+        Description = "The username to login with",
+        Required = true,
+    };
+    private readonly Option<string> _password = new Option<string>("--password", "-pass")
+    {
+        Description = "The password to login with",
+        Required = true,
+    };
 
     public Login(UserService userService, TokenService tokenService, ChatService chatService, IMapper mapper)
     {
@@ -25,31 +37,12 @@ public class Login : Command
         _mapper = mapper;
     }
 
-    public override Dictionary<string, CommandArgument>? Args => new Dictionary<string, CommandArgument>
+    public override async Task<CommandResult> Handle(ParseResult parseResult)
     {
-        {
-            "username",
-            new CommandArgument {
-                Name = "username",
-                IsRequired = true,
-                Description = "The username to login with",
-                Alias = "u",
-            }
-        },
-        {
-            "password",
-            new CommandArgument {
-                Name = "password",
-                IsRequired = true,
-                Description = "The password to login with",
-                Alias = "pass",
-            }
-        }
-    };
+        var username = parseResult.GetValue(_username);
+        var password = parseResult.GetValue(_password);
 
-    public override async Task<CommandResult> Handle(Dictionary<string, string?> args)
-    {
-        var user = await _userService.ValidateUserCredentialsAsync(args["username"] as string, args["password"] as string);
+        var user = await _userService.ValidateUserCredentialsAsync(username, password);
         if (user == null)
         {
             return CommandResult.FailureResult("Invalid email or password", CommandName);
@@ -71,5 +64,16 @@ public class Login : Command
             Result = CommandResultEnum.Success,
             Message = "Login successful"
         };
+    }
+
+    public override Command GetCommandInstance()
+    {
+        var command = new Command(CommandName, Description)
+        {
+            _username,
+            _password
+        };
+        command.TreatUnmatchedTokensAsErrors = false;
+        return command;
     }
 }

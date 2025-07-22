@@ -1,3 +1,5 @@
+using System.CommandLine;
+
 namespace backend.Commands;
 
 public static class CommandsList
@@ -11,5 +13,6 @@ public static class CommandsList
         { "logout", typeof(Logout) },
         { "chat", typeof(Chat) },
         { "create", typeof(Create) },
+        { "profile", typeof(Profile) },
     };
 }

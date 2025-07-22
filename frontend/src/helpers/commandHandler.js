@@ -9,7 +9,16 @@ import { getMessages } from "@/api/getMessages";
 export default function handleCommand(command, t) {
   console.log(command);
 
-  if (command.result != 0) {
+  if (command.error != null) {
+    switch (command.error) {
+      case 0:
+        alert(t("alerts.command-not-found"), 2);
+        break;
+      case 1:
+        alert(t("alerts.unauthorized"), 1);
+        break;
+    }
+
     if (command.errors && Object.keys(command.errors).length > 0) {
       Object.values(command.errors).forEach((message) => {
         alert(message, 1);
@@ -44,6 +53,9 @@ export default function handleCommand(command, t) {
       break;
     case "create":
       handleJoin(command, t);
+      break;
+    case "profile":
+      handleProfile(command, t);
       break;
     default:
       console.log(command);
@@ -120,4 +132,20 @@ function handleJoin(command, t) {
   getMessages().then((messages) => {
     messagesStore.setMessages(messages);
   });
+}
+
+function handleProfile(command, t) {
+  const data = command.response;
+
+  if (!data?.id) {
+    alert(command.message, 1);
+
+    return;
+  }
+
+  const authStore = useAuthStore();
+
+  authStore.setUser(data);
+
+  alert(t("alerts.profile-updated"), 3);
 }

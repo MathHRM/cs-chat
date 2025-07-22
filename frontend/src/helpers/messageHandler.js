@@ -1,4 +1,4 @@
-import { HubConnectionState } from "@aspnet/signalr";
+import { HubConnectionState } from "@microsoft/signalr";
 import { useMessagesStore } from "@/stores/messages";
 
 export default function handleMessage(
@@ -29,6 +29,7 @@ export default function handleMessage(
       },
       chat: {
         id: chat.id,
+        name: chat.name,
       },
     });
   }

@@ -2,6 +2,6 @@ namespace backend.Commands;
 
 public interface ICommandResolver
 {
-    Command? GetCommand(string commandName);
-    IEnumerable<Command> GetAllCommands();
+    CommandBase? GetCommand(string commandName);
+    IEnumerable<CommandBase> GetAllCommands();
 }
