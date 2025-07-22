@@ -62,7 +62,7 @@ onMounted(() => {
       });
     })
     .catch(() => {
-      alert(t("alerts.connection-failed"), 1);
+      alert(t("connection.failed"), 1);
     });
 
   getMessages().then((messages) => {
