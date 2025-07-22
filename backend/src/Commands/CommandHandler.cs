@@ -24,19 +24,19 @@ public class CommandHandler
 
         if (string.IsNullOrWhiteSpace(commandName))
         {
-            return CommandResult.FailureResult("Invalid command");
+            return CommandResult.FailureResult("Invalid command", null, null, Error.CommandNotFound);
         }
 
         var command = _commandResolver.GetCommand(commandName);
 
         if (command == null)
         {
-            return CommandResult.FailureResult("Command not found", commandName);
+            return CommandResult.FailureResult("Command not found", commandName, null, Error.CommandNotFound);
         }
 
         if (!UserCanUseCommand(command, connection, httpContext))
         {
-            return CommandResult.FailureResult("Invalid command", command.CommandName);
+            return CommandResult.FailureResult("Invalid command", command.CommandName, null, Error.Unauthorized);
         }
 
         var commandInstance = command.GetCommandInstance();
@@ -47,7 +47,8 @@ public class CommandHandler
             return CommandResult.FailureResult(
                 "Invalid arguments",
                 command.CommandName,
-                validationResult.Errors.ToDictionary(e => e.SymbolResult.ToString(), e => e.Message)
+                validationResult.Errors.ToDictionary(e => e.SymbolResult.ToString(), e => e.Message),
+                Error.UnknownError
             );
         }
 
