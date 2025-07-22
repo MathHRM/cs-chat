@@ -54,12 +54,12 @@ public abstract class CommandResult
         return new GenericResult
         {
             Result = CommandResultEnum.Unauthorized,
-            Message = "Unauthorized",
+            Message = "Não autorizado",
             Command = command,
             Error = Commands.Error.Unauthorized,
             Response = new MessageResponse
             {
-                Content = "Unauthorized",
+                Content = "Não autorizado",
                 Type = MessageType.Error,
                 CreatedAt = DateTime.UtcNow
             }

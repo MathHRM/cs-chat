@@ -24,7 +24,7 @@ const _hub = new Hub();
 const messagesStore = useMessagesStore();
 const messages = computed(() => messagesStore.messages);
 const user = {
-  username: "Guest",
+  username: "Visitante",
   currentChatId: "guest",
 };
 const chat = {
@@ -49,7 +49,7 @@ onMounted(async () => {
       });
     })
     .catch(() => {
-      alert(t("alerts.connection-failed"), 1);
+      alert(t("connection.failed"), 1);
     });
 
   alert(t("alerts.unauthenticated"), 1);

@@ -1,0 +1,10 @@
+{
+    "not-logged-in": "Você não está logado, por favor logue ou registre-se para começar a conversar",
+    "command-handle": "Comando não pode ser processado",
+    "joined-chat": "Você entrou no chat { chatId }",
+    "profile-updated": "Perfil atualizado com sucesso",
+    "command-not-found": "Comando não encontrado, por favor use o comando /help para ver os comandos disponíveis",
+    "unauthorized": "Não autorizado, por favor faça login para continuar",
+    "unknown-error": "Erro desconhecido, por favor tente novamente mais tarde",
+    "unauthenticated": "Você não está autenticado, suas mensagens não serão salvas e você não poderá entrar em outros chats. Veja /help para ver os comandos disponíveis"
+}

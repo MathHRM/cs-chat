@@ -1,0 +1,6 @@
+{
+    "reconnecting": "Reconectando ao servidor...",
+    "reconnected": "Reconectado ao servidor",
+    "failed": "Falha na conexão, aguarde a reconexão ou tente recarregar a página",
+    "closed": "Conexão fechada, aguarde a reconexão ou tente recarregar a página"
+}

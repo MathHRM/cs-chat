@@ -9,7 +9,7 @@ namespace backend.Commands;
 public class Register : CommandBase
 {
     public override string CommandName => "register";
-    public override string Description => "Register a new user";
+    public override string Description => "Registra um novo usuário";
     public override bool ForAuthenticatedUsers => false;
     public override bool ForGuestUsers => true;
 
@@ -26,11 +26,11 @@ public class Register : CommandBase
 
     // Arguments
     private readonly Option<string> _username = new Option<string>("--username", "-u") {
-        Description = "The username to register with",
+        Description = "O username para registrar",
         Required = true,
     };
     private readonly Option<string> _password = new Option<string>("--password", "-pass") {
-        Description = "The password to register with",
+        Description = "A senha para registrar",
         Required = true,
     };
 
@@ -54,7 +54,7 @@ public class Register : CommandBase
 
         if (await _userService.UserExistsAsync(username))
         {
-            return CommandResult.FailureResult("User with this Username already exists", CommandName);
+            return CommandResult.FailureResult("Usuário com este username já existe", CommandName);
         }
 
         var user = new User
@@ -77,7 +77,7 @@ public class Register : CommandBase
             },
             Command = CommandName,
             Result = CommandResultEnum.Success,
-            Message = "Register successful"
+            Message = "Registro realizado com sucesso"
         };
     }
 }
