@@ -16,7 +16,7 @@ import { onMounted, computed } from "vue";
 import Hub from "../Hub";
 import { useAuthStore } from "@/stores/auth";
 import handleCommand from "@/helpers/commandHandler";
-import handleMessage from "@/helpers/messageHandler";
+import handleMessage, { alert } from "@/helpers/messageHandler";
 import { useChatStore } from "@/stores/chat";
 import { useI18n } from "vue-i18n";
 import { useMessagesStore } from "@/stores/messages";
