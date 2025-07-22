@@ -6,6 +6,7 @@ using backend.Services;
 using backend.Http.Responses;
 using Microsoft.AspNetCore.Authorization;
 using AutoMapper;
+using System.Security.Claims;
 
 namespace backend.Http.Controllers
 {
@@ -72,7 +73,8 @@ namespace backend.Http.Controllers
         [Route("me")]
         public async Task<ActionResult<UserResponse>> GetUser()
         {
-            var user = await _userService.GetUserByUsernameAsync(User.Identity.Name);
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var user = await _userService.GetUserByIdAsync(int.Parse(userId));
             var token = Request.Headers.Authorization.ToString().Replace("Bearer ", "");
 
             return Ok(new LoginResponse
