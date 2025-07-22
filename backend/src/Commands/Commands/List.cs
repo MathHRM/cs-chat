@@ -8,7 +8,7 @@ namespace backend.Commands;
 public class List : CommandBase
 {
     public override string CommandName => "list";
-    public override string Description => "List all chats you have access to";
+    public override string Description => "Lista todos os chats que você tem acesso";
     public override bool ForAuthenticatedUsers => true;
     public override bool ForGuestUsers => false;
 
@@ -48,7 +48,7 @@ public class List : CommandBase
 
         if (chats.Count == 0)
         {
-            chatsMessage.AppendLine("No chats found");
+            chatsMessage.AppendLine("Nenhum chat encontrado");
         }
 
         return new GenericResult
@@ -62,7 +62,7 @@ public class List : CommandBase
                 User = new UserResponse
                 {
                     Id = 0,
-                    Username = "System",
+                    Username = "Sistema",
                     CurrentChatId = null
                 },
             },

@@ -10,7 +10,7 @@ namespace backend.Commands;
 public class Profile : CommandBase
 {
     public override string CommandName => "profile";
-    public override string Description => "Update your profile";
+    public override string Description => "Atualiza seu perfil";
     public override bool ForAuthenticatedUsers => true;
     public override bool ForGuestUsers => false;
 
@@ -28,13 +28,13 @@ public class Profile : CommandBase
 
     // Arguments
     private readonly Option<string> _username = new Option<string>("--username", "-u") {
-        Description = "Update your username",
+        Description = "Atualiza seu username",
     };
     private readonly Option<string> _password = new Option<string>("--password", "-pass") {
-        Description = "Update your password",
+        Description = "Atualiza sua senha",
     };
     private readonly Option<string> _confirmPassword = new Option<string>("--confirm-password", "-confirm") {
-        Description = "Confirm your new password",
+        Description = "Confirma sua nova senha",
     };
 
     private readonly UserService _userService;
@@ -55,22 +55,22 @@ public class Profile : CommandBase
 
         if (username == null && password == null)
         {
-            return CommandResult.FailureResult("Name or password is required", CommandName);
+            return CommandResult.FailureResult("Username ou senha são obrigatórios", CommandName);
         }
 
         if (password != null && confirmPassword == null)
         {
-            return CommandResult.FailureResult("Confirm password is required", CommandName);
+            return CommandResult.FailureResult("Senha de confirmação é obrigatória para atualizar a senha", CommandName);
         }
 
         if (password != null && confirmPassword != null && password != confirmPassword)
         {
-            return CommandResult.FailureResult("Password and confirm password do not match", CommandName);
+            return CommandResult.FailureResult("Senha e senha de confirmação não coincidem", CommandName);
         }
 
         if (username != null && await _userService.UserExistsAsync(username))
         {
-            return CommandResult.FailureResult("User with this username already exists", CommandName);
+            return CommandResult.FailureResult("Usuário com este username já existe", CommandName);
         }
 
         user.Username = username ?? user.Username;
@@ -81,7 +81,7 @@ public class Profile : CommandBase
             Response = _mapper.Map<UserResponse>(user),
             Command = CommandName,
             Result = CommandResultEnum.Success,
-            Message = "Profile updated successfully",
+            Message = "Perfil atualizado com sucesso",
         };
     }
 }

@@ -7,7 +7,7 @@ namespace backend.Commands;
 public class Help : CommandBase
 {
     public override string CommandName => "help";
-    public override string Description => "Show help for all commands";
+    public override string Description => "Mostra ajuda para todos os comandos";
     public override bool ForAuthenticatedUsers => true;
     public override bool ForGuestUsers => true;
 
@@ -28,8 +28,8 @@ public class Help : CommandBase
     public override async Task<CommandResult> Handle(ParseResult parseResult)
     {
         var commands = CommandsForUser();
-        var helpMessage = new StringBuilder("Available commands:\n\n")
-            .AppendLine("    For multiple word names, use quotes.")
+        var helpMessage = new StringBuilder("Comandos disponíveis:\n\n")
+            .AppendLine("    Para nomes com múltiplas palavras, use aspas.")
             .AppendLine();
 
         foreach (var command in commands)
@@ -63,7 +63,7 @@ public class Help : CommandBase
                 User = new UserResponse
                 {
                     Id = 0,
-                    Username = "System",
+                    Username = "Sistema",
                     CurrentChatId = null
                 },
             },

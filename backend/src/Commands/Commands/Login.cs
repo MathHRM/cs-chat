@@ -8,7 +8,7 @@ namespace backend.Commands;
 public class Login : CommandBase
 {
     public override string CommandName => "login";
-    public override string Description => "Login to the system";
+    public override string Description => "Login no sistema";
     public override bool ForAuthenticatedUsers => false;
     public override bool ForGuestUsers => true;
 
@@ -20,12 +20,12 @@ public class Login : CommandBase
     // Arguments
     private readonly Option<string> _username = new Option<string>("--username", "-u")
     {
-        Description = "The username to login with",
+        Description = "O nome de usuário para login",
         Required = true,
     };
     private readonly Option<string> _password = new Option<string>("--password", "-pass")
     {
-        Description = "The password to login with",
+        Description = "A senha para login",
         Required = true,
     };
 
@@ -45,7 +45,7 @@ public class Login : CommandBase
         var user = await _userService.ValidateUserCredentialsAsync(username, password);
         if (user == null)
         {
-            return CommandResult.FailureResult("Invalid email or password", CommandName);
+            return CommandResult.FailureResult("Email ou senha inválidos", CommandName);
         }
 
         var token = _tokenService.GenerateToken(user);
@@ -62,7 +62,7 @@ public class Login : CommandBase
             },
             Command = CommandName,
             Result = CommandResultEnum.Success,
-            Message = "Login successful"
+            Message = "Login realizado com sucesso"
         };
     }
 

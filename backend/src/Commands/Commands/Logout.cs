@@ -7,7 +7,7 @@ namespace backend.Commands;
 public class Logout : CommandBase
 {
     public override string CommandName => "logout";
-    public override string Description => "Logout from the chat";
+    public override string Description => "Logout do chat";
     public override bool ForAuthenticatedUsers => true;
     public override bool ForGuestUsers => false;
 
@@ -31,18 +31,18 @@ public class Logout : CommandBase
     {
         if (HubCallerContext == null || !(HubCallerContext.User.Identity?.IsAuthenticated ?? false))
         {
-            return CommandResult.FailureResult("You are not logged in", CommandName);
+            return CommandResult.FailureResult("Você não está logado", CommandName);
         }
 
         var user = await _userService.GetUserByIdAsync(AuthenticatedUserId);
 
         if (user == null)
         {
-            return CommandResult.FailureResult("User not found", CommandName);
+            return CommandResult.FailureResult("Usuário não encontrado", CommandName);
         }
 
         await _hubConnectionService.DisconnectUserFromAllChatsAsync(user.Id, HubCallerContext, HubGroups);
 
-        return CommandResult.SuccessResult("You have been logged out", CommandName);
+        return CommandResult.SuccessResult("Você foi deslogado com sucesso", CommandName);
     }
 }

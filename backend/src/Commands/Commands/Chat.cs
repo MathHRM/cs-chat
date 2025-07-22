@@ -9,7 +9,7 @@ namespace backend.Commands;
 public class Chat : CommandBase
 {
     public override string CommandName => "chat";
-    public override string Description => "Chat with a user";
+    public override string Description => "Converse com um usuário";
     public override bool ForAuthenticatedUsers => true;
     public override bool ForGuestUsers => false;
 
@@ -25,7 +25,7 @@ public class Chat : CommandBase
 
     // Arguments
     private readonly Argument<string> _username = new Argument<string>("username") {
-        Description = "The username to chat with",
+        Description = "O nome de usuário para conversar",
     };
 
     private readonly UserService _userService;
@@ -58,12 +58,12 @@ public class Chat : CommandBase
 
         if (string.IsNullOrEmpty(targetUsername))
         {
-            return CommandResult.FailureResult("Username is required", CommandName);
+            return CommandResult.FailureResult("O nome de usuário é obrigatório", CommandName);
         }
 
         if (targetUsername.Equals(currentUser.Username, StringComparison.OrdinalIgnoreCase))
         {
-            return CommandResult.FailureResult("You cannot chat with yourself", CommandName);
+            return CommandResult.FailureResult("Você não pode conversar com você mesmo", CommandName);
         }
 
         var chatId = _chatService.GeneratePrivateChatId(currentUser.Username, targetUsername);
@@ -82,7 +82,7 @@ public class Chat : CommandBase
                     Users = existingChat.ChatUsers.Select(cu => _mapper.Map<UserResponse>(cu.User)).ToList(),
                 },
                 Result = CommandResultEnum.Success,
-                Message = "Joined existing chat successfully",
+                Message = "Entrou no chat com sucesso",
                 Command = CommandName,
             };
         }
@@ -90,12 +90,12 @@ public class Chat : CommandBase
         var targetUser = await _userService.GetUserByUsernameAsync(targetUsername);
         if (targetUser == null)
         {
-            return CommandResult.FailureResult($"User '{targetUsername}' not found", CommandName);
+            return CommandResult.FailureResult($"Usuário '{targetUsername}' não encontrado", CommandName);
         }
 
         var users = new List<Models.User> { currentUser, targetUser };
         var orderedUsernames = users.Select(u => u.Username).OrderBy(u => u, StringComparer.OrdinalIgnoreCase).ToList();
-        var description = $"Chat between {orderedUsernames[0]} and {orderedUsernames[1]}";
+        var description = $"Chat entre {orderedUsernames[0]} e {orderedUsernames[1]}";
         var name = $"{orderedUsernames[0]}.{orderedUsernames[1]}";
         var password = Guid.NewGuid().ToString();
 
@@ -103,7 +103,7 @@ public class Chat : CommandBase
 
         if (createdChat == null)
         {
-            return CommandResult.FailureResult("Failed to create chat", CommandName);
+            return CommandResult.FailureResult("Falha ao criar chat", CommandName);
         }
 
         await _hubConnectionService.UpdateUserCurrentChatAsync(currentUser.Id, createdChat.Id, HubCallerContext, HubGroups);
@@ -117,7 +117,7 @@ public class Chat : CommandBase
                 Users = users.Select(u => _mapper.Map<UserResponse>(u)).ToList(),
             },
             Result = CommandResultEnum.Success,
-            Message = "Chat created successfully",
+            Message = "Chat criado com sucesso",
             Command = CommandName,
         };
     }

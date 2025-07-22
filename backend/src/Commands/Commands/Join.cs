@@ -9,7 +9,7 @@ namespace backend.Commands;
 public class Join : CommandBase
 {
     public override string CommandName => "join";
-    public override string Description => "Join a chat";
+    public override string Description => "Entra em um chat";
     public override bool ForAuthenticatedUsers => true;
     public override bool ForGuestUsers => false;
 
@@ -27,11 +27,11 @@ public class Join : CommandBase
     // Arguments
     private readonly Argument<string> _chatId = new Argument<string>("chatId")
     {
-        Description = "The chat to join",
+        Description = "O chat para entrar",
     };
     private readonly Option<string> _password = new Option<string>("--password", "-pass")
     {
-        Description = "The password of the chat",
+        Description = "A senha do chat, se o chat for privado",
     };
 
     private readonly UserService _userService;
@@ -61,31 +61,31 @@ public class Join : CommandBase
 
         if (user?.CurrentChat?.Id == chatId)
         {
-            return CommandResult.SuccessResult($"You are already in chat {chatId}", CommandName, "You are already in chat");
+            return CommandResult.SuccessResult($"Você já está no chat {chatId}", CommandName, "Você já está no chat");
         }
 
         var chat = await _chatService.GetChatByIdAsync(chatId);
 
         if (chat == null)
         {
-            return CommandResult.FailureResult("Failed to join chat.", CommandName);
+            return CommandResult.FailureResult("Falha ao entrar no chat.", CommandName);
         }
 
         if (!chat.IsGroup)
         {
-            return CommandResult.FailureResult("Chat is not a group to join", CommandName);
+            return CommandResult.FailureResult("O chat não é um grupo público", CommandName);
         }
 
         var userBelongsToChat = await _chatService.UserBelongsToChatAsync(user.Id, chat.Id);
 
         if (!userBelongsToChat && chat.Password != null && password == null)
         {
-            return CommandResult.FailureResult("Chat is private and no password provided", CommandName);
+            return CommandResult.FailureResult("O chat é privado e não foi fornecida uma senha", CommandName);
         }
 
         if (!userBelongsToChat && chat.Password != null && !BCrypt.Net.BCrypt.Verify(password, chat.Password))
         {
-            return CommandResult.FailureResult("Invalid password", CommandName);
+            return CommandResult.FailureResult("Senha inválida", CommandName);
         }
 
         if (!userBelongsToChat)
@@ -104,7 +104,7 @@ public class Join : CommandBase
                 Users = chat.ChatUsers.Select(cu => _mapper.Map<UserResponse>(cu.User)).ToList(),
             },
             Result = CommandResultEnum.Success,
-            Message = "Chat joined successfully",
+            Message = "Entrou no chat com sucesso",
             Command = CommandName,
         };
     }

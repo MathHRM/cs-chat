@@ -10,7 +10,7 @@ namespace backend.Commands;
 public class Create : CommandBase
 {
     public override string CommandName => "create";
-    public override string Description => "Create a chat";
+    public override string Description => "Crie um chat";
     public override bool ForAuthenticatedUsers => true;
     public override bool ForGuestUsers => false;
 
@@ -29,15 +29,15 @@ public class Create : CommandBase
     // Arguments
     private readonly Argument<string> _name = new Argument<string>("name")
     {
-        Description = "The name of the chat",
+        Description = "O nome do chat",
     };
     private readonly Option<string> _description = new Option<string>("--description", "-d")
     {
-        Description = "The description of the chat",
+        Description = "A descrição do chat",
     };
     private readonly Option<string> _password = new Option<string>("--password", "-pass")
     {
-        Description = "The password of the chat",
+        Description = "A senha do chat",
     };
 
     private readonly UserService _userService;
@@ -84,7 +84,7 @@ public class Create : CommandBase
                 Users = chat.ChatUsers.Select(cu => _mapper.Map<UserResponse>(cu.User)).ToList(),
             },
             Result = CommandResultEnum.Success,
-            Message = $"Chat {chat.Id} created successfully",
+            Message = $"Chat {chat.Id} criado com sucesso",
             Command = CommandName,
         };
     }
