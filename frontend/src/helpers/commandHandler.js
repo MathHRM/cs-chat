@@ -4,6 +4,7 @@ import { useChatStore } from "@/stores/chat";
 import { useMessagesStore } from "@/stores/messages";
 import router from "@/routes";
 import { useCommandHistoryStore } from "@/stores/commandHistory";
+import { getMessages } from "@/api/getMessages";
 
 export default function handleCommand(command, t) {
   console.log(command);
@@ -89,6 +90,10 @@ function handleLogin(command) {
   localStorage.setItem("@auth", `${data.token}`);
 
   router.push("/");
+
+  getMessages().then((messages) => {
+    messagesStore.setMessages(messages);
+  });
 }
 
 function handleLogout() {
@@ -123,6 +128,10 @@ function handleJoin(command, t) {
   messagesStore.$reset();
 
   alert(t("alerts.joined-chat", { chatId: data.chat.name }), 3);
+
+  getMessages().then((messages) => {
+    messagesStore.setMessages(messages);
+  });
 }
 
 function handleProfile(command, t) {

@@ -1,5 +1,6 @@
 using backend.Commands;
 using backend.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace backend.Services
 {
@@ -34,6 +35,18 @@ namespace backend.Services
             _context.Messages.Add(message);
             await _context.SaveChangesAsync();
             return message;
+        }
+
+        public async Task<IEnumerable<Message>> GetMessagesAsync(string chatId, int? lastMessageId)
+        {
+            return await _context.Messages
+                .Where(m => m.ChatId == chatId)
+                .Where(m => lastMessageId == null || m.Id < lastMessageId)
+                .Include(m => m.User)
+                .Include(m => m.Chat)
+                .OrderByDescending(m => m.Id)
+                .Take(50)
+                .ToListAsync();
         }
     }
 }

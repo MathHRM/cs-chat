@@ -18,14 +18,17 @@ import {
   onUpdated,
   defineProps,
   nextTick,
-  useTemplateRef,
+  ref,
+  defineEmits,
 } from "vue";
 
 defineProps({
   messages: Array,
 });
 
-const terminalBody = useTemplateRef("terminalBody");
+const emit = defineEmits(["load-more-messages"]);
+
+const terminalBody = ref(null);
 
 const scrollToBottom = () => {
   nextTick(() => {
@@ -35,8 +38,15 @@ const scrollToBottom = () => {
   });
 };
 
+const handleScroll = () => {
+  if (terminalBody.value.scrollTop === 0) {
+    emit("load-more-messages");
+  }
+};
+
 onMounted(() => {
   scrollToBottom();
+  terminalBody.value.addEventListener("scroll", handleScroll);
 });
 
 onUpdated(() => {
