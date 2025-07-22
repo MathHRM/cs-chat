@@ -7,8 +7,6 @@ import { useCommandHistoryStore } from "@/stores/commandHistory";
 import { getMessages } from "@/api/getMessages";
 
 export default function handleCommand(command, t) {
-  console.log(command);
-
   if (command.error != null) {
     switch (command.error) {
       case 0:
@@ -58,7 +56,6 @@ export default function handleCommand(command, t) {
       handleProfile(command, t);
       break;
     default:
-      console.log(command);
       alert(t("alerts.command-handle"), 2);
       break;
   }

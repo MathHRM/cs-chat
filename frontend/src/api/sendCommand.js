@@ -6,8 +6,6 @@ export const sendCommand = async (command) => {
 
     return data;
   } catch (err) {
-    console.log(err);
-
     return err;
   }
 };

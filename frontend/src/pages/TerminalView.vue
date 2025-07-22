@@ -54,7 +54,6 @@ onMounted(() => {
     .start()
     .then(() => {
       _hub.connection.on("ReceivedMessage", (msg) => {
-        console.log(msg);
         messagesStore.addMessage(msg);
       });
 
@@ -62,7 +61,7 @@ onMounted(() => {
         handleCommand(command, t);
       });
     })
-    .catch((e) => console.log("Error: Connection failed", e));
+    .catch((e) => {});
 
   getMessages().then((messages) => {
     messagesStore.setMessages(messages);
