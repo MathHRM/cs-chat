@@ -1,37 +1,25 @@
 using backend.Models;
-using backend.Repository;
-using Microsoft.AspNetCore.SignalR;
-using Microsoft.EntityFrameworkCore;
+using backend.Repository.Interfaces;
 
 namespace backend.Services
 {
     public class UserService
     {
-        private readonly UserRepository _userRepository;
-        private readonly AppDbContext _context;
+        private readonly IUserRepository _userRepository;
 
-        public UserService(UserRepository userRepository, AppDbContext context)
+        public UserService(IUserRepository userRepository)
         {
             _userRepository = userRepository;
-            _context = context;
         }
 
         public async Task<User?> GetUserByIdAsync(int? id)
         {
-            if (id == null)
-            {
-                return null;
-            }
-
             return await _userRepository.GetUserByIdAsync(id);
         }
 
         public async Task<User?> GetUserByUsernameAsync(string username)
         {
-            return await _context.Users
-                .Include(u => u.CurrentChat)
-                .Include(u => u.ChatUsers)
-                .FirstOrDefaultAsync(u => u.Username == username);
+            return await _userRepository.GetUserByUsernameAsync(username);
         }
 
         public async Task<IEnumerable<User>> GetAllUsersAsync()
@@ -46,15 +34,13 @@ namespace backend.Services
                 user.Password = BCrypt.Net.BCrypt.HashPassword(user.Password);
             }
 
+            // Set default chat for new users
             user.CurrentChatId = "general";
 
-            await _context.Users.AddAsync(user);
-            await _context.SaveChangesAsync();
-
-            return user;
+            return await _userRepository.AddUserAsync(user);
         }
 
-        public async Task<User?> UpdateUserAsync(int id, User user)
+        public async Task<User?> UpdateUserAsync(int id, User updatedUser, string? newPassword = null)
         {
             var existingUser = await _userRepository.GetUserByIdAsync(id);
             if (existingUser == null)
@@ -62,33 +48,27 @@ namespace backend.Services
                 return null;
             }
 
-            existingUser.Username = user.Username ?? existingUser.Username;
-            existingUser.CurrentChatId = user.CurrentChatId ?? existingUser.CurrentChatId;
-
-            await _userRepository.UpdateUserAsync(existingUser);
-            return existingUser;
-        }
-
-        public async Task<User?> UpdateUserAsync(int id, User user, string? password)
-        {
-            var existingUser = await GetUserByIdAsync(id);
-            if (existingUser == null)
+            // Check if username is being changed and if it's already taken
+            if (!string.IsNullOrEmpty(updatedUser.Username) &&
+                updatedUser.Username != existingUser.Username)
             {
-                return null;
+                if (await _userRepository.UserExistsAsync(updatedUser.Username))
+                {
+                    return null; // Username already taken
+                }
+                existingUser.Username = updatedUser.Username;
             }
 
-            var existingUsername = await GetUserByUsernameAsync(user.Username);
-
-            if (existingUsername != null && existingUsername.Id != id)
+            // Update password if provided
+            if (!string.IsNullOrEmpty(newPassword))
             {
-                return null;
+                existingUser.Password = BCrypt.Net.BCrypt.HashPassword(newPassword);
             }
 
-            existingUser.Username = user.Username ?? existingUser.Username;
-
-            if (password != null)
+            // Update other properties
+            if (!string.IsNullOrEmpty(updatedUser.CurrentChatId))
             {
-                existingUser.Password = BCrypt.Net.BCrypt.HashPassword(password);
+                existingUser.CurrentChatId = updatedUser.CurrentChatId;
             }
 
             await _userRepository.UpdateUserAsync(existingUser);
@@ -102,93 +82,33 @@ namespace backend.Services
 
         public async Task<bool> UserExistsAsync(string username)
         {
-            var user = await GetUserByUsernameAsync(username);
-            return user != null;
+            return await _userRepository.UserExistsAsync(username);
         }
 
         public async Task<User?> ValidateUserCredentialsAsync(string username, string password)
         {
-            var user = await GetUserByUsernameAsync(username);
+            var user = await _userRepository.GetUserByUsernameAsync(username);
             if (user == null)
             {
-                Console.WriteLine("User not found");
                 return null;
             }
 
             if (!BCrypt.Net.BCrypt.Verify(password, user.Password))
             {
-                Console.WriteLine("Invalid password");
                 return null;
             }
 
             return user;
-        }
-
-        public async Task<User?> ValidateUserCredentialsAsync(int userId)
-        {
-            var user = await GetUserByIdAsync(userId);
-
-            if (user == null)
-            {
-                return null;
-            }
-
-            return user;
-        }
-
-        public async Task<List<ChatUser>> GetChatUsersFromUserAsync(User user)
-        {
-            if (user == null || user.CurrentChatId == null)
-            {
-                return new List<ChatUser>();
-            }
-
-            return await _context.ChatUsers
-                .Where(cu => cu.UserId == user.Id)
-                .ToListAsync();
         }
 
         public async Task<User?> GetUserWithChatsAsync(string username)
         {
-            return await _context.Users
-                .Include(u => u.ChatUsers)
-                .ThenInclude(chatUser => chatUser.Chat)
-                .FirstOrDefaultAsync(u => u.Username == username);
+            return await _userRepository.GetUserWithChatsAsync(username);
         }
 
-        public async Task UpdateUserCurrentChatAsync(User user, string chatId, HubCallerContext connection, IGroupManager groups)
+        public async Task<List<ChatUser>> GetChatUsersFromUserAsync(int userId)
         {
-            user.CurrentChatId = chatId;
-            await UpdateUserAsync(user.Id, user);
-
-            await RemoveUserFromOtherChats(chatId, connection, groups);
-            await groups.AddToGroupAsync(connection.ConnectionId, chatId);
-        }
-
-        private async Task RemoveUserFromOtherChats(string chatId, HubCallerContext connection, IGroupManager groups)
-        {
-            var username = connection.User.Identity.Name;
-            var user = await GetUserWithChatsAsync(username);
-
-            Logger.Info($"Removing user {username} from other chats: {chatId}");
-
-            foreach (var chatUser in user.ChatUsers.Where(cu => cu.ChatId != chatId))
-            {
-                await groups.RemoveFromGroupAsync(connection.ConnectionId, chatUser.ChatId);
-            }
-        }
-
-        public async Task DisconnectUserFromAllChatsAsync(User user, HubCallerContext connection, IGroupManager groups)
-        {
-            if (user == null || user.ChatUsers == null)
-            {
-                return;
-            }
-
-            foreach (var chatUser in user.ChatUsers)
-            {
-                await groups.RemoveFromGroupAsync(connection.ConnectionId, chatUser.ChatId);
-            }
+            return await _userRepository.GetChatUsersFromUserAsync(userId);
         }
     }
 }

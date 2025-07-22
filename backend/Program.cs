@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using backend;
 using backend.Services;
 using backend.Repository;
+using backend.Repository.Interfaces;
 using backend.Commands;
 using backend.src.Mappers;
 
@@ -58,13 +59,17 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         });
 builder.Services.AddAuthorization();
 
-// Add application services
+// Register repository interfaces and implementations
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IChatRepository, ChatRepository>();
+builder.Services.AddScoped<IMessageRepository, MessageRepository>();
+
+// Register application services
 builder.Services.AddScoped<TokenService>();
-builder.Services.AddScoped<UserRepository>();
-builder.Services.AddScoped<ChatRepository>();
 builder.Services.AddScoped<UserService>();
 builder.Services.AddScoped<ChatService>();
 builder.Services.AddScoped<MessageService>();
+builder.Services.AddScoped<HubConnectionService>();
 
 // Add command services
 builder.Services.AddScoped<ICommandResolver, CommandResolver>();

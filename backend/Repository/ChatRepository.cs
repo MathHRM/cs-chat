@@ -1,9 +1,10 @@
 using backend.Models;
+using backend.Repository.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 namespace backend.Repository
 {
-    public class ChatRepository
+    public class ChatRepository : IChatRepository
     {
         private readonly AppDbContext _context;
 
@@ -51,6 +52,34 @@ namespace backend.Repository
             }
 
             return false;
+        }
+
+        public async Task<ChatUser?> AddUserToChatAsync(string chatId, int userId)
+        {
+            // Check if the user is already in the chat
+            var exists = await _context.ChatUsers
+                .AnyAsync(cu => cu.ChatId == chatId && cu.UserId == userId);
+
+            if (exists)
+            {
+                return null;
+            }
+
+            var chatUser = new ChatUser
+            {
+                ChatId = chatId,
+                UserId = userId,
+            };
+
+            await _context.ChatUsers.AddAsync(chatUser);
+            await _context.SaveChangesAsync();
+
+            return chatUser;
+        }
+
+        public async Task<bool> UserBelongsToChatAsync(int userId, string chatId)
+        {
+            return await _context.ChatUsers.AnyAsync(cu => cu.UserId == userId && cu.ChatId == chatId);
         }
     }
 }

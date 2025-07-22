@@ -1,52 +1,41 @@
 using backend.Commands;
 using backend.Models;
-using Microsoft.EntityFrameworkCore;
+using backend.Repository.Interfaces;
 
 namespace backend.Services
 {
     public class MessageService
     {
-        private readonly AppDbContext _context;
+        private readonly IMessageRepository _messageRepository;
 
-        public MessageService(
-            AppDbContext context
-        )
+        public MessageService(IMessageRepository messageRepository)
         {
-            _context = context;
+            _messageRepository = messageRepository;
         }
 
         public async Task<Message> CreateMessageAsync(Message message)
         {
-            _context.Messages.Add(message);
-            await _context.SaveChangesAsync();
-            return message;
+            return await _messageRepository.CreateMessageAsync(message);
         }
 
         public async Task<Message> CreateMessageAsync(Models.Chat chat, User user, string content, MessageType type = MessageType.Text)
         {
-            var message = new Message
-            {
-                Chat = chat,
-                User = user,
-                Content = content,
-                Type = type
-            };
-
-            _context.Messages.Add(message);
-            await _context.SaveChangesAsync();
-            return message;
+            return await _messageRepository.CreateMessageAsync(chat.Id, user.Id, content, type);
         }
 
         public async Task<IEnumerable<Message>> GetMessagesAsync(string chatId, int? lastMessageId)
         {
-            return await _context.Messages
-                .Where(m => m.ChatId == chatId)
-                .Where(m => lastMessageId == null || m.Id < lastMessageId)
-                .Include(m => m.User)
-                .Include(m => m.Chat)
-                .OrderByDescending(m => m.Id)
-                .Take(50)
-                .ToListAsync();
+            return await _messageRepository.GetMessagesAsync(chatId, lastMessageId);
+        }
+
+        public async Task<Message?> GetMessageByIdAsync(int id)
+        {
+            return await _messageRepository.GetMessageByIdAsync(id);
+        }
+
+        public async Task<bool> DeleteMessageAsync(int id)
+        {
+            return await _messageRepository.DeleteMessageAsync(id);
         }
     }
 }

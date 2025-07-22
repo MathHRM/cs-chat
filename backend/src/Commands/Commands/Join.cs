@@ -36,12 +36,14 @@ public class Join : CommandBase
 
     private readonly UserService _userService;
     private readonly ChatService _chatService;
+    private readonly HubConnectionService _hubConnectionService;
     private readonly IMapper _mapper;
 
-    public Join(UserService userService, ChatService chatService, IMapper mapper)
+    public Join(UserService userService, ChatService chatService, HubConnectionService hubConnectionService, IMapper mapper)
     {
         _userService = userService;
         _chatService = chatService;
+        _hubConnectionService = hubConnectionService;
         _mapper = mapper;
     }
 
@@ -57,7 +59,7 @@ public class Join : CommandBase
 
         var user = await _userService.GetUserByIdAsync(AuthenticatedUserId);
 
-        if (user.CurrentChat.Id == chatId)
+        if (user?.CurrentChat?.Id == chatId)
         {
             return CommandResult.SuccessResult($"You are already in chat {chatId}", CommandName, "You are already in chat");
         }
@@ -91,7 +93,7 @@ public class Join : CommandBase
             await _chatService.JoinChatAsync(chat.Id, user.Id);
         }
 
-        await _userService.UpdateUserCurrentChatAsync(user, chat.Id, HubCallerContext, HubGroups);
+        await _hubConnectionService.UpdateUserCurrentChatAsync(user.Id, chat.Id, HubCallerContext, HubGroups);
 
         return new JoinResult
         {

@@ -19,10 +19,12 @@ public class Logout : CommandBase
     }
 
     private readonly UserService _userService;
+    private readonly HubConnectionService _hubConnectionService;
 
-    public Logout(UserService userService)
+    public Logout(UserService userService, HubConnectionService hubConnectionService)
     {
         _userService = userService;
+        _hubConnectionService = hubConnectionService;
     }
 
     public override async Task<CommandResult> Handle(ParseResult parseResult)
@@ -39,7 +41,7 @@ public class Logout : CommandBase
             return CommandResult.FailureResult("User not found", CommandName);
         }
 
-        await _userService.DisconnectUserFromAllChatsAsync(user, HubCallerContext, HubGroups);
+        await _hubConnectionService.DisconnectUserFromAllChatsAsync(user.Id, HubCallerContext, HubGroups);
 
         return CommandResult.SuccessResult("You have been logged out", CommandName);
     }
