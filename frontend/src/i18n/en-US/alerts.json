@@ -5,5 +5,6 @@
     "profile-updated": "Profile updated successfully",
     "command-not-found": "Command not found, please use the /help command to see the available commands",
     "unauthorized": "Unauthorized, please log in to continue",
-    "unknown-error": "Unknown error, please try again later"
+    "unknown-error": "Unknown error, please try again later",
+    "unauthenticated": "You are not authenticated, your messages will not be saved and you will not be able to chat with other users. See /help to see the available commands"
 }

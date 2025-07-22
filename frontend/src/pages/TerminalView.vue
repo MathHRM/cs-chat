@@ -12,7 +12,7 @@
 <script setup>
 import CommandsComponent from "@/components/CommandsComponent.vue";
 import CommandLine from "@/components/CommandLine.vue";
-import { onMounted, computed } from "vue";
+import { onMounted, computed, onUnmounted } from "vue";
 import Hub from "../Hub";
 import { useAuthStore } from "@/stores/auth";
 import handleCommand from "@/helpers/commandHandler";
@@ -68,5 +68,9 @@ onMounted(() => {
   getMessages().then((messages) => {
     messagesStore.setMessages(messages);
   });
+});
+
+onUnmounted(() => {
+  _hub.connection.stop();
 });
 </script>

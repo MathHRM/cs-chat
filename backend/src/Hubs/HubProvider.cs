@@ -27,6 +27,8 @@ public class HubProvider : Hub<IHubProvider>
     {
         if (!Context.User.Identity.IsAuthenticated)
         {
+            await Groups.AddToGroupAsync(Context.ConnectionId, "guest");
+
             return;
         }
 
@@ -65,6 +67,31 @@ public class HubProvider : Hub<IHubProvider>
         if (_commandHandler.IsCommand(message.Content))
         {
             await Clients.Caller.ReceivedCommand(await _commandHandler.HandleCommand(message.Content, Context, Groups));
+
+            return;
         }
+
+        var guestMessage = new Message
+        {
+            Content = message.Content,
+            Type = message.Type,
+            CreatedAT = message.CreatedAT,
+            UserId = 0,
+            Chat = new Models.Chat
+            {
+                Id = "guest",
+                Name = "Chat para visitantes",
+                Description = "Chat para visitantes",
+                IsGroup = true,
+            },
+            User = new User
+            {
+                Id = 0,
+                Username = "Visitante",
+                CurrentChatId = "guest",
+            },
+        };
+
+        await Clients.Group("guest").ReceivedMessage(_mapper.Map<MessageResponse>(guestMessage));
     }
 }
