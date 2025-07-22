@@ -92,6 +92,8 @@ public class HubProvider : Hub<IHubProvider>
             },
         };
 
+        Console.WriteLine($"Guest message: {guestMessage.User.Username} - {guestMessage.Content}");
+
         await Clients.Group("guest").ReceivedMessage(_mapper.Map<MessageResponse>(guestMessage));
     }
 }
