@@ -1,7 +1,8 @@
-using backend.Commands;
 using System.Security.Claims;
 using Microsoft.AspNetCore.SignalR;
 using System.CommandLine;
+
+namespace backend.Commands;
 
 public abstract class CommandBase
 {
