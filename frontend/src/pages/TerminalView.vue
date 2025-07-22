@@ -61,7 +61,9 @@ onMounted(() => {
         handleCommand(command, t);
       });
     })
-    .catch((e) => {});
+    .catch(() => {
+      alert(t("alerts.connection-failed"), 1);
+    });
 
   getMessages().then((messages) => {
     messagesStore.setMessages(messages);

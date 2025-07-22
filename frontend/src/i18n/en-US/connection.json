@@ -1,6 +1,6 @@
 {
     "reconnecting": "Reconnecting to the server...",
     "reconnected": "Reconnected to the server",
-    "connection-failed": "Connection failed, try reloading the page",
-    "closed": "Connection closed, waiting for reconnection..."
+    "connection-failed": "Connection failed, wait for reconnection or try reloading the page",
+    "closed": "Connection closed, waiting for reconnection or try reloading the page"
 }
