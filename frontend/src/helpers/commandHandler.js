@@ -11,10 +11,10 @@ export default function handleCommand(command, t) {
     switch (command.error) {
       case 0:
         alert(t("alerts.command-not-found"), 2);
-        break;
+        return;
       case 1:
         alert(t("alerts.unauthorized"), 1);
-        break;
+        return;
     }
 
     if (command.errors && Object.keys(command.errors).length > 0) {
