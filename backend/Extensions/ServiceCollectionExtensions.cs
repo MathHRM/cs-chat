@@ -57,6 +57,7 @@ public static class ServiceCollectionExtensions
         services.AddScoped<Chat>();
         services.AddScoped<Create>();
         services.AddScoped<Profile>();
+        services.AddScoped<List>();
 
         return services;
     }

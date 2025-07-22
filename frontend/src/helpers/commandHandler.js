@@ -55,6 +55,9 @@ export default function handleCommand(command, t) {
     case "profile":
       handleProfile(command, t);
       break;
+    case "list":
+      handleList(command, t);
+      break;
     default:
       alert(t("alerts.command-handle"), 2);
       break;
@@ -145,4 +148,10 @@ function handleProfile(command, t) {
   authStore.setUser(data);
 
   alert(t("alerts.profile-updated"), 3);
+}
+
+function handleList(command) {
+  const messagesStore = useMessagesStore();
+
+  messagesStore.addMessage(command.response);
 }
