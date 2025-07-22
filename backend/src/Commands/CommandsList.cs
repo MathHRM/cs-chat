@@ -14,5 +14,6 @@ public static class CommandsList
         { "chat", typeof(Chat) },
         { "create", typeof(Create) },
         { "profile", typeof(Profile) },
+        { "list", typeof(List) },
     };
 }

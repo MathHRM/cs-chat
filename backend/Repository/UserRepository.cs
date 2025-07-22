@@ -1,9 +1,10 @@
 using backend.Models;
+using backend.Repository.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 namespace backend.Repository
 {
-    public class UserRepository
+    public class UserRepository : IUserRepository
     {
         private readonly AppDbContext _context;
 
@@ -24,6 +25,22 @@ namespace backend.Repository
                 .Include(u => u.ChatUsers)
                 .ThenInclude(cu => cu.Chat)
                 .FirstOrDefaultAsync(u => u.Id == id);
+        }
+
+        public async Task<User?> GetUserByUsernameAsync(string username)
+        {
+            return await _context.Users
+                .Include(u => u.CurrentChat)
+                .Include(u => u.ChatUsers)
+                .FirstOrDefaultAsync(u => u.Username == username);
+        }
+
+        public async Task<User?> GetUserWithChatsAsync(string username)
+        {
+            return await _context.Users
+                .Include(u => u.ChatUsers)
+                .ThenInclude(chatUser => chatUser.Chat)
+                .FirstOrDefaultAsync(u => u.Username == username);
         }
 
         public async Task<IEnumerable<User>> GetAllUsersAsync()
@@ -56,6 +73,18 @@ namespace backend.Repository
             }
 
             return false;
+        }
+
+        public async Task<List<ChatUser>> GetChatUsersFromUserAsync(int userId)
+        {
+            return await _context.ChatUsers
+                .Where(cu => cu.UserId == userId)
+                .ToListAsync();
+        }
+
+        public async Task<bool> UserExistsAsync(string username)
+        {
+            return await _context.Users.AnyAsync(u => u.Username == username);
         }
     }
 }

@@ -13,8 +13,6 @@ export const getUser = async () => {
       return null;
     }
 
-    console.log(err);
-
     return err;
   }
 };

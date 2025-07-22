@@ -7,16 +7,14 @@ import { useCommandHistoryStore } from "@/stores/commandHistory";
 import { getMessages } from "@/api/getMessages";
 
 export default function handleCommand(command, t) {
-  console.log(command);
-
   if (command.error != null) {
     switch (command.error) {
       case 0:
         alert(t("alerts.command-not-found"), 2);
-        break;
+        return;
       case 1:
         alert(t("alerts.unauthorized"), 1);
-        break;
+        return;
     }
 
     if (command.errors && Object.keys(command.errors).length > 0) {
@@ -57,8 +55,10 @@ export default function handleCommand(command, t) {
     case "profile":
       handleProfile(command, t);
       break;
+    case "list":
+      handleList(command, t);
+      break;
     default:
-      console.log(command);
       alert(t("alerts.command-handle"), 2);
       break;
   }
@@ -148,4 +148,10 @@ function handleProfile(command, t) {
   authStore.setUser(data);
 
   alert(t("alerts.profile-updated"), 3);
+}
+
+function handleList(command) {
+  const messagesStore = useMessagesStore();
+
+  messagesStore.addMessage(command.response);
 }

@@ -42,12 +42,14 @@ public class Create : CommandBase
 
     private readonly UserService _userService;
     private readonly ChatService _chatService;
+    private readonly HubConnectionService _hubConnectionService;
     private readonly IMapper _mapper;
 
-    public Create(UserService userService, ChatService chatService, IMapper mapper)
+    public Create(UserService userService, ChatService chatService, HubConnectionService hubConnectionService, IMapper mapper)
     {
         _userService = userService;
         _chatService = chatService;
+        _hubConnectionService = hubConnectionService;
         _mapper = mapper;
     }
 
@@ -59,6 +61,11 @@ public class Create : CommandBase
         var isPrivate = password != null;
         var user = await _userService.GetUserByIdAsync(AuthenticatedUserId);
 
+        if (user == null)
+        {
+            return CommandResult.UnauthorizedResult(CommandName);
+        }
+
         if (HubCallerContext == null)
         {
             return CommandResult.UnauthorizedResult(CommandName);
@@ -66,7 +73,7 @@ public class Create : CommandBase
 
         var chat = await _chatService.CreateChatAsync(name, description, password, !isPrivate, true, new List<User> { user });
 
-        await _userService.UpdateUserCurrentChatAsync(user, chat.Id, HubCallerContext, HubGroups);
+        await _hubConnectionService.UpdateUserCurrentChatAsync(user.Id, chat.Id, HubCallerContext, HubGroups);
 
         return new JoinResult
         {

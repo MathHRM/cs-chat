@@ -30,12 +30,14 @@ public class Chat : CommandBase
 
     private readonly UserService _userService;
     private readonly ChatService _chatService;
+    private readonly HubConnectionService _hubConnectionService;
     private readonly IMapper _mapper;
 
-    public Chat(UserService userService, ChatService chatService, IMapper mapper)
+    public Chat(UserService userService, ChatService chatService, HubConnectionService hubConnectionService, IMapper mapper)
     {
         _userService = userService;
         _chatService = chatService;
+        _hubConnectionService = hubConnectionService;
         _mapper = mapper;
     }
 
@@ -69,7 +71,7 @@ public class Chat : CommandBase
         var existingChat = await _chatService.GetChatByIdAsync(chatId);
         if (existingChat != null)
         {
-            await _userService.UpdateUserCurrentChatAsync(currentUser, chatId, HubCallerContext, HubGroups);
+            await _hubConnectionService.UpdateUserCurrentChatAsync(currentUser.Id, chatId, HubCallerContext, HubGroups);
 
             return new JoinResult
             {
@@ -104,7 +106,7 @@ public class Chat : CommandBase
             return CommandResult.FailureResult("Failed to create chat", CommandName);
         }
 
-        await _userService.UpdateUserCurrentChatAsync(currentUser, createdChat.Id, HubCallerContext, HubGroups);
+        await _hubConnectionService.UpdateUserCurrentChatAsync(currentUser.Id, createdChat.Id, HubCallerContext, HubGroups);
 
         return new JoinResult
         {

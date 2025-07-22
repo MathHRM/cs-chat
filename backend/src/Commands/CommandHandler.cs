@@ -19,7 +19,8 @@ public class CommandHandler
         HttpContext? httpContext = null
     )
     {
-        var commandArgs = commandInput.Substring(1).Split(' ');
+        var matches = Regex.Matches(commandInput.Substring(1), @"[\""].+?[\""]|[^ ]+");
+        var commandArgs = matches.Select(m => m.Value.Trim('"')).ToArray();
         var commandName = commandArgs.FirstOrDefault();
 
         if (string.IsNullOrWhiteSpace(commandName))

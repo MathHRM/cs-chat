@@ -23,16 +23,12 @@ export const useCommandHistoryStore = defineStore('commandHistory', {
         this.index++;
       }
 
-      console.log(`index: ${this.index}`);
-
       return this.commandHistory[this.index];
     },
     getNextCommand() {
       if (this.index > 0) {
         this.index--;
       }
-
-      console.log(`index: ${this.index}`);
 
       return this.commandHistory[this.index];
     },

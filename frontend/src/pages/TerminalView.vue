@@ -16,7 +16,7 @@ import { onMounted, computed } from "vue";
 import Hub from "../Hub";
 import { useAuthStore } from "@/stores/auth";
 import handleCommand from "@/helpers/commandHandler";
-import handleMessage from "@/helpers/messageHandler";
+import handleMessage, { alert } from "@/helpers/messageHandler";
 import { useChatStore } from "@/stores/chat";
 import { useI18n } from "vue-i18n";
 import { useMessagesStore } from "@/stores/messages";
@@ -54,7 +54,6 @@ onMounted(() => {
     .start()
     .then(() => {
       _hub.connection.on("ReceivedMessage", (msg) => {
-        console.log(msg);
         messagesStore.addMessage(msg);
       });
 
@@ -62,7 +61,9 @@ onMounted(() => {
         handleCommand(command, t);
       });
     })
-    .catch((e) => console.log("Error: Connection failed", e));
+    .catch(() => {
+      alert(t("alerts.connection-failed"), 1);
+    });
 
   getMessages().then((messages) => {
     messagesStore.setMessages(messages);

@@ -6,8 +6,6 @@ export const getChat = async (chatId) => {
 
     return data;
   } catch (err) {
-    console.log(err);
-
     return err;
   }
 };

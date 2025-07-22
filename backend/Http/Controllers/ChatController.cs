@@ -37,39 +37,6 @@ public class ChatController : ControllerBase
         }));
     }
 
-    // [HttpPost]
-    // [Authorize]
-    // public async Task<ActionResult<Chat>> CreateChat([FromBody] ChatRequest request)
-    // {
-    //     var user = await _userService.GetUserByIdAsync(int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value));
-    //     var users = new List<User>() { user };
-
-    //     if (request.Name != null)
-    //     {
-    //         var chat = await _chatService.GetChatByIdAsync(request.Name);
-    //         if (chat != null)
-    //         {
-    //             return BadRequest("Chat already exists.");
-    //         }
-    //     }
-
-    //     if (request.UserId != null)
-    //     {
-    //         var userToAdd = await _userService.GetUserByIdAsync(request.UserId.Value);
-    //         if (userToAdd != null)
-    //         {
-    //             users.Add(userToAdd);
-    //         }
-    //     }
-
-    //     var createdChat = await _chatService.CreateChatAsync(request.Name, request.Description, request.Password, true, false, users);
-
-    //     return Ok(new ChatUserResponse {
-    //         Chat = _mapper.Map<ChatResponse>(createdChat),
-    //         Users = users.Select(u => _mapper.Map<UserResponse>(u)).ToList(),
-    //     });
-    // }
-
     [HttpPost]
     [Authorize]
     [Route("join")]
