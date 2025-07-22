@@ -24,7 +24,7 @@ const _hub = new Hub();
 const messagesStore = useMessagesStore();
 const messages = computed(() => messagesStore.messages);
 const user = {
-  username: "Guest",
+  username: "Visitante",
   currentChatId: "guest",
 };
 const chat = {

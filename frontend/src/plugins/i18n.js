@@ -3,8 +3,8 @@ import languages from '../i18n';
 
 const i18n = createI18n({
     legacy: false,
-    locale: 'en-US',
-    fallbackLocale: 'en-US',
+    locale: 'pt-BR',
+    fallbackLocale: 'pt-BR',
     messages: languages
 });
 
