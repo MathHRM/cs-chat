@@ -1,6 +1,6 @@
 <template>
   <div class="terminal-container">
-    <CommandsComponent :messages="messages" />
+    <CommandsComponent :messages="messages" @load-more-messages="handleLoadMoreMessages" />
 
     <CommandLine @send-message="handleInput" :chat="'guest'" :connection-id="connectionId" />
   </div>
@@ -16,6 +16,7 @@ import handleCommand from "@/helpers/commandHandler";
 import { useI18n } from "vue-i18n";
 import { useMessagesStore } from "@/stores/messages";
 import Hub from "@/Hub";
+import { getGuestMessages } from "@/api/guestMessages";
 
 const { t } = useI18n();
 
@@ -38,14 +39,24 @@ async function handleInput(message) {
   handleMessage(message, _hub.connection, user, chat, t);
 }
 
+function handleLoadMoreMessages() {
+  const firstMessageId = messages.value[0]?.id;
+
+  if (!firstMessageId) {
+    return;
+  }
+
+  getGuestMessages(firstMessageId).then((newMessages) => {
+    messagesStore.prependMessages(newMessages);
+  });
+}
+
 onMounted(async () => {
   _hub.connection
     .start()
     .then(() => {
       _hub.connection.on("ReceivedMessage", (msg) => {
         messagesStore.addMessage(msg);
-
-        console.log(msg);
       });
 
       _hub.connection.on("ReceivedCommand", (command) => {
@@ -53,18 +64,20 @@ onMounted(async () => {
       });
 
       connectionId.value = _hub.connection.connectionId;
-
-      console.log(connectionId.value);
     })
     .catch(() => {
       alert(t("connection.failed"), 1);
     });
 
-  alert(t("alerts.unauthenticated"), 1);
+  getGuestMessages().then((messages) => {
+    messagesStore.setMessages(messages);
 
-  const command = await sendCommand("/help");
+    alert(t("alerts.unauthenticated"), 1);
 
-  handleCommand(command, t);
+    sendCommand("/help").then((command) => {
+      handleCommand(command, t);
+    });
+  });
 });
 
 onUnmounted(() => {
