@@ -45,4 +45,12 @@ public class MessageController : ControllerBase
 
         return Ok(messages.Select(m => _mapper.Map<MessageResponse>(m)).Reverse());
     }
+
+    [HttpGet]
+    [Route("guest")]
+    public async Task<ActionResult<IEnumerable<MessageResponse>>> GetGuestMessages([FromQuery] int? lastMessageId = null)
+    {
+        var messages = await _messageService.GetMessagesAsync("guest", lastMessageId);
+        return Ok(messages.Select(m => _mapper.Map<MessageResponse>(m)).Reverse());
+    }
 }
