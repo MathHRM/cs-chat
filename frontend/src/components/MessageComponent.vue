@@ -2,7 +2,7 @@
   <div class="terminal-line">
     <span v-if="message.type === 0" class="message-wrapper">
       <span class="user-chat-info">
-        <span class="terminal-user">{{ message.user.username }}</span>
+        <span class="terminal-user">{{ getUsername(message) }}</span>
         <span class="terminal-separator"> chat:( </span>
         <span class="terminal-chat" v-if="message.chat?.id">{{ `${message.chat?.name} (${message.chat?.id})` }}</span>
         <span class="terminal-chat" v-else>{{ "chat" }}</span>
@@ -33,6 +33,14 @@ const getAlertClass = (type) => {
     case 3: return "alert-success";
     default: return "";
   }
+}
+
+const getUsername = (message) => {
+  if (message.user) {
+    return message.user.username;
+  }
+
+  return `Visitante-${message.connectionId?.substring(0, 5)}`;
 }
 </script>
 

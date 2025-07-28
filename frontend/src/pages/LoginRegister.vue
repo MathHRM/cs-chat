@@ -2,14 +2,14 @@
   <div class="terminal-container">
     <CommandsComponent :messages="messages" />
 
-    <CommandLine @send-message="handleInput" :chat="'guest'" />
+    <CommandLine @send-message="handleInput" :chat="'guest'" :connection-id="connectionId" />
   </div>
 </template>
 
 <script setup>
 import CommandLine from "@/components/CommandLine.vue";
 import CommandsComponent from "@/components/CommandsComponent.vue";
-import { onMounted, computed, onUnmounted } from "vue";
+import { onMounted, computed, onUnmounted, ref } from "vue";
 import handleMessage, { alert } from "@/helpers/messageHandler";
 import { sendCommand } from "@/api/sendCommand";
 import handleCommand from "@/helpers/commandHandler";
@@ -20,6 +20,8 @@ import Hub from "@/Hub";
 const { t } = useI18n();
 
 const _hub = new Hub();
+
+const connectionId = ref(null);
 
 const messagesStore = useMessagesStore();
 const messages = computed(() => messagesStore.messages);
@@ -42,11 +44,17 @@ onMounted(async () => {
     .then(() => {
       _hub.connection.on("ReceivedMessage", (msg) => {
         messagesStore.addMessage(msg);
+
+        console.log(msg);
       });
 
       _hub.connection.on("ReceivedCommand", (command) => {
         handleCommand(command, t);
       });
+
+      connectionId.value = _hub.connection.connectionId;
+
+      console.log(connectionId.value);
     })
     .catch(() => {
       alert(t("connection.failed"), 1);

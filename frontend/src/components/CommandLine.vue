@@ -4,7 +4,7 @@
       <span class="terminal-prompt">
         <span class="terminal-start">&rarr;</span>
         <span class="user-chat-info">
-          <span class="terminal-user">{{ getUser?.username || "Visitante" }}</span>
+          <span class="terminal-user">{{ getUser?.username || getGuestUsername || "Visitante" }}</span>
           <span class="terminal-separator"> chat:( </span>
           <span class="terminal-chat" v-if="getChat?.id">{{ `${getChat.name} (${getChat.id})` }}</span>
           <span class="terminal-chat" v-else>{{ chat || "chat" }}</span>
@@ -36,8 +36,11 @@ import { useChatStore } from "@/stores/chat";
 import { saveCommandHistory, nextCommand, previousCommand } from "@/helpers/commandHistoryHelper";
 import { isCommand } from "@/helpers/messageHandler";
 
-defineProps({
+const props = defineProps({
   chat: {
+    type: String,
+  },
+  connectionId: {
     type: String,
   },
 });
@@ -54,6 +57,10 @@ const currentInput = ref("");
 const showCursor = ref(true);
 
 const terminalInput = ref(null);
+
+const getGuestUsername = computed(() => {
+  return `Visitante-${props.connectionId?.substring(0, 5)}`;
+});
 
 const focusInput = () => {
   if (terminalInput.value) {
