@@ -14,13 +14,15 @@ public class HubProvider : Hub<IHubProvider>
     private readonly CommandHandler _commandHandler;
     private readonly IMapper _mapper;
     private readonly MessageService _messageService;
+    private readonly ChatService _chatService;
 
-    public HubProvider(UserService userService, CommandHandler commandHandler, IMapper mapper, MessageService messageService)
+    public HubProvider(UserService userService, CommandHandler commandHandler, IMapper mapper, MessageService messageService, ChatService chatService)
     {
         _userService = userService;
         _commandHandler = commandHandler;
         _mapper = mapper;
         _messageService = messageService;
+        _chatService = chatService;
     }
 
     public override async Task OnConnectedAsync()
@@ -40,7 +42,7 @@ public class HubProvider : Hub<IHubProvider>
 
     public async Task SendMessage(Message message)
     {
-        if (! Context.User.Identity.IsAuthenticated)
+        if (!Context.User.Identity.IsAuthenticated)
         {
             await HandleGuestUser(message);
 
@@ -71,21 +73,9 @@ public class HubProvider : Hub<IHubProvider>
             return;
         }
 
-        var guestMessage = new Message
-        {
-            Content = message.Content,
-            Type = message.Type,
-            CreatedAT = message.CreatedAT,
-            UserId = 0,
-            Chat = new Models.Chat
-            {
-                Id = "guest",
-                Name = "Chat para visitantes",
-                Description = "Chat para visitantes",
-                IsGroup = true,
-            },
-            ConnectionId = Context.ConnectionId,
-        };
+        var guestChat = await _chatService.GetChatByIdAsync("guest");
+
+        var guestMessage = await _messageService.CreateMessageAsync(guestChat, null, message.Content, message.Type, Context.ConnectionId!);
 
         await Clients.Group("guest").ReceivedMessage(_mapper.Map<MessageResponse>(guestMessage));
     }

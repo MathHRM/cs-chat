@@ -21,14 +21,15 @@ namespace backend.Repository
             return message;
         }
 
-        public async Task<Message> CreateMessageAsync(string chatId, int userId, string content, MessageType type = MessageType.Text)
+        public async Task<Message> CreateMessageAsync(string chatId, int? userId, string content, MessageType type = MessageType.Text, string? connectionId = null)
         {
             var message = new Message
             {
                 ChatId = chatId,
                 UserId = userId,
                 Content = content,
-                Type = type
+                Type = type,
+                ConnectionId = connectionId
             };
 
             _context.Messages.Add(message);
