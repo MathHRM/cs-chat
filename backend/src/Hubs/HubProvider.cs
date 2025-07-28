@@ -84,15 +84,8 @@ public class HubProvider : Hub<IHubProvider>
                 Description = "Chat para visitantes",
                 IsGroup = true,
             },
-            User = new User
-            {
-                Id = 0,
-                Username = $"Visitante-{Context.ConnectionId.Substring(0, 5)}",
-                CurrentChatId = "guest",
-            },
+            ConnectionId = Context.ConnectionId,
         };
-
-        Console.WriteLine($"Guest message: {guestMessage.User.Username} - {guestMessage.Content}");
 
         await Clients.Group("guest").ReceivedMessage(_mapper.Map<MessageResponse>(guestMessage));
     }
