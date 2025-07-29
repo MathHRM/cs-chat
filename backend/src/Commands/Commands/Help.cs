@@ -35,19 +35,25 @@ public class Help : CommandBase
         foreach (var command in commands)
         {
             var commandInstance = command.GetCommandInstance();
+            var commandCopyShortcut = new StringBuilder($"/{commandInstance.Name}");
 
             helpMessage.AppendLine($"/{commandInstance.Name} - {commandInstance.Description}");
 
             foreach (var argument in commandInstance.Arguments)
             {
+                commandCopyShortcut.Append($" {argument.Name}");
                 helpMessage.AppendLine($"    [{argument.Name}] - {argument.Description}");
             }
 
             foreach (var option in commandInstance.Options)
             {
+                commandCopyShortcut.Append($" {option.Name} [valor]");
                 string alias = $" | {string.Join(", ", option.Aliases)}";
                 helpMessage.AppendLine($"    {option.Name}{alias} - {option.Description}");
             }
+
+            helpMessage.AppendLine();
+            helpMessage.AppendLine($"Copie e cole o comando: {commandCopyShortcut}");
 
             helpMessage.AppendLine();
         }

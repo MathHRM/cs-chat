@@ -1,16 +1,15 @@
 <template>
   <div class="terminal-line">
-    <span v-if="message.type === 0" class="message-wrapper">
-      <span class="user-chat-info">
-        <span class="terminal-user">{{ getUsername(message) }}</span>
-        <span class="terminal-separator"> chat:( </span>
-        <span class="terminal-chat" v-if="message.chat?.id">{{ `${message.chat?.name} (${message.chat?.id})` }}</span>
-        <span class="terminal-chat" v-else>{{ "chat" }}</span>
-        <span class="terminal-separator"> )</span>
-      </span>
+    <div v-if="message.command">
+      <div v-if="message.command === 'help'">
+        <HelpComponent :commands="message.response" />
+      </div>
+    </div>
+    <span v-else-if="message?.type === 0" class="message-wrapper">
+      <ChatIdentifier :username="getUsername(message)" :chat="message.chat" />
       <span class="terminal-message">{{ message.content }}</span>
     </span>
-    <span v-else>
+    <span v-else-if="message?.type">
       <span class="alert"
       :class="getAlertClass(message.type)">
         {{ message.content }}
@@ -21,6 +20,8 @@
 
 <script setup>
 import { defineProps } from "vue";
+import HelpComponent from "./HelpComponent.vue";
+import ChatIdentifier from "./ChatIdentifier.vue";
 
 defineProps({
   message: Object,
