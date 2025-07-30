@@ -41,7 +41,7 @@ public class Help : CommandBase
 
             commandResponses.Add(new CommandResponse
             {
-                Command = command.CommandName,
+                Name = command.CommandName,
                 Description = command.Description,
                 Arguments = commandInstance.Arguments.Select(a => new ArgumentResponse
                 {

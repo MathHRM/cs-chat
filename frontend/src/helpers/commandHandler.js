@@ -69,7 +69,7 @@ function handleHelp(command) {
 
   const messagesStore = useMessagesStore();
 
-  messagesStore.addMessage(command.response);
+  messagesStore.addMessage(command);
 }
 
 function handleLogin(command) {

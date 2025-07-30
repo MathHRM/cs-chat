@@ -1,9 +1,9 @@
 <template>
   <div class="terminal-line">
     <div v-if="message.command">
-      <div v-if="message.command === 'help'">
+      <span v-if="message.command === 'help'" class="message-wrapper">
         <HelpComponent :commands="message.response" />
-      </div>
+      </span>
     </div>
     <span v-else-if="message?.type === 0" class="message-wrapper">
       <ChatIdentifier :username="getUsername(message)" :chat="message.chat" />

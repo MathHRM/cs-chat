@@ -1,17 +1,21 @@
 <template>
-  <ChatIdentifier :username="`System`" />
-  <span class="terminal-chat">Comandos disponíveis:</span>
+  <ChatIdentifier :username="`Sistema`" />
+  <span class="terminal-message">Comandos disponíveis:</span>
   <div v-for="command in commands" :key="command.name">
-    <span class="terminal-chat">/{{ command.name }} - {{ command.description }}</span>
-    <span class="terminal-chat"
-      @click="copyToClipboard(getCommandCopyShortcut(command))">Copie e cole o comando: {{ getCommandCopyShortcut(command) }}
+    <span class="terminal-message">/{{ command.name }} - {{ command.description }}</span>
+    <span class="terminal-message" v-for="argument in command.arguments" :key="argument.name">
+      <br>
+      <span class="terminal-message argument">{{ argument.name }} - {{ argument.description }}</span>
     </span>
-    <span class="terminal-chat" v-for="argument in command.arguments" :key="argument.name">
-      <span class="terminal-chat">{{ argument.name }} - {{ argument.description }}</span>
+    <span class="terminal-message" v-for="option in command.options" :key="option.name">
+      <br>
+      <span class="terminal-message argument">{{ getOptionName(option) }} {{ getOptionAlias(option) }} - {{ option.description }}</span>
     </span>
-    <span class="terminal-chat" v-for="option in command.options" :key="option.name">
-      <span class="terminal-chat">{{ option.name }} - {{ option.description }}</span>
-    </span>
+    <br><br>
+    <button class="terminal-message" @click="copyToClipboard(getCommandCopyShortcut(command))">
+      <span class="terminal-message">Copie o comando: {{ getCommandCopyShortcut(command) }}</span>
+    </button>
+    <br><br>
   </div>
 </template>
 
@@ -25,7 +29,7 @@ const { t } = useI18n();
 
 const getCommandCopyShortcut = (command) => {
   const args = command.arguments.map(arg => `[${arg.name}]`).join(" ");
-  const opts = command.options.map(opt => `${opt.name} [valor]`).join(" ");
+  const opts = command.options.filter(opt => opt.isRequired).map(opt => `${opt.name}`).join(" ");
   return `/${command.name} ${args} ${opts}`;
 };
 
@@ -39,9 +43,40 @@ const copyToClipboard = async (message) => {
   }
 };
 
+const getOptionName = (option) => {
+  if (option.isRequired) {
+    return `${option.name}*`;
+  }
+  return option.name;
+};
+
+const getOptionAlias = (option) => {
+  let aliases = "";
+  if (option.aliases) {
+    aliases = option.aliases.map(alias => `${alias}`).join(" ");
+  }
+
+  return `| ${aliases}`;
+};
+
 defineProps({
   commands: {
     type: Array,
   },
 });
 </script>
+
+<style scoped>
+.argument {
+  margin-left: 30px;
+}
+
+button {
+  background-color: #212121;
+  color: #fff;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+</style>
