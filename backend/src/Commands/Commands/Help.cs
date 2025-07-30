@@ -1,6 +1,7 @@
 using System.Text;
 using System.CommandLine;
 using backend.Http.Responses;
+using backend.Commands.Responses;
 
 namespace backend.Commands;
 
@@ -32,41 +33,36 @@ public class Help : CommandBase
             .AppendLine("    Para nomes com múltiplas palavras, use aspas.")
             .AppendLine();
 
+        var commandResponses = new List<CommandResponse>();
+
         foreach (var command in commands)
         {
             var commandInstance = command.GetCommandInstance();
 
-            helpMessage.AppendLine($"/{commandInstance.Name} - {commandInstance.Description}");
-
-            foreach (var argument in commandInstance.Arguments)
+            commandResponses.Add(new CommandResponse
             {
-                helpMessage.AppendLine($"    [{argument.Name}] - {argument.Description}");
-            }
-
-            foreach (var option in commandInstance.Options)
-            {
-                string alias = $" | {string.Join(", ", option.Aliases)}";
-                helpMessage.AppendLine($"    {option.Name}{alias} - {option.Description}");
-            }
-
-            helpMessage.AppendLine();
+                Name = command.CommandName,
+                Description = command.Description,
+                Arguments = commandInstance.Arguments.Select(a => new ArgumentResponse
+                {
+                    Name = a.Name,
+                    Description = a.Description,
+                    IsRequired = true,
+                }).ToList(),
+                Options = commandInstance.Options.Select(o => new ArgumentResponse
+                {
+                    Name = o.Name,
+                    Description = o.Description,
+                    IsRequired = o.Required,
+                    Aliases = o.Aliases.ToList()
+                }).ToList()
+            });
         }
 
-        return new GenericResult
+        return new HelpResult
         {
             Result = CommandResultEnum.Success,
-            Response = new MessageResponse
-            {
-                Content = helpMessage.ToString(),
-                CreatedAt = DateTime.UtcNow,
-                Type = MessageType.Text,
-                User = new UserResponse
-                {
-                    Id = 0,
-                    Username = "Sistema",
-                    CurrentChatId = null
-                },
-            },
+            Response = commandResponses,
             Command = CommandName
         };
     }

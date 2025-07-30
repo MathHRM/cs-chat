@@ -77,4 +77,9 @@ onMounted(async () => {
 .q-layout__section--marginal {
   color: #fff;
 }
+
+.terminal-wrapper {
+  max-height: 100vh;
+  height: 100vh;
+}
 </style>

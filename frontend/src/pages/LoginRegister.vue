@@ -1,25 +1,28 @@
 <template>
   <div class="terminal-container">
-    <CommandsComponent :messages="messages" />
+    <CommandsComponent :messages="messages" @load-more-messages="handleLoadMoreMessages" />
 
-    <CommandLine @send-message="handleInput" :chat="'guest'" />
+    <CommandLine @send-message="handleInput" :chat="'guest'" :connection-id="connectionId" />
   </div>
 </template>
 
 <script setup>
 import CommandLine from "@/components/CommandLine.vue";
 import CommandsComponent from "@/components/CommandsComponent.vue";
-import { onMounted, computed, onUnmounted } from "vue";
+import { onMounted, computed, onUnmounted, ref } from "vue";
 import handleMessage, { alert } from "@/helpers/messageHandler";
 import { sendCommand } from "@/api/sendCommand";
 import handleCommand from "@/helpers/commandHandler";
 import { useI18n } from "vue-i18n";
 import { useMessagesStore } from "@/stores/messages";
 import Hub from "@/Hub";
+import { getGuestMessages } from "@/api/guestMessages";
 
 const { t } = useI18n();
 
 const _hub = new Hub();
+
+const connectionId = ref(null);
 
 const messagesStore = useMessagesStore();
 const messages = computed(() => messagesStore.messages);
@@ -36,6 +39,18 @@ async function handleInput(message) {
   handleMessage(message, _hub.connection, user, chat, t);
 }
 
+function handleLoadMoreMessages() {
+  const firstMessageId = messages.value[0]?.id;
+
+  if (!firstMessageId) {
+    return;
+  }
+
+  getGuestMessages(firstMessageId).then((newMessages) => {
+    messagesStore.prependMessages(newMessages);
+  });
+}
+
 onMounted(async () => {
   _hub.connection
     .start()
@@ -47,16 +62,22 @@ onMounted(async () => {
       _hub.connection.on("ReceivedCommand", (command) => {
         handleCommand(command, t);
       });
+
+      connectionId.value = _hub.connection.connectionId;
     })
     .catch(() => {
       alert(t("connection.failed"), 1);
     });
 
-  alert(t("alerts.unauthenticated"), 1);
+  getGuestMessages().then((messages) => {
+    messagesStore.setMessages(messages);
 
-  const command = await sendCommand("/help");
+    alert(t("alerts.unauthenticated"), 1);
 
-  handleCommand(command, t);
+    sendCommand("/help").then((command) => {
+      handleCommand(command, t);
+    });
+  });
 });
 
 onUnmounted(() => {

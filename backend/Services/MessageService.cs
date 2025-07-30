@@ -18,9 +18,9 @@ namespace backend.Services
             return await _messageRepository.CreateMessageAsync(message);
         }
 
-        public async Task<Message> CreateMessageAsync(Models.Chat chat, User user, string content, MessageType type = MessageType.Text)
+        public async Task<Message> CreateMessageAsync(Models.Chat chat, User? user, string content, MessageType type = MessageType.Text, string? connectionId = null)
         {
-            return await _messageRepository.CreateMessageAsync(chat.Id, user.Id, content, type);
+            return await _messageRepository.CreateMessageAsync(chat.Id, user?.Id, content, type, connectionId);
         }
 
         public async Task<IEnumerable<Message>> GetMessagesAsync(string chatId, int? lastMessageId)

@@ -6,5 +6,6 @@
     "command-not-found": "Comando não encontrado, por favor use o comando /help para ver os comandos disponíveis",
     "unauthorized": "Não autorizado, por favor faça login para continuar",
     "unknown-error": "Erro desconhecido, por favor tente novamente mais tarde",
-    "unauthenticated": "Você não está autenticado, suas mensagens não serão salvas e você não poderá entrar em outros chats. Veja /help para ver os comandos disponíveis"
+    "unauthenticated": "Você não está autenticado, então não poderá entrar em outros chats nem criar um nome de usuário. Veja /help para ver os comandos disponíveis e fazer login",
+    "command-copied": "Comando copiado!"
 }

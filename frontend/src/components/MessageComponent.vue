@@ -1,16 +1,15 @@
 <template>
   <div class="terminal-line">
-    <span v-if="message.type === 0" class="message-wrapper">
-      <span class="user-chat-info">
-        <span class="terminal-user">{{ message.user.username }}</span>
-        <span class="terminal-separator"> chat:( </span>
-        <span class="terminal-chat" v-if="message.chat?.id">{{ `${message.chat?.name} (${message.chat?.id})` }}</span>
-        <span class="terminal-chat" v-else>{{ "chat" }}</span>
-        <span class="terminal-separator"> )</span>
+    <div v-if="message.command">
+      <span v-if="message.command === 'help'" class="message-wrapper">
+        <HelpComponent :commands="message.response" />
       </span>
+    </div>
+    <span v-else-if="message?.type === 0" class="message-wrapper">
+      <ChatIdentifier :username="getUsername(message)" :chat="message.chat" />
       <span class="terminal-message">{{ message.content }}</span>
     </span>
-    <span v-else>
+    <span v-else-if="message?.type">
       <span class="alert"
       :class="getAlertClass(message.type)">
         {{ message.content }}
@@ -21,6 +20,8 @@
 
 <script setup>
 import { defineProps } from "vue";
+import HelpComponent from "./HelpComponent.vue";
+import ChatIdentifier from "./ChatIdentifier.vue";
 
 defineProps({
   message: Object,
@@ -33,6 +34,14 @@ const getAlertClass = (type) => {
     case 3: return "alert-success";
     default: return "";
   }
+}
+
+const getUsername = (message) => {
+  if (message.user) {
+    return message.user.username;
+  }
+
+  return `Visitante-${message.connectionId?.substring(0, 5)}`;
 }
 </script>
 
