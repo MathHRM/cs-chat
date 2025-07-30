@@ -5,13 +5,13 @@
       @load-more-messages="handleLoadMoreMessages"
     />
 
-    <CommandLine @send-message="handleSendMessage" />
+    <CommandInput @send-message="handleSendMessage" />
   </div>
 </template>
 
 <script setup>
 import CommandsComponent from "@/components/CommandsComponent.vue";
-import CommandLine from "@/components/CommandLine.vue";
+import CommandInput from "@/components/CommandInput.vue";
 import { onMounted, computed, onUnmounted } from "vue";
 import Hub from "../Hub";
 import { useAuthStore } from "@/stores/auth";
