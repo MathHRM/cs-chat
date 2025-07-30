@@ -455,14 +455,6 @@ onUnmounted(() => {
   color: #ccc;
 }
 
-.terminal-input-line {
-  display: flex;
-  align-items: center;
-  padding: 8px 0;
-  font-family: 'Courier New', monospace;
-  color: #fff;
-}
-
 .input-wrapper {
   display: flex;
   align-items: center;
@@ -479,19 +471,6 @@ onUnmounted(() => {
 .terminal-start {
   color: #4CAF50;
   margin-right: 4px;
-}
-
-.terminal-user {
-  color: #2196F3;
-  font-weight: bold;
-}
-
-.terminal-separator {
-  color: #ccc;
-}
-
-.terminal-chat {
-  color: #FF9800;
 }
 
 .terminal-end {
