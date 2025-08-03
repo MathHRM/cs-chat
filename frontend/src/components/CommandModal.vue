@@ -1,19 +1,6 @@
-<!--
-  CommandModal Component
 
-  Features:
-  - Shows available commands when user types "/"
-  - Allows navigation with arrow keys (up/down)
-  - Tab key to select the highlighted command
-  - Escape key to close the modal
-  - Real-time filtering as user types
-  - Shows command syntax hints
-  - Displays command arguments and options
-  - Supports both guest and authenticated users
--->
 <template>
   <div v-if="show && filteredCommands.length > 0" class="command-modal">
-    <!-- Command Syntax Hint -->
     <div v-if="selectedCommand" class="command-syntax-hint">
       <span class="syntax-label">Sintaxe:</span>
       <span class="syntax-text">{{ getCommandSyntax(selectedCommand) }}</span>
@@ -47,9 +34,6 @@
       <div v-if="isLoading" class="loading-commands">
         Carregando comandos...
       </div>
-      <!-- <div v-else-if="filteredCommands.length === 0" class="no-commands">
-        Nenhum comando encontrado
-      </div> -->
     </div>
   </div>
 </template>
@@ -82,7 +66,6 @@ const props = defineProps({
 
 const emit = defineEmits(["select-command"]);
 
-// Computed property for the currently selected command
 const selectedCommand = computed(() => {
   if (props.show && filteredCommands.value.length > 0 && props.selectedIndex < filteredCommands.value.length) {
     return filteredCommands.value[props.selectedIndex];
@@ -90,7 +73,6 @@ const selectedCommand = computed(() => {
   return null;
 });
 
-// Filter commands based on current input
 const filteredCommands = computed(() => {
   if (!props.currentInput.startsWith("/")) return [];
 

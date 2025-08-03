@@ -1,20 +1,5 @@
-<!--
-  CommandInput Component
-
-  Features:
-  - Shows a modal with available commands when user types "/"
-  - Allows navigation with arrow keys (up/down)
-  - Tab key to select the highlighted command
-  - Escape key to close the modal
-  - Ctrl+Space to toggle the modal
-  - Real-time filtering as user types
-  - Shows command syntax hints
-  - Displays command arguments and options
-  - Supports both guest and authenticated users
--->
 <template>
   <div class="command-input-container">
-    <!-- Command Modal -->
     <CommandModal
       :show="showModal"
       :commands="commands"
@@ -24,7 +9,6 @@
       @select-command="selectCommand"
     />
 
-    <!-- Input Line -->
     <div class="terminal-input-line">
       <div class="input-wrapper">
         <span class="terminal-prompt">
@@ -101,7 +85,6 @@ const getGuestUsername = computed(() => {
   return `Visitante-${props.connectionId.substring(0, 5)}`;
 });
 
-// Filter commands based on current input
 const filteredCommands = computed(() => {
   if (!currentInput.value.startsWith("/")) return [];
 
@@ -126,7 +109,6 @@ const handleWindowClick = () => {
 const handleSend = () => {
   console.log("handleSend", showModal.value, commands.value.length, selectedIndex.value);
 
-  // If modal is open and a command is selected, insert the command instead of sending
   if (showModal.value && filteredCommands.value.length > 0 && selectedIndex.value < filteredCommands.value.length) {
     selectCommand(filteredCommands.value[selectedIndex.value]);
     return;
@@ -195,7 +177,6 @@ const handleCtrlSpace = (event) => {
 const handleInput = () => {
   showCursor.value = true;
 
-  // Show modal when user starts typing "/"
   if (currentInput.value.startsWith("/")) {
     showModal.value = true;
     selectedIndex.value = 0;
@@ -205,19 +186,15 @@ const handleInput = () => {
 };
 
 const selectCommand = (command) => {
-  // If user has already typed something after "/", preserve it
   const currentText = currentInput.value;
   const slashIndex = currentText.indexOf("/");
 
-  // Build the command with required arguments and options
   let commandTemplate = `/${command.name}`;
 
-  // Add required arguments
   if (command.arguments && command.arguments.length > 0) {
-    commandTemplate += ` ${command.arguments.map(arg => `<${arg.name}>`).join(' ')}`;
+    commandTemplate += ` ${command.arguments.map(() => "").join(' ')}`;
   }
 
-  // Add required options
   if (command.options && command.options.length > 0) {
     const requiredOptions = command.options.filter(opt => opt.isRequired);
     if (requiredOptions.length > 0) {
@@ -225,11 +202,9 @@ const selectCommand = (command) => {
     }
   }
 
-  // Add a space at the end for easy editing
   commandTemplate += ' ';
 
   if (slashIndex !== -1) {
-    // Replace everything from "/" onwards with the selected command
     currentInput.value = currentText.substring(0, slashIndex) + commandTemplate;
   } else {
     currentInput.value = commandTemplate;
@@ -264,12 +239,10 @@ onMounted(() => {
   focusInput();
   loadCommands();
 
-  // Add window click event listener to focus input
   window.addEventListener('click', handleWindowClick);
 });
 
 onUnmounted(() => {
-  // Clean up event listener when component is destroyed
   window.removeEventListener('click', handleWindowClick);
 });
 </script>
