@@ -15,46 +15,14 @@
 <template>
   <div class="command-input-container">
     <!-- Command Modal -->
-    <div v-if="showModal" class="command-modal">
-      <!-- Command Syntax Hint -->
-      <div v-if="selectedCommand" class="command-syntax-hint">
-        <span class="syntax-label">Sintaxe:</span>
-        <span class="syntax-text">{{ getCommandSyntax(selectedCommand) }}</span>
-      </div>
-
-      <div class="command-list">
-        <div
-          v-for="(command, index) in filteredCommands"
-          :key="command.name"
-          class="command-item"
-          :class="{ 'selected': index === selectedIndex }"
-          @click="selectCommand(command)"
-        >
-          <div class="command-header">
-            <span class="command-name">/{{ command.name }}</span>
-            <span class="command-description">{{ command.description }}</span>
-          </div>
-          <div v-if="command.arguments && command.arguments.length > 0" class="command-arguments">
-            <div v-for="arg in command.arguments" :key="arg.name" class="argument">
-              <span class="argument-name">{{ arg.name }}</span>
-              <span class="argument-description">{{ arg.description }}</span>
-            </div>
-          </div>
-          <div v-if="command.options && command.options.length > 0" class="command-options">
-            <div v-for="option in command.options" :key="option.name" class="option">
-              <span class="option-name">{{ getOptionName(option) }}</span>
-              <span class="option-description">{{ option.description }}</span>
-            </div>
-          </div>
-        </div>
-        <div v-if="isLoadingCommands" class="loading-commands">
-          Carregando comandos...
-        </div>
-        <div v-else-if="filteredCommands.length === 0" class="no-commands">
-          Nenhum comando encontrado
-        </div>
-      </div>
-    </div>
+    <CommandModal
+      :show="showModal"
+      :commands="commands"
+      :selectedIndex="selectedIndex"
+      :currentInput="currentInput"
+      :isLoading="isLoadingCommands"
+      @select-command="selectCommand"
+    />
 
     <!-- Input Line -->
     <div class="terminal-input-line">
@@ -99,6 +67,7 @@ import { useChatStore } from "@/stores/chat";
 import { saveCommandHistory, nextCommand, previousCommand } from "@/helpers/commandHistoryHelper";
 import { isCommand } from "@/helpers/messageHandler";
 import { sendCommand } from "@/api/sendCommand";
+import CommandModal from "./CommandModal.vue";
 
 const props = defineProps({
   chat: {
@@ -126,14 +95,6 @@ const commands = ref([]);
 const selectedIndex = ref(0);
 const commandInput = ref(null);
 const isLoadingCommands = ref(false);
-
-// Computed property for the currently selected command
-const selectedCommand = computed(() => {
-  if (showModal.value && filteredCommands.value.length > 0 && selectedIndex.value < filteredCommands.value.length) {
-    return filteredCommands.value[selectedIndex.value];
-  }
-  return null;
-});
 
 const getGuestUsername = computed(() => {
   if (!props.connectionId) return null;
@@ -163,9 +124,11 @@ const handleWindowClick = () => {
 };
 
 const handleSend = () => {
+  console.log("handleSend", showModal.value, commands.value.length, selectedIndex.value);
+
   // If modal is open and a command is selected, insert the command instead of sending
-  if (showModal.value && selectedCommand.value) {
-    selectCommand(selectedCommand.value);
+  if (showModal.value && filteredCommands.value.length > 0 && selectedIndex.value < filteredCommands.value.length) {
+    selectCommand(filteredCommands.value[selectedIndex.value]);
     return;
   }
 
@@ -185,20 +148,20 @@ const handleSend = () => {
 };
 
 const handleUp = (event) => {
-  if (showModal.value && filteredCommands.value.length > 0) {
+  if (showModal.value && commands.value.length > 0) {
     event.preventDefault();
     selectedIndex.value = selectedIndex.value > 0
       ? selectedIndex.value - 1
-      : filteredCommands.value.length - 1;
+      : commands.value.length - 1;
   } else {
     currentInput.value = nextCommand();
   }
 };
 
 const handleDown = (event) => {
-  if (showModal.value && filteredCommands.value.length > 0) {
+  if (showModal.value && commands.value.length > 0) {
     event.preventDefault();
-    selectedIndex.value = selectedIndex.value < filteredCommands.value.length - 1
+    selectedIndex.value = selectedIndex.value < commands.value.length - 1
       ? selectedIndex.value + 1
       : 0;
   } else {
@@ -274,36 +237,6 @@ const selectCommand = (command) => {
 
   showModal.value = false;
   focusInput();
-};
-
-const getOptionName = (option) => {
-  if (option.isRequired) {
-    return `${option.name}*`;
-  }
-  return option.name;
-};
-
-const getCommandSyntax = (command) => {
-  let syntax = `/${command.name}`;
-
-  if (command.arguments && command.arguments.length > 0) {
-    syntax += ` ${command.arguments.map(arg => `<${arg.name}>`).join(' ')}`;
-  }
-
-  if (command.options && command.options.length > 0) {
-    const requiredOptions = command.options.filter(opt => opt.isRequired);
-    const optionalOptions = command.options.filter(opt => !opt.isRequired);
-
-    if (requiredOptions.length > 0) {
-      syntax += ` ${requiredOptions.map(opt => `${opt.name}`).join(' ')}`;
-    }
-
-    if (optionalOptions.length > 0) {
-      syntax += ` [${optionalOptions.map(opt => `${opt.name}`).join(' | ')}]`;
-    }
-  }
-
-  return syntax;
 };
 
 const loadCommands = async () => {
