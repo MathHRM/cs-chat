@@ -72,10 +72,10 @@ onMounted(async () => {
   getGuestMessages().then((messages) => {
     messagesStore.setMessages(messages);
 
-    alert(t("alerts.unauthenticated"), 1);
-
     sendCommand("/help").then((command) => {
       handleCommand(command, t);
+
+      alert(t("alerts.unauthenticated"), 1);
     });
   });
 });

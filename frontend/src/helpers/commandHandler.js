@@ -7,8 +7,6 @@ import { useCommandHistoryStore } from "@/stores/commandHistory";
 import { getMessages } from "@/api/getMessages";
 
 export default function handleCommand(command, t) {
-  console.log(command);
-
   if (command.error != null) {
     switch (command.error) {
       case 0:
@@ -67,8 +65,6 @@ export default function handleCommand(command, t) {
 }
 
 function handleHelp(command) {
-  console.log(command);
-
   const messagesStore = useMessagesStore();
 
   messagesStore.addMessage(command);
