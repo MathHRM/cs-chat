@@ -1,21 +1,33 @@
 <template>
   <ChatIdentifier :username="`Sistema`" />
   <span class="terminal-message">Comandos disponíveis:</span>
+  <br /> <br />
   <div v-for="command in commands" :key="command.name">
-    <span class="terminal-message">/{{ command.name }} - {{ command.description }}</span>
+    <span class="terminal-message">Comando: /{{ command.name }}</span>
+    <br />
+    <span class="terminal-message">Descrição: {{ command.description }}</span>
+    <br />
+    <span class="terminal-message" v-if="command.arguments.length > 0 || command.options.length > 0">Argumentos: </span>
     <span class="terminal-message" v-for="argument in command.arguments" :key="argument.name">
       <br>
-      <span class="terminal-message argument">{{ argument.name }} - {{ argument.description }}</span>
+      <span class="terminal-message argument">{{ argument.name }}</span>
+      <br />
+      <span class="terminal-message argument-description">{{ argument.description }}</span>
     </span>
     <span class="terminal-message" v-for="option in command.options" :key="option.name">
       <br>
-      <span class="terminal-message argument">{{ getOptionName(option) }} {{ getOptionAlias(option) }} - {{ option.description }}</span>
+      <span class="terminal-message argument">{{ getOptionName(option) }} {{ getOptionAlias(option) }}</span>
+      <br />
+      <span class="terminal-message argument-description">{{ option.description }}</span>
     </span>
-    <br><br>
+    <br>
+    <span class="terminal-message">Copie o comando: </span>
     <button class="terminal-message" @click="copyToClipboard(getCommandCopyShortcut(command))">
-      <span class="terminal-message">Copie o comando: {{ getCommandCopyShortcut(command) }}</span>
+      <span class="terminal-message">{{ getCommandCopyShortcut(command) }}</span>
     </button>
-    <br><br>
+    <br />
+    <span class="terminal-message">--------------------------------</span>
+    <br>
   </div>
 </template>
 
@@ -68,6 +80,14 @@ defineProps({
 
 <style scoped>
 .argument {
+  margin-left: 30px;
+}
+
+.argument-description {
+  margin-left: 60px;
+}
+
+.command-description {
   margin-left: 30px;
 }
 

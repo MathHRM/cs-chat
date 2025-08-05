@@ -65,8 +65,6 @@ export default function handleCommand(command, t) {
 }
 
 function handleHelp(command) {
-  console.log(command);
-
   const messagesStore = useMessagesStore();
 
   messagesStore.addMessage(command);
@@ -155,5 +153,5 @@ function handleProfile(command, t) {
 function handleList(command) {
   const messagesStore = useMessagesStore();
 
-  messagesStore.addMessage(command.response);
+  messagesStore.addMessage(command);
 }

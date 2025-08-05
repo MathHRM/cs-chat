@@ -2,6 +2,7 @@ using System.Text;
 using System.CommandLine;
 using backend.Http.Responses;
 using backend.Services;
+using AutoMapper;
 
 namespace backend.Commands;
 
@@ -20,52 +21,23 @@ public class List : CommandBase
     }
 
     private readonly UserService _userService;
+    private readonly IMapper _mapper;
 
-    public List(UserService userService)
+    public List(UserService userService, IMapper mapper)
     {
         _userService = userService;
+        _mapper = mapper;
     }
 
     public override async Task<CommandResult> Handle(ParseResult parseResult)
     {
         var authenticatedUser = await _userService.GetUserByIdAsync(AuthenticatedUserId);
         var chats = authenticatedUser.ChatUsers.OrderBy(c => c.Chat.Name).ToList();
-        var chatsMessage = new StringBuilder("Available chats:\n\n");
 
-        foreach (var chatUser in chats)
-        {
-            var chat = chatUser.Chat;
-            var user = chatUser.User;
-            var description = string.IsNullOrEmpty(chat.Description) ? "" : $"- {chat.Description}";
-            var type = chat.IsGroup ? "Group" : "Private";
-            var command = chat.IsGroup ? $"/join {chat.Id}" : $"/chat";
-
-            chatsMessage.AppendLine($"{chat.Name} {description}");
-            chatsMessage.AppendLine($"- {type}");
-            chatsMessage.AppendLine($"{command}");
-            chatsMessage.AppendLine();
-        }
-
-        if (chats.Count == 0)
-        {
-            chatsMessage.AppendLine("Nenhum chat encontrado");
-        }
-
-        return new GenericResult
+        return new ChatsListResult
         {
             Result = CommandResultEnum.Success,
-            Response = new MessageResponse
-            {
-                Content = chatsMessage.ToString(),
-                CreatedAt = DateTime.UtcNow,
-                Type = MessageType.Text,
-                User = new UserResponse
-                {
-                    Id = 0,
-                    Username = "Sistema",
-                    CurrentChatId = null
-                },
-            },
+            Chats = chats.Select(c => _mapper.Map<ChatResponse>(c.Chat)).ToList(),
             Command = CommandName
         };
     }

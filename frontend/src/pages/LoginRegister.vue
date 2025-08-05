@@ -2,12 +2,12 @@
   <div class="terminal-container">
     <CommandsComponent :messages="messages" @load-more-messages="handleLoadMoreMessages" />
 
-    <CommandLine @send-message="handleInput" :chat="'guest'" :connection-id="connectionId" />
+    <CommandInput @send-message="handleInput" :chat="'guest'" :connection-id="connectionId" />
   </div>
 </template>
 
 <script setup>
-import CommandLine from "@/components/CommandLine.vue";
+import CommandInput from "@/components/CommandInput.vue";
 import CommandsComponent from "@/components/CommandsComponent.vue";
 import { onMounted, computed, onUnmounted, ref } from "vue";
 import handleMessage, { alert } from "@/helpers/messageHandler";
@@ -72,10 +72,10 @@ onMounted(async () => {
   getGuestMessages().then((messages) => {
     messagesStore.setMessages(messages);
 
-    alert(t("alerts.unauthenticated"), 1);
-
     sendCommand("/help").then((command) => {
       handleCommand(command, t);
+
+      alert(t("alerts.unauthenticated"), 1);
     });
   });
 });
