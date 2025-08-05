@@ -157,5 +157,5 @@ function handleProfile(command, t) {
 function handleList(command) {
   const messagesStore = useMessagesStore();
 
-  messagesStore.addMessage(command.response);
+  messagesStore.addMessage(command);
 }

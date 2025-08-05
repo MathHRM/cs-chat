@@ -1,8 +1,14 @@
 <template>
   <div class="terminal-line">
-    <div v-if="message.command">
+    <div v-if="message?.command">
       <span v-if="message.command === 'help'" class="message-wrapper">
         <HelpComponent :commands="message.response" />
+      </span>
+      <span v-else-if="message.command === 'list'" class="message-wrapper">
+        <ListComponent :chats="message.chats" />
+      </span>
+      <span v-else class="message-wrapper">
+        <span class="terminal-message">{{ message.command }}</span>
       </span>
     </div>
     <span v-else-if="message?.type === 0" class="message-wrapper">
@@ -22,6 +28,7 @@
 import { defineProps } from "vue";
 import HelpComponent from "./HelpComponent.vue";
 import ChatIdentifier from "./ChatIdentifier.vue";
+import ListComponent from "./ListComponent.vue";
 
 defineProps({
   message: Object,
