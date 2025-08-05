@@ -3,7 +3,11 @@
   <span class="terminal-message">Comandos disponíveis:</span>
   <br /> <br />
   <div v-for="command in commands" :key="command.name">
-    <span class="terminal-message">/{{ command.name }} - {{ command.description }}</span>
+    <span class="terminal-message">Comando: /{{ command.name }}</span>
+    <br />
+    <span class="terminal-message">Descrição: {{ command.description }}</span>
+    <br />
+    <span class="terminal-message" v-if="command.arguments.length > 0 || command.options.length > 0">Argumentos: </span>
     <span class="terminal-message" v-for="argument in command.arguments" :key="argument.name">
       <br>
       <span class="terminal-message argument">{{ argument.name }}</span>
@@ -15,9 +19,8 @@
       <span class="terminal-message argument">{{ getOptionName(option) }} {{ getOptionAlias(option) }}</span>
       <br />
       <span class="terminal-message argument-description">{{ option.description }}</span>
-      <br />
     </span>
-    <br><br>
+    <br>
     <span class="terminal-message">Copie o comando: </span>
     <button class="terminal-message" @click="copyToClipboard(getCommandCopyShortcut(command))">
       <span class="terminal-message">{{ getCommandCopyShortcut(command) }}</span>
@@ -82,6 +85,10 @@ defineProps({
 
 .argument-description {
   margin-left: 60px;
+}
+
+.command-description {
+  margin-left: 30px;
 }
 
 button {
