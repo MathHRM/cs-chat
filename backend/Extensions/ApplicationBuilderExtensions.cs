@@ -48,6 +48,7 @@ public static class ApplicationBuilderExtensions
     {
         // Configure the middleware pipeline in the correct order
         app.UseCustomSwagger(app.Environment);
+        app.UseRouting();
         app.UseCustomCors(configuration);
         app.UseCustomAuthentication();
         app.ConfigureEndpoints();
