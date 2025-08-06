@@ -1,3 +1,4 @@
+using backend.Configs;
 using backend.src.Hubs;
 using Microsoft.AspNetCore.Builder;
 
@@ -16,9 +17,15 @@ public static class ApplicationBuilderExtensions
         return app;
     }
 
-    public static IApplicationBuilder UseCustomCors(this IApplicationBuilder app)
+    public static IApplicationBuilder UseCustomCors(this IApplicationBuilder app, IConfiguration configuration)
     {
-        app.UseCors();
+        var allowedConfig = configuration.GetSection("AllowedConfig").Get<AllowedConfig>();
+        app.UseCors(cors =>
+        {
+            cors.AllowAnyHeader()
+                .AllowAnyMethod()
+                .AllowCredentials().WithOrigins(allowedConfig.Origins);
+        });
         return app;
     }
 
@@ -37,11 +44,11 @@ public static class ApplicationBuilderExtensions
         return app;
     }
 
-    public static WebApplication ConfigureMiddlewarePipeline(this WebApplication app)
+    public static WebApplication ConfigureMiddlewarePipeline(this WebApplication app, IConfiguration configuration)
     {
         // Configure the middleware pipeline in the correct order
         app.UseCustomSwagger(app.Environment);
-        app.UseCustomCors();
+        app.UseCustomCors(configuration);
         app.UseCustomAuthentication();
         app.ConfigureEndpoints();
 

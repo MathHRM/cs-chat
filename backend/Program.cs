@@ -1,3 +1,4 @@
+using backend.Configs;
 using backend.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -16,7 +17,7 @@ builder.Services
 var app = builder.Build();
 
 // Configure the HTTP request pipeline using extension methods
-app.ConfigureMiddlewarePipeline();
+app.ConfigureMiddlewarePipeline(builder.Configuration);
 
 app.Run();
 
