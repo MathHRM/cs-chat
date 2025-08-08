@@ -25,7 +25,8 @@ public static class ApplicationBuilderExtensions
         {
             cors.AllowAnyHeader()
                 .AllowAnyMethod()
-                .AllowCredentials().WithOrigins(allowedConfig.Origins);
+                .AllowCredentials()
+                .WithOrigins(allowedConfig.Origins);
         });
         return app;
     }
@@ -50,8 +51,8 @@ public static class ApplicationBuilderExtensions
         app.UseCustomSwagger(app.Environment);
         app.UseHttpsRedirection();
         app.UseRouting();
-        app.ConfigureEndpoints();
         app.UseCustomCors(configuration);
+        app.ConfigureEndpoints();
         app.UseCustomAuthentication();
 
         return app;

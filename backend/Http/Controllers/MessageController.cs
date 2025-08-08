@@ -6,6 +6,7 @@ using System.Security.Claims;
 using backend.Http.Requests;
 using backend.Http.Responses;
 using AutoMapper;
+using Microsoft.AspNetCore.Cors;
 
 namespace backend.Http.Controllers;
 
@@ -48,6 +49,7 @@ public class MessageController : ControllerBase
 
     [HttpGet]
     [Route("guest")]
+    [EnableCors("PublicGuest")]
     public async Task<ActionResult<IEnumerable<MessageResponse>>> GetGuestMessages([FromQuery] int? lastMessageId = null)
     {
         var messages = await _messageService.GetMessagesAsync("guest", lastMessageId);

@@ -116,6 +116,13 @@ public static class ServiceCollectionExtensions
                       .AllowAnyMethod()
                       .AllowCredentials();
             });
+
+            options.AddPolicy("PublicGuest", policy =>
+            {
+                policy.AllowAnyOrigin()
+                      .WithMethods("GET")
+                      .AllowAnyHeader();
+            });
         });
 
         return services;
