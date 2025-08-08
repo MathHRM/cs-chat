@@ -20,6 +20,7 @@ public static class ApplicationBuilderExtensions
     public static IApplicationBuilder UseCustomCors(this IApplicationBuilder app, IConfiguration configuration)
     {
         var allowedConfig = configuration.GetSection("AllowedConfig").Get<AllowedConfig>();
+
         app.UseCors(cors =>
         {
             cors.AllowAnyHeader()
@@ -38,7 +39,6 @@ public static class ApplicationBuilderExtensions
 
     public static WebApplication ConfigureEndpoints(this WebApplication app)
     {
-        app.UseHttpsRedirection();
         app.MapControllers();
         app.MapHub<HubProvider>("/Hub");
         return app;
@@ -48,10 +48,11 @@ public static class ApplicationBuilderExtensions
     {
         // Configure the middleware pipeline in the correct order
         app.UseCustomSwagger(app.Environment);
+        app.UseHttpsRedirection();
         app.UseRouting();
+        app.ConfigureEndpoints();
         app.UseCustomCors(configuration);
         app.UseCustomAuthentication();
-        app.ConfigureEndpoints();
 
         return app;
     }
