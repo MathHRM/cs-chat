@@ -119,9 +119,10 @@ public static class ServiceCollectionExtensions
 
             options.AddPolicy("PublicGuest", policy =>
             {
-                policy.AllowAnyOrigin()
-                      .WithMethods("GET")
-                      .AllowAnyHeader();
+                policy.WithOrigins(allowedConfig.Origins)
+                      .AllowAnyHeader()
+                      .AllowAnyMethod()
+                      .AllowCredentials();
             });
         });
 

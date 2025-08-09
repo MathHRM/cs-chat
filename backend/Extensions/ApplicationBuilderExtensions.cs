@@ -19,15 +19,7 @@ public static class ApplicationBuilderExtensions
 
     public static IApplicationBuilder UseCustomCors(this IApplicationBuilder app, IConfiguration configuration)
     {
-        var allowedConfig = configuration.GetSection("AllowedConfig").Get<AllowedConfig>();
-
-        app.UseCors(cors =>
-        {
-            cors.AllowAnyHeader()
-                .AllowAnyMethod()
-                .AllowCredentials()
-                .WithOrigins(allowedConfig.Origins);
-        });
+        app.UseCors();
         return app;
     }
 
@@ -52,8 +44,8 @@ public static class ApplicationBuilderExtensions
         app.UseHttpsRedirection();
         app.UseRouting();
         app.UseCustomCors(configuration);
-        app.ConfigureEndpoints();
         app.UseCustomAuthentication();
+        app.ConfigureEndpoints();
 
         return app;
     }
