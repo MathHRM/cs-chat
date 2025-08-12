@@ -17,7 +17,7 @@ builder.Services
 var app = builder.Build();
 
 // Configure the HTTP request pipeline using extension methods
-app.ConfigureMiddlewarePipeline(builder.Configuration);
+app.ConfigureMiddlewarePipeline();
 
 app.Run();
 
