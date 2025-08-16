@@ -20,8 +20,8 @@ import { useMessagesStore } from "./stores/messages";
 
 const authStore = useAuthStore();
 const chatStore = useChatStore();
-useCommandHistoryStore();
 useMessagesStore();
+useCommandHistoryStore();
 
 onMounted(async () => {
   const token = localStorage.getItem("@auth");

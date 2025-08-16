@@ -1,8 +1,15 @@
 <template>
   <div class="terminal-container">
-    <CommandsComponent :messages="messages" @load-more-messages="handleLoadMoreMessages" />
+    <CommandsComponent
+      :messages="messages"
+      @load-more-messages="handleLoadMoreMessages"
+    />
 
-    <CommandInput @send-message="handleInput" :chat="'guest'" :connection-id="connectionId" />
+    <CommandInput
+      @send-message="handleInput"
+      :chat="'guest'"
+      :connection-id="connectionId"
+    />
   </div>
 </template>
 
@@ -67,17 +74,22 @@ onMounted(async () => {
     })
     .catch(() => {
       alert(t("connection.failed"), 1);
+      alert(t("alerts.server-starting"), 2);
     });
 
-  getGuestMessages().then((messages) => {
-    messagesStore.setMessages(messages);
+  getGuestMessages()
+    .then((messages) => {
+      messagesStore.setMessages(messages.data);
 
-    sendCommand("/help").then((command) => {
-      handleCommand(command, t);
+      sendCommand("/help").then((command) => {
+        handleCommand(command, t);
 
-      alert(t("alerts.unauthenticated"), 1);
+        alert(t("alerts.unauthenticated"), 1);
+      });
+    })
+    .catch(() => {
+      //
     });
-  });
 });
 
 onUnmounted(() => {
