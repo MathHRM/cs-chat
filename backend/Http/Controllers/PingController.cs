@@ -41,22 +41,22 @@ public sealed class PingController : ControllerBase
             cmd.CommandText = "SELECT 1";
             cmd.CommandType = CommandType.Text;
 
-            var result = await cmd.ExecuteScalarAsync(cancellationToken);
+            await cmd.ExecuteScalarAsync(cancellationToken);
 
             return Ok(new
             {
                 status = "ok",
                 system,
-                database = new { healthy = true, result },
+                database = new { healthy = true },
             });
         }
-        catch (Exception ex)
+        catch (Exception)
         {
             return StatusCode(StatusCodes.Status503ServiceUnavailable, new
             {
                 status = "degraded",
                 system,
-                database = new { healthy = false, error = ex.Message },
+                database = new { healthy = false },
             });
         }
         finally
