@@ -2,6 +2,9 @@ name: Ping API
 
 on:
   workflow_dispatch:
+  push:
+    branches:
+      - main
   schedule:
     # NOTE: GitHub Actions cron is hour-based; "*/14" runs at minutes 0,14,28,42,56.
     - cron: '*/14 * * * *'
