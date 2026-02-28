@@ -5,9 +5,9 @@ on:
   push:
     branches:
       - main
-  schedule:
+  # schedule:
     # NOTE: GitHub Actions cron is hour-based; "*/14" runs at minutes 0,14,28,42,56.
-    - cron: '*/14 * * * *'
+    # - cron: '*/14 * * * *'
 
 concurrency:
   group: ping-api
